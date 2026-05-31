@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BedDouble, Bath, Ruler, MapPin } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 
@@ -8,109 +9,126 @@ const TIPO_LABEL: Record<string, string> = {
 };
 
 export default function PropertyListCard({ property: p }: { property: Property }) {
-  const precio = new Intl.NumberFormat("es-AR").format(p.precio);
-  const precioPorM2 = p.superficie_total && p.superficie_total > 0
-    ? new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(p.precio / p.superficie_total)
-    : null;
+  const precio = `${p.moneda} ${new Intl.NumberFormat("es-AR").format(p.precio)}`;
 
   return (
     <a
       href={buildPropertyUrl(p)}
-      className="group block bg-white rounded-2xl overflow-hidden card-lift border border-gray-100"
+      className="card-lift"
+      style={{
+        background: "#fff", borderRadius: "var(--radius-lg)",
+        border: "1px solid var(--line-200)", overflow: "hidden",
+        cursor: "pointer", textDecoration: "none", display: "block",
+        boxShadow: "var(--shadow-sm)",
+      }}
     >
-      {/* Image with gradient overlay */}
-      <div className="relative h-64 bg-gray-200 overflow-hidden">
+      {/* Image */}
+      <div style={{ position: "relative" }}>
         {p.fotos?.[0] ? (
-          <Image
-            src={p.fotos[0]}
-            alt={p.titulo}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
+          <div style={{ position: "relative", height: 188, overflow: "hidden" }}>
+            <Image
+              src={p.fotos[0]} alt={p.titulo} fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </div>
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-300">
-            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
+          <div style={{
+            height: 188, background: "repeating-linear-gradient(45deg,#e9e3d6 0 11px,#f1ece1 11px 22px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontFamily: "var(--font-mono,monospace)", fontSize: 11, color: "#ada592" }}>sin foto</span>
           </div>
         )}
 
-        {/* Dark gradient from bottom */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
-        {/* Top tags */}
-        <div className="absolute top-3 left-3 flex gap-1.5">
-          <span className="text-xs font-semibold text-white px-2.5 py-1 rounded-md"
-            style={{ background: "#0E2C50" }}>
-            {p.operacion === "venta" ? "Venta" : "Alquiler"}
-          </span>
-          <span className="text-xs font-semibold text-white px-2.5 py-1 rounded-md bg-black/40 backdrop-blur-sm">
+        {/* Tipo badge — top left */}
+        <span style={{ position: "absolute", top: 12, left: 12 }}>
+          <span style={{
+            fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
+            padding: "6px 11px", borderRadius: 999,
+            background: "rgba(255,255,255,.92)", color: "var(--navy-800)",
+            boxShadow: "var(--shadow-xs)",
+          }}>
             {TIPO_LABEL[p.tipo]}
           </span>
-        </div>
+        </span>
 
-        {/* Price overlay — bottom left */}
-        <div className="absolute bottom-3 left-3">
-          <p className="text-2xl font-bold text-white leading-tight drop-shadow">
-            {p.moneda === "USD" ? "US$" : "$"} {precio}
-          </p>
-          {precioPorM2 && (
-            <p className="text-xs text-white/75 mt-0.5">
-              {p.moneda === "USD" ? "US$" : "$"} {precioPorM2}/m²
-            </p>
-          )}
-        </div>
+        {/* Operacion badge — top right */}
+        <span style={{ position: "absolute", top: 12, right: 12 }}>
+          <span style={{
+            fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
+            padding: "6px 11px", borderRadius: 999,
+            background: p.operacion === "venta" ? "var(--navy-800)" : "var(--gold-500)",
+            color: p.operacion === "venta" ? "#fff" : "#26200f",
+          }}>
+            {p.operacion === "venta" ? "Venta" : "Alquiler"}
+          </span>
+        </span>
       </div>
 
-      {/* Card body */}
-      <div className="p-4">
-        <h2 className="font-semibold text-gray-800 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-navy transition-colors">
+      {/* Body */}
+      <div style={{ padding: "16px 18px 18px" }}>
+        {/* Title */}
+        <h3 style={{
+          fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 16,
+          lineHeight: 1.35, color: "var(--ink-900)", margin: "0 0 7px",
+          minHeight: 43, display: "-webkit-box",
+          WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
           {p.titulo}
-        </h2>
+        </h3>
 
         {/* Location */}
-        <div className="flex items-center gap-1 text-gray-400 text-xs mb-3">
-          <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span className="truncate">{p.barrio || p.ciudad}</span>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 5,
+          fontFamily: "var(--font-sans)", fontSize: 13,
+          color: "var(--ink-500)", marginBottom: 13,
+        }}>
+          <MapPin size={14} strokeWidth={1.75} />
+          {p.barrio ? `${p.barrio}, ${p.ciudad}` : p.ciudad}
         </div>
 
-        {/* Features */}
-        <div className="flex items-center gap-4 text-xs text-gray-500 border-t border-gray-100 pt-3">
-          {p.superficie_total != null && (
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
+        {/* Specs */}
+        <div style={{
+          display: "flex", gap: 16, fontFamily: "var(--font-sans)",
+          fontSize: 13, color: "var(--ink-600)",
+          paddingBottom: 13, borderBottom: "1px solid var(--line-100)", marginBottom: 13,
+        }}>
+          {p.dormitorios != null && (
+            <span style={spec}>
+              <BedDouble size={15} strokeWidth={1.75} />
+              {p.dormitorios} dorm.
+            </span>
+          )}
+          {p.banos != null && (
+            <span style={spec}>
+              <Bath size={15} strokeWidth={1.75} />
+              {p.banos} {p.banos !== 1 ? "baños" : "baño"}
+            </span>
+          )}
+          {p.superficie_total && (
+            <span style={spec}>
+              <Ruler size={15} strokeWidth={1.75} />
               {p.superficie_total} m²
             </span>
           )}
-          {p.dormitorios != null && (
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              {p.dormitorios}
-            </span>
-          )}
-          {p.cochera && (
-            <span className="flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-              </svg>
-              Cochera
-            </span>
+        </div>
+
+        {/* Price */}
+        <div style={{
+          fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 22,
+          color: "var(--gold-700)", letterSpacing: "-.01em",
+        }}>
+          {precio}
+          {p.operacion === "alquiler" && (
+            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-500)" }}> /mes</span>
           )}
         </div>
       </div>
     </a>
   );
 }
+
+const spec: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap",
+};

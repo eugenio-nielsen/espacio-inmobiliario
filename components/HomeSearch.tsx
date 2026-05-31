@@ -2,45 +2,90 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 
 export default function HomeSearch() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const [operacion, setOperacion] = useState("");
+  const [tipo, setTipo] = useState("");
+  const [zona, setZona] = useState("");
 
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+  function handleSearch() {
     const params = new URLSearchParams();
-    if (query.trim()) params.set("q", query.trim());
+    if (operacion) params.set("operacion", operacion);
+    if (tipo)      params.set("tipo", tipo);
+    if (zona)      params.set("q", zona);
     router.push(`/propiedades?${params.toString()}`);
   }
 
+  const fieldLabel: React.CSSProperties = {
+    fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 9.5,
+    textTransform: "uppercase", letterSpacing: ".1em",
+    color: "var(--ink-400)", marginBottom: 4, display: "block",
+  };
+  const fieldValue: React.CSSProperties = {
+    fontFamily: "var(--font-sans)", fontWeight: 500, fontSize: 14,
+    color: "var(--ink-800)", background: "transparent",
+    border: "none", outline: "none", width: "100%", padding: 0,
+  };
+
   return (
-    <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto">
-      <div className="flex items-center bg-white rounded-xl overflow-hidden shadow-2xl">
-        <div className="flex items-center gap-3 flex-1 px-5">
-          <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por ubicación, tipo de propiedad..."
-            className="flex-1 py-4 text-gray-800 text-sm bg-transparent outline-none placeholder-gray-400"
-          />
-        </div>
-        <button
-          type="submit"
-          className="flex items-center gap-2 px-7 py-4 text-sm font-semibold text-white transition-colors shrink-0"
-          style={{ background: "#0E2C50" }}
-        >
-          Buscar
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </button>
+    <div style={{
+      maxWidth: 720, margin: "0 auto", background: "#fff",
+      borderRadius: "var(--radius-md)", padding: 10,
+      display: "flex", gap: 8, boxShadow: "var(--shadow-lg)",
+    }}>
+      {/* Operación */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px" }}>
+        <span style={fieldLabel}>Operación</span>
+        <select value={operacion} onChange={e => setOperacion(e.target.value)} style={fieldValue}>
+          <option value="">Todas</option>
+          <option value="venta">Venta</option>
+          <option value="alquiler">Alquiler</option>
+        </select>
       </div>
-    </form>
+
+      {/* Tipo */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px", borderLeft: "1px solid var(--line-100)" }}>
+        <span style={fieldLabel}>Tipo</span>
+        <select value={tipo} onChange={e => setTipo(e.target.value)} style={fieldValue}>
+          <option value="">Todos</option>
+          <option value="departamento">Departamento</option>
+          <option value="casa">Casa</option>
+          <option value="terreno">Terreno</option>
+          <option value="local">Local</option>
+          <option value="oficina">Oficina</option>
+        </select>
+      </div>
+
+      {/* Zona */}
+      <div style={{ flex: 2, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px", borderLeft: "1px solid var(--line-100)" }}>
+        <span style={fieldLabel}>Zona o barrio</span>
+        <input
+          value={zona}
+          onChange={e => setZona(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleSearch()}
+          placeholder="Palermo, San Isidro…"
+          style={fieldValue}
+        />
+      </div>
+
+      {/* Buscar */}
+      <button
+        onClick={handleSearch}
+        className="esbtn esbtn-gold"
+        style={{
+          fontFamily: "var(--font-sans)", fontWeight: 600,
+          borderRadius: "var(--radius-sm)", border: "1.5px solid transparent",
+          cursor: "pointer", display: "inline-flex", alignItems: "center",
+          gap: 8, fontSize: 14.5, padding: "13px 22px",
+          background: "var(--gold-500)", color: "#26200f",
+          transition: "all var(--dur) var(--ease-out)", whiteSpace: "nowrap",
+        }}
+      >
+        <Search size={16} strokeWidth={2} />
+        Buscar
+      </button>
+    </div>
   );
 }

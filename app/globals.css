@@ -1,69 +1,124 @@
 @import "tailwindcss";
 
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  /* Brand core */
+  --navy:        #0E2C50;
+  --gold:        #B99F66;
+
+  /* Navy scale */
+  --navy-950:    #07182C;
+  --navy-900:    #0A2038;
+  --navy-800:    #0E2C50;
+  --navy-700:    #173A63;
+  --navy-600:    #234C7A;
+  --navy-500:    #355F8F;
+  --navy-300:    #8AA1BD;
+  --navy-100:    #DCE4EE;
+  --navy-50:     #EFF3F8;
+
+  /* Gold scale */
+  --gold-700:    #8C7641;
+  --gold-600:    #A4894E;
+  --gold-500:    #B99F66;
+  --gold-400:    #CBB585;
+  --gold-300:    #D9C9A1;
+  --gold-200:    #E8DFC8;
+  --gold-100:    #F2EBDA;
+  --gold-50:     #F8F4EA;
+
+  /* Warm neutrals */
+  --cream:       #F7F4EE;
+  --paper:       #FFFFFF;
+  --ink-900:     #14110B;
+  --ink-800:     #2A2620;
+  --ink-600:     #595349;
+  --ink-500:     #7C766B;
+  --ink-400:     #A39C8F;
+  --line-200:    #E7E2D8;
+  --line-100:    #F0ECE3;
+  --fill-100:    #F2EFE8;
+
+  /* Semantic */
+  --success:     #2F7A52; --success-bg: #E7F1EB; --success-line: #CBE2D5;
+  --danger:      #B23A36; --danger-bg:  #F7E9E8; --danger-line:  #ECCFCD;
+  --warning:     #B5852A; --warning-bg: #F8EFD9; --warning-line: #EBDCB5;
+
+  /* Type families */
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-sans:    var(--font-outfit), system-ui, sans-serif;
+
+  /* Radii */
+  --radius-xs: 6px;   --radius-sm: 10px; --radius-md: 14px;
+  --radius-lg: 20px;  --radius-xl: 28px; --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-xs:   0 1px 2px rgba(20,17,11,.05);
+  --shadow-sm:   0 1px 3px rgba(20,17,11,.06), 0 1px 2px rgba(20,17,11,.04);
+  --shadow-md:   0 4px 14px rgba(20,17,11,.07), 0 2px 5px rgba(20,17,11,.04);
+  --shadow-lg:   0 12px 32px rgba(14,44,80,.10), 0 4px 10px rgba(20,17,11,.05);
+  --shadow-navy: 0 14px 30px rgba(14,44,80,.18);
+
+  /* Motion */
+  --ease-out:   cubic-bezier(0.22,1,0.36,1);
+  --dur-fast:   140ms;
+  --dur:        220ms;
+  --dur-slow:   360ms;
+
+  /* Layout */
+  --container: 1120px;
+}
+
+/* ── Tailwind theme bridge ─────────────────────────────────── */
 @theme {
   --color-navy:       #0E2C50;
-  --color-navy-dark:  #071828;
-  --color-navy-light: #1a3a6b;
-  --color-gold:       #b99f66;
-  --color-gold-light: #d4c49a;
-  --color-gold-pale:  #f5f0e8;
+  --color-navy-dark:  #07182C;
+  --color-gold:       #B99F66;
+  --color-gold-700:   #8C7641;
+  --color-cream:      #F7F4EE;
+  --color-ink-800:    #2A2620;
+  --color-ink-600:    #595349;
   --font-sans:        var(--font-outfit);
   --font-serif:       var(--font-playfair);
 }
 
+/* ── Base ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
-  font-family: var(--font-outfit), system-ui, sans-serif;
+  font-family: var(--font-sans);
+  color: var(--ink-800);
+  background: var(--cream);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: #f8f8f6;
-  color: #1a1a2e;
+  text-rendering: optimizeLegibility;
 }
 
-.font-serif { font-family: var(--font-playfair), Georgia, serif; }
+/* ── Button utilities ──────────────────────────────────────── */
+.esbtn-primary:hover { background: var(--navy-700) !important; box-shadow: var(--shadow-navy); }
+.esbtn-gold:hover    { background: var(--gold-600)  !important; }
+.esbtn-outline:hover { border-color: var(--navy-800) !important; color: var(--navy-800) !important; }
+.esbtn-ghost:hover   { background: var(--navy-50)   !important; }
 
-/* Hero diagonal decoration */
-.hero-pattern {
-  background-image:
-    linear-gradient(rgba(14, 44, 80, 0.88) 0%, rgba(7, 24, 40, 0.92) 100%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b99f66' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+/* ── Form focus ring ───────────────────────────────────────── */
+select:focus, input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--navy-800) !important;
+  box-shadow: 0 0 0 3px var(--navy-100);
 }
 
-/* Card hover lift */
+/* ── Card hover lift ───────────────────────────────────────── */
 .card-lift {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: box-shadow var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
 }
 .card-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(14, 44, 80, 0.15);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
 }
 
-/* Gradient text */
-.text-gradient-gold {
-  background: linear-gradient(135deg, #b99f66 0%, #d4c49a 50%, #b99f66 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ── Font helpers ──────────────────────────────────────────── */
+.font-serif  { font-family: var(--font-display); }
+.es-eyebrow  {
+  font-family: var(--font-sans); font-weight: 600; font-size: 12px;
+  text-transform: uppercase; letter-spacing: .12em; color: var(--gold-700);
 }
-
-/* Navbar register button */
-.nav-register-btn {
-  border-color: #0E2C50;
-  color: #0E2C50;
-}
-.nav-register-btn:hover {
-  background: #0E2C50;
-  color: #fff;
-}
-
-/* Step connector line */
-.steps-connector::after {
-  content: '';
-  position: absolute;
-  top: 36px;
-  left: calc(50% + 60px);
-  right: calc(-50% + 60px);
-  height: 1px;
-  background: linear-gradient(to right, #b99f66, transparent);
-}
+.es-eyebrow-light { color: var(--gold-300); }

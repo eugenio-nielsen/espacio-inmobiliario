@@ -2,6 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { sendInquiry } from "@/lib/actions/inquiries";
+import { MessageCircle, CheckCircle2 } from "lucide-react";
+
+const inp: React.CSSProperties = {
+  width: "100%", boxSizing: "border-box",
+  border: "1.5px solid var(--line-200)", borderRadius: "var(--radius-sm)",
+  padding: "11px 13px", fontFamily: "var(--font-sans)",
+  fontSize: 14, color: "var(--ink-800)", marginBottom: 10,
+  background: "#fff",
+};
 
 export default function InquiryForm({ propertyId }: { propertyId: string }) {
   const [sent, setSent] = useState(false);
@@ -19,62 +28,56 @@ export default function InquiryForm({ propertyId }: { propertyId: string }) {
     });
   }
 
-  if (sent) {
-    return (
-      <div className="text-center py-6 bg-green-50 rounded-xl border border-green-200">
-        <div className="text-3xl mb-2">✅</div>
-        <p className="font-semibold text-green-800 text-sm">¡Consulta enviada!</p>
-        <p className="text-green-600 text-xs mt-1">El dueño se comunicará con vos a la brevedad.</p>
-      </div>
-    );
-  }
+  if (sent) return (
+    <div style={{
+      textAlign: "center", padding: "26px 16px",
+      background: "var(--success-bg)", border: "1px solid var(--success-line)",
+      borderRadius: "var(--radius-md)",
+    }}>
+      <CheckCircle2 size={32} color="var(--success)" strokeWidth={1.75} style={{ margin: "0 auto" }} />
+      <p style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15, color: "var(--success)", margin: "10px 0 4px" }}>
+        ¡Consulta enviada!
+      </p>
+      <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-600)", margin: 0 }}>
+        El dueño se comunicará con vos a la brevedad.
+      </p>
+    </div>
+  );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <p className="text-sm font-semibold text-gray-700">Enviá una consulta</p>
-
-      <input
-        name="nombre"
-        type="text"
-        required
-        placeholder="Tu nombre *"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        name="email"
-        type="email"
-        required
-        placeholder="Tu email *"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        name="telefono"
-        type="tel"
-        placeholder="Tu teléfono (opcional)"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+    <form onSubmit={handleSubmit}>
+      <p style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15, color: "var(--ink-900)", margin: "0 0 12px" }}>
+        Consultá al dueño
+      </p>
+      <input name="nombre" type="text" required placeholder="Tu nombre" style={inp} />
+      <input name="email" type="email" required placeholder="Tu email" style={inp} />
+      <input name="telefono" type="tel" placeholder="Tu teléfono (opcional)" style={inp} />
       <textarea
-        name="mensaje"
-        required
-        rows={3}
-        placeholder="Tu mensaje *"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        name="mensaje" required rows={3}
+        style={{ ...inp, resize: "none" }}
         defaultValue="Hola, me interesa la propiedad. ¿Podemos coordinar una visita?"
       />
-
       {error && (
-        <p className="text-red-600 text-xs">{error}</p>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--danger)", marginBottom: 10 }}>{error}</p>
       )}
-
       <button
         type="submit"
         disabled={isPending}
-        className="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+        className="esbtn esbtn-gold"
+        style={{
+          width: "100%", fontFamily: "var(--font-sans)", fontWeight: 600,
+          borderRadius: "var(--radius-sm)", border: "1.5px solid transparent",
+          cursor: isPending ? "not-allowed" : "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          gap: 8, fontSize: 14.5, padding: "13px 24px",
+          background: isPending ? "var(--gold-400)" : "var(--gold-500)",
+          color: "#26200f", transition: "all var(--dur) var(--ease-out)",
+        }}
       >
-        {isPending ? "Enviando..." : "Enviar consulta"}
+        <MessageCircle size={16} strokeWidth={2} />
+        {isPending ? "Enviando…" : "Enviar consulta"}
       </button>
-
-      <p className="text-xs text-gray-400 text-center">
+      <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", textAlign: "center", margin: "12px 0 0" }}>
         Tu consulta va directamente al dueño. Sin intermediarios.
       </p>
     </form>

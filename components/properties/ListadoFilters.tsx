@@ -2,14 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 
-const PROVINCIAS = [
-  "Buenos Aires", "CABA", "Catamarca", "Chaco", "Chubut",
-  "Córdoba", "Corrientes", "Entre Ríos", "Formosa", "Jujuy",
-  "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén",
-  "Río Negro", "Salta", "San Juan", "San Luis", "Santa Cruz",
-  "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán",
-];
+const PROVINCIAS = ["Ciudad Autónoma de Buenos Aires", "Provincia de Buenos Aires"];
 
 interface Props {
   current: {
@@ -20,79 +15,112 @@ interface Props {
 
 export default function ListadoFilters({ current }: Props) {
   const router = useRouter();
-  const [filters, setFilters] = useState({
-    tipo: current.tipo || "",
-    operacion: current.operacion || "",
-    provincia: current.provincia || "",
-    dormitorios: current.dormitorios || "",
-    precio_min: current.precio_min || "",
+  const [f, setF] = useState({
+    tipo:       current.tipo       || "",
+    operacion:  current.operacion  || "",
+    provincia:  current.provincia  || "",
+    dormitorios:current.dormitorios|| "",
     precio_max: current.precio_max || "",
   });
 
   function apply() {
     const params = new URLSearchParams();
-    Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v); });
+    Object.entries(f).forEach(([k, v]) => { if (v) params.set(k, v); });
     router.push(`/propiedades?${params.toString()}`);
   }
 
-  function reset() {
-    setFilters({ tipo: "", operacion: "", provincia: "", dormitorios: "", precio_min: "", precio_max: "" });
-    router.push("/propiedades");
-  }
-
-  const hasFilters = Object.values(filters).some(Boolean);
-
-  const sel = "border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
-  const inp = "border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full";
+  const sel: React.CSSProperties = {
+    fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-800)",
+    background: "#fff", border: "1.5px solid var(--line-200)",
+    borderRadius: "var(--radius-sm)", padding: "10px 12px",
+    appearance: "none" as const, cursor: "pointer", width: "100%",
+  };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <select className={sel} value={filters.tipo} onChange={e => setFilters(f => ({ ...f, tipo: e.target.value }))}>
-          <option value="">Tipo</option>
-          <option value="casa">Casa</option>
+    <div style={{
+      background: "#fff", borderRadius: "var(--radius-md)",
+      border: "1px solid var(--line-200)", boxShadow: "var(--shadow-sm)",
+      padding: 16, display: "grid",
+      gridTemplateColumns: "repeat(5,1fr) auto", gap: 12, alignItems: "center",
+    }}>
+      {/* Tipo */}
+      <div style={{ position: "relative" }}>
+        <select style={sel} value={f.tipo} onChange={e => setF(p => ({ ...p, tipo: e.target.value }))}>
+          <option value="">Tipo: Todos</option>
           <option value="departamento">Departamento</option>
+          <option value="casa">Casa</option>
           <option value="terreno">Terreno</option>
           <option value="local">Local</option>
           <option value="oficina">Oficina</option>
         </select>
+        <Chevron />
+      </div>
 
-        <select className={sel} value={filters.operacion} onChange={e => setFilters(f => ({ ...f, operacion: e.target.value }))}>
-          <option value="">Operación</option>
+      {/* Operación */}
+      <div style={{ position: "relative" }}>
+        <select style={sel} value={f.operacion} onChange={e => setF(p => ({ ...p, operacion: e.target.value }))}>
+          <option value="">Operación: Todas</option>
           <option value="venta">Venta</option>
           <option value="alquiler">Alquiler</option>
         </select>
+        <Chevron />
+      </div>
 
-        <select className={sel} value={filters.provincia} onChange={e => setFilters(f => ({ ...f, provincia: e.target.value }))}>
-          <option value="">Provincia</option>
-          {PROVINCIAS.map(p => <option key={p} value={p}>{p}</option>)}
+      {/* Zona */}
+      <div style={{ position: "relative" }}>
+        <select style={sel} value={f.provincia} onChange={e => setF(p => ({ ...p, provincia: e.target.value }))}>
+          <option value="">Zona: Todas</option>
+          {PROVINCIAS.map(p => <option key={p} value={p}>{p === "Ciudad Autónoma de Buenos Aires" ? "CABA" : "Pcia. Bs. As."}</option>)}
         </select>
+        <Chevron />
+      </div>
 
-        <select className={sel} value={filters.dormitorios} onChange={e => setFilters(f => ({ ...f, dormitorios: e.target.value }))}>
-          <option value="">Dormitorios</option>
+      {/* Dormitorios */}
+      <div style={{ position: "relative" }}>
+        <select style={sel} value={f.dormitorios} onChange={e => setF(p => ({ ...p, dormitorios: e.target.value }))}>
+          <option value="">Dormitorios: Todos</option>
           <option value="1">1+</option>
           <option value="2">2+</option>
           <option value="3">3+</option>
           <option value="4">4+</option>
         </select>
-
-        <input className={inp} type="number" placeholder="Precio mín (USD)" value={filters.precio_min}
-          onChange={e => setFilters(f => ({ ...f, precio_min: e.target.value }))} />
-
-        <input className={inp} type="number" placeholder="Precio máx (USD)" value={filters.precio_max}
-          onChange={e => setFilters(f => ({ ...f, precio_max: e.target.value }))} />
+        <Chevron />
       </div>
 
-      <div className="flex gap-2 mt-3 justify-end">
-        {hasFilters && (
-          <button onClick={reset} className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2">
-            Limpiar filtros
-          </button>
-        )}
-        <button onClick={apply} className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">
-          Buscar
-        </button>
+      {/* Precio */}
+      <div style={{ position: "relative" }}>
+        <select style={sel} value={f.precio_max} onChange={e => setF(p => ({ ...p, precio_max: e.target.value }))}>
+          <option value="">Precio: Todos</option>
+          <option value="50000">hasta USD 50k</option>
+          <option value="100000">hasta USD 100k</option>
+          <option value="200000">hasta USD 200k</option>
+          <option value="500000">hasta USD 500k</option>
+        </select>
+        <Chevron />
       </div>
+
+      {/* Botón */}
+      <button
+        onClick={apply}
+        className="esbtn esbtn-primary"
+        style={{
+          fontFamily: "var(--font-sans)", fontWeight: 600,
+          borderRadius: "var(--radius-sm)", border: "1.5px solid transparent",
+          cursor: "pointer", display: "inline-flex", alignItems: "center",
+          justifyContent: "center", gap: 8, fontSize: 13,
+          padding: "10px 16px", background: "var(--navy-800)", color: "#fff",
+          transition: "all var(--dur) var(--ease-out)", whiteSpace: "nowrap",
+        }}
+      >
+        <SlidersHorizontal size={15} strokeWidth={2} />
+        Filtrar
+      </button>
     </div>
+  );
+}
+
+function Chevron() {
+  return (
+    <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "var(--ink-500)", fontSize: 11 }}>▾</span>
   );
 }
