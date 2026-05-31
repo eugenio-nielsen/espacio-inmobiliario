@@ -7,14 +7,14 @@
   --color-gold:       #b99f66;
   --color-gold-light: #d4c49a;
   --color-gold-pale:  #f5f0e8;
-  --font-sans:        var(--font-geist);
+  --font-sans:        var(--font-outfit);
   --font-serif:       var(--font-playfair);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
-  font-family: var(--font-geist), system-ui, sans-serif;
+  font-family: var(--font-outfit), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #f8f8f6;
