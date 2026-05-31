@@ -1,19 +1,69 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-navy:       #0E2C50;
+  --color-navy-dark:  #071828;
+  --color-navy-light: #1a3a6b;
+  --color-gold:       #b99f66;
+  --color-gold-light: #d4c49a;
+  --color-gold-pale:  #f5f0e8;
+  --font-sans:        var(--font-geist);
+  --font-serif:       var(--font-playfair);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8f8f6;
+  color: #1a1a2e;
+}
+
+.font-serif { font-family: var(--font-playfair), Georgia, serif; }
+
+/* Hero diagonal decoration */
+.hero-pattern {
+  background-image:
+    linear-gradient(rgba(14, 44, 80, 0.88) 0%, rgba(7, 24, 40, 0.92) 100%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b99f66' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Card hover lift */
+.card-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(14, 44, 80, 0.15);
+}
+
+/* Gradient text */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #b99f66 0%, #d4c49a 50%, #b99f66 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Navbar register button */
+.nav-register-btn {
+  border-color: #0E2C50;
+  color: #0E2C50;
+}
+.nav-register-btn:hover {
+  background: #0E2C50;
+  color: #fff;
+}
+
+/* Step connector line */
+.steps-connector::after {
+  content: '';
+  position: absolute;
+  top: 36px;
+  left: calc(50% + 60px);
+  right: calc(-50% + 60px);
+  height: 1px;
+  background: linear-gradient(to right, #b99f66, transparent);
 }

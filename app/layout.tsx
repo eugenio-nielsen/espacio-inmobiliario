@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  style: ["normal", "italic"],
+  display: "swap",
+});
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
@@ -25,8 +32,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-AR" className={`${geist.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-50">{children}</body>
+    <html lang="es-AR" className={`${geist.variable} ${playfair.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
