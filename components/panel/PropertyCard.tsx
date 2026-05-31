@@ -56,7 +56,7 @@ export default function PropertyCard({ property: p, statusLabel, statusColor }: 
               {statusLabel}
             </span>
             <span className="text-xs text-gray-400">
-              {TIPO_LABEL[p.tipo]} · {p.operacion === "venta" ? "Venta" : "Alquiler"}
+              {TIPO_LABEL[p.tipo]} · Venta
             </span>
           </div>
           <h2 className="font-semibold text-gray-800 truncate">{p.titulo}</h2>

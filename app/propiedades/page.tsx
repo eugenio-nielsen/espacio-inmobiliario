@@ -8,8 +8,8 @@ import Navbar from "@/components/Navbar";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Propiedades en venta y alquiler",
-  description: "Buscá casas, departamentos, terrenos, locales y oficinas directamente de sus dueños en Buenos Aires. Sin comisiones.",
+  title: "Propiedades en venta",
+  description: "Buscá casas, departamentos, terrenos, locales y oficinas en venta directamente de sus dueños en Buenos Aires. Sin comisiones.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/propiedades` },
 };
 
@@ -60,7 +60,7 @@ export default async function PropiedadesPage({
         }}>
           <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
           <span style={{ color: "var(--gold-500)", margin: "0 6px" }}>/</span>
-          Propiedades en venta y alquiler
+          Propiedades en venta
         </div>
 
         {/* Title + count */}
@@ -72,7 +72,7 @@ export default async function PropiedadesPage({
             fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 34,
             letterSpacing: "-.02em", color: "var(--navy-800)", margin: 0,
           }}>
-            Propiedades en venta y alquiler
+            Propiedades en venta
           </h1>
         </div>
 

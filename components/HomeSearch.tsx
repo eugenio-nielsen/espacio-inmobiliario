@@ -35,14 +35,11 @@ export default function HomeSearch() {
       borderRadius: "var(--radius-md)", padding: 10,
       display: "flex", gap: 8, boxShadow: "var(--shadow-lg)",
     }}>
-      {/* Operación */}
+      {/* Operación — solo venta */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px" }}>
         <span style={fieldLabel}>Operación</span>
-        <select value={operacion} onChange={e => setOperacion(e.target.value)} style={fieldValue}>
-          <option value="">Todas</option>
-          <option value="venta">Venta</option>
-          <option value="alquiler">Alquiler</option>
-        </select>
+        <span style={{ ...fieldValue, color: "var(--ink-600)" }}>Venta</span>
+        <input type="hidden" value="venta" />
       </div>
 
       {/* Tipo */}

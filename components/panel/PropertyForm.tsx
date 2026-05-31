@@ -94,12 +94,9 @@ export default function PropertyForm({ mode, property }: Props) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Operación *</label>
-            <select name="operacion" required defaultValue={v?.operacion || ""} className={sel}>
-              <option value="" disabled>Seleccioná</option>
-              <option value="venta">Venta</option>
-              <option value="alquiler">Alquiler</option>
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Operación</label>
+            <input type="hidden" name="operacion" value="venta" />
+            <div className={`${sel} bg-gray-50 text-gray-500 cursor-default`}>Venta</div>
           </div>
         </div>
 
@@ -205,7 +202,7 @@ export default function PropertyForm({ mode, property }: Props) {
           <select name="status" defaultValue={v?.status || "activa"} className={sel}>
             <option value="activa">Activa — visible en el listado público</option>
             <option value="pausada">Pausada — oculta temporalmente</option>
-            <option value="vendida">Vendida / Alquilada</option>
+            <option value="vendida">Vendida</option>
           </select>
         </section>
       )}

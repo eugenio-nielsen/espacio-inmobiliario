@@ -56,14 +56,12 @@ export default function ListadoFilters({ current }: Props) {
         <Chevron />
       </div>
 
-      {/* Operación */}
+      {/* Operación — solo venta, campo oculto */}
       <div style={{ position: "relative" }}>
-        <select style={sel} value={f.operacion} onChange={e => setF(p => ({ ...p, operacion: e.target.value }))}>
-          <option value="">Operación: Todas</option>
-          <option value="venta">Venta</option>
-          <option value="alquiler">Alquiler</option>
-        </select>
-        <Chevron />
+        <div style={{ ...sel, color: "var(--ink-500)", background: "var(--fill-100)", display: "flex", alignItems: "center" }}>
+          Operación: Venta
+        </div>
+        <input type="hidden" value="venta" />
       </div>
 
       {/* Zona */}

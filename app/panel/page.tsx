@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const STATUS_LABEL: Record<string, string> = {
   activa: "Activa",
   pausada: "Pausada",
-  vendida: "Vendida / Alquilada",
+  vendida: "Vendida",
 };
 
 const STATUS_COLOR: Record<string, string> = {

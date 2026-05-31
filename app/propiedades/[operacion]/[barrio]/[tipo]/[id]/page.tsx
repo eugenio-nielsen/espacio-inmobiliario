@@ -61,7 +61,7 @@ export default async function PropiedadPage({ params }: PageProps) {
   if (!property) notFound();
 
   const p = property as Property & { profiles: Profile };
-  const precio = `${p.moneda} ${new Intl.NumberFormat("es-AR").format(p.precio)}`;
+  const precio = `${p.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p.precio))}`;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const jsonLd = {
@@ -120,10 +120,9 @@ export default async function PropiedadPage({ params }: PageProps) {
                 <span style={{
                   fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
                   padding: "6px 11px", borderRadius: 999,
-                  background: p.operacion === "venta" ? "var(--navy-800)" : "var(--gold-500)",
-                  color: p.operacion === "venta" ? "#fff" : "#26200f",
+                  background: "var(--navy-800)", color: "#fff",
                 }}>
-                  {p.operacion === "venta" ? "Venta" : "Alquiler"}
+                  Venta
                 </span>
               </div>
 
@@ -194,15 +193,12 @@ export default async function PropiedadPage({ params }: PageProps) {
               }}>
                 {/* Price label */}
                 <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", marginBottom: 4 }}>
-                  {p.operacion === "venta" ? "Precio de venta" : "Alquiler mensual"}
+                  Precio de venta
                 </div>
 
                 {/* Price */}
                 <div style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 34, color: "var(--gold-700)", letterSpacing: "-.01em", marginBottom: 18 }}>
                   {precio}
-                  {p.operacion === "alquiler" && (
-                    <span style={{ fontSize: 16, fontWeight: 500, color: "var(--ink-500)" }}> /mes</span>
-                  )}
                 </div>
 
                 {/* Owner */}

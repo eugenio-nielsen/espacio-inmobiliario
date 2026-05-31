@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BedDouble, Bath, Ruler, MapPin } from "lucide-react";
+import { MapPin, Maximize2, BedDouble, Car } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 
@@ -8,120 +8,143 @@ const TIPO_LABEL: Record<string, string> = {
   local: "Local", oficina: "Oficina",
 };
 
+function fmtPrecio(precio: number, moneda: string): string {
+  return `${moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(precio))}`;
+}
+
 export default function PropertyListCard({ property: p }: { property: Property }) {
-  const precio = `${p.moneda} ${new Intl.NumberFormat("es-AR").format(p.precio)}`;
+  const precioPorM2 = p.superficie_total && p.superficie_total > 0
+    ? Math.round(p.precio / p.superficie_total)
+    : null;
 
   return (
     <a
       href={buildPropertyUrl(p)}
       className="card-lift"
       style={{
-        background: "#fff", borderRadius: "var(--radius-lg)",
-        border: "1px solid var(--line-200)", overflow: "hidden",
-        cursor: "pointer", textDecoration: "none", display: "block",
+        background: "#fff",
+        borderRadius: "var(--radius-lg)",
+        border: "1px solid var(--line-200)",
+        overflow: "hidden",
+        cursor: "pointer",
+        textDecoration: "none",
+        display: "block",
         boxShadow: "var(--shadow-sm)",
       }}
     >
-      {/* Image */}
-      <div style={{ position: "relative" }}>
+      {/* ── Image area ──────────────────────────────── */}
+      <div style={{ position: "relative", height: 220, overflow: "hidden", background: "var(--fill-100)" }}>
         {p.fotos?.[0] ? (
-          <div style={{ position: "relative", height: 188, overflow: "hidden" }}>
-            <Image
-              src={p.fotos[0]} alt={p.titulo} fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            />
-          </div>
+          <Image
+            src={p.fotos[0]}
+            alt={p.titulo}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            style={{ transition: "transform 0.4s ease" }}
+          />
         ) : (
           <div style={{
-            height: 188, background: "repeating-linear-gradient(45deg,#e9e3d6 0 11px,#f1ece1 11px 22px)",
+            position: "absolute", inset: 0,
+            background: "repeating-linear-gradient(45deg,#e9e3d6 0 11px,#f1ece1 11px 22px)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <span style={{ fontFamily: "var(--font-mono,monospace)", fontSize: 11, color: "#ada592" }}>sin foto</span>
+            <span style={{ fontFamily: "monospace", fontSize: 11, color: "#ada592" }}>sin foto</span>
           </div>
         )}
 
-        {/* Tipo badge — top left */}
-        <span style={{ position: "absolute", top: 12, left: 12 }}>
+        {/* Gradient overlay — dark bottom */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to top, rgba(7,24,44,.82) 0%, rgba(7,24,44,.3) 45%, transparent 70%)",
+        }} />
+
+        {/* Badges — top left */}
+        <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 6 }}>
           <span style={{
             fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
-            padding: "6px 11px", borderRadius: 999,
-            background: "rgba(255,255,255,.92)", color: "var(--navy-800)",
+            padding: "5px 10px", borderRadius: 999,
+            background: "var(--navy-800)", color: "#fff",
+          }}>
+            Venta
+          </span>
+          <span style={{
+            fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
+            padding: "5px 10px", borderRadius: 999,
+            background: "rgba(255,255,255,.88)", color: "var(--navy-800)",
             boxShadow: "var(--shadow-xs)",
           }}>
             {TIPO_LABEL[p.tipo]}
           </span>
-        </span>
+        </div>
 
-        {/* Operacion badge — top right */}
-        <span style={{ position: "absolute", top: 12, right: 12 }}>
-          <span style={{
-            fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
-            padding: "6px 11px", borderRadius: 999,
-            background: p.operacion === "venta" ? "var(--navy-800)" : "var(--gold-500)",
-            color: p.operacion === "venta" ? "#fff" : "#26200f",
+        {/* Price overlay — bottom left */}
+        <div style={{ position: "absolute", bottom: 14, left: 14 }}>
+          <p style={{
+            fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 26,
+            color: "#fff", margin: 0, lineHeight: 1,
+            textShadow: "0 1px 4px rgba(0,0,0,.3)",
           }}>
-            {p.operacion === "venta" ? "Venta" : "Alquiler"}
-          </span>
-        </span>
+            {fmtPrecio(p.precio, p.moneda)}
+          </p>
+          {precioPorM2 && (
+            <p style={{
+              fontFamily: "var(--font-sans)", fontSize: 12.5,
+              color: "rgba(255,255,255,.75)", margin: "4px 0 0",
+            }}>
+              {p.moneda === "USD" ? "US$" : "$"} {new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(precioPorM2)}/m²
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Body */}
-      <div style={{ padding: "16px 18px 18px" }}>
+      {/* ── Card body ────────────────────────────────── */}
+      <div style={{ padding: "14px 16px 16px" }}>
         {/* Title */}
         <h3 style={{
-          fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 16,
-          lineHeight: 1.35, color: "var(--ink-900)", margin: "0 0 7px",
-          minHeight: 43, display: "-webkit-box",
-          WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+          fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15,
+          lineHeight: 1.4, color: "var(--ink-900)", margin: "0 0 6px",
+          display: "-webkit-box", WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
           {p.titulo}
         </h3>
 
         {/* Location */}
         <div style={{
-          display: "flex", alignItems: "center", gap: 5,
+          display: "flex", alignItems: "center", gap: 4,
           fontFamily: "var(--font-sans)", fontSize: 13,
-          color: "var(--ink-500)", marginBottom: 13,
+          color: "var(--ink-500)", marginBottom: 12,
         }}>
-          <MapPin size={14} strokeWidth={1.75} />
-          {p.barrio ? `${p.barrio}, ${p.ciudad}` : p.ciudad}
+          <MapPin size={13} strokeWidth={1.75} style={{ flexShrink: 0 }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {p.barrio ? `${p.barrio}` : p.ciudad}
+          </span>
         </div>
 
-        {/* Specs */}
+        {/* Features row */}
         <div style={{
-          display: "flex", gap: 16, fontFamily: "var(--font-sans)",
-          fontSize: 13, color: "var(--ink-600)",
-          paddingBottom: 13, borderBottom: "1px solid var(--line-100)", marginBottom: 13,
+          display: "flex", alignItems: "center", gap: 14,
+          fontFamily: "var(--font-sans)", fontSize: 13,
+          color: "var(--ink-600)", borderTop: "1px solid var(--line-100)", paddingTop: 12,
         }}>
+          {p.superficie_total != null && (
+            <span style={feat}>
+              <Maximize2 size={14} strokeWidth={1.75} />
+              {new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(p.superficie_total)} m²
+            </span>
+          )}
           {p.dormitorios != null && (
-            <span style={spec}>
-              <BedDouble size={15} strokeWidth={1.75} />
-              {p.dormitorios} dorm.
+            <span style={feat}>
+              <BedDouble size={14} strokeWidth={1.75} />
+              {p.dormitorios}
             </span>
           )}
-          {p.banos != null && (
-            <span style={spec}>
-              <Bath size={15} strokeWidth={1.75} />
-              {p.banos} {p.banos !== 1 ? "baños" : "baño"}
+          {p.cochera && (
+            <span style={feat}>
+              <Car size={14} strokeWidth={1.75} />
+              1
             </span>
-          )}
-          {p.superficie_total && (
-            <span style={spec}>
-              <Ruler size={15} strokeWidth={1.75} />
-              {p.superficie_total} m²
-            </span>
-          )}
-        </div>
-
-        {/* Price */}
-        <div style={{
-          fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 22,
-          color: "var(--gold-700)", letterSpacing: "-.01em",
-        }}>
-          {precio}
-          {p.operacion === "alquiler" && (
-            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-500)" }}> /mes</span>
           )}
         </div>
       </div>
@@ -129,6 +152,6 @@ export default function PropertyListCard({ property: p }: { property: Property }
   );
 }
 
-const spec: React.CSSProperties = {
+const feat: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: 5, whiteSpace: "nowrap",
 };

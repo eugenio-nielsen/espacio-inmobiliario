@@ -216,7 +216,7 @@ export default async function HomePage() {
           </div>
           <div>
             <h5 style={footH}>Propiedades</h5>
-            {["Departamentos en venta", "Casas en alquiler", "Oficinas", "Terrenos"].map(t => (
+            {["Departamentos en venta", "Casas en venta", "Oficinas", "Terrenos"].map(t => (
               <a key={t} href="/propiedades" style={footLink}>{t}</a>
             ))}
           </div>
