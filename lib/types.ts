@@ -27,6 +27,7 @@ export interface Property {
   direccion?: string;
   superficie_total?: number;
   superficie_cubierta?: number;
+  ambientes?: number;
   dormitorios?: number;
   banos?: number;
   cochera: boolean;

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Maximize2, BedDouble, Car } from "lucide-react";
+import { MapPin, Maximize2, BedDouble, Car, LayoutGrid } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 
@@ -128,6 +128,12 @@ export default function PropertyListCard({ property: p }: { property: Property }
           fontFamily: "var(--font-sans)", fontSize: 13,
           color: "var(--ink-600)", borderTop: "1px solid var(--line-100)", paddingTop: 12,
         }}>
+          {p.ambientes != null && (
+            <span style={feat}>
+              <LayoutGrid size={14} strokeWidth={1.75} />
+              {p.ambientes} amb.
+            </span>
+          )}
           {p.superficie_total != null && (
             <span style={feat}>
               <Maximize2 size={14} strokeWidth={1.75} />
@@ -137,13 +143,13 @@ export default function PropertyListCard({ property: p }: { property: Property }
           {p.dormitorios != null && (
             <span style={feat}>
               <BedDouble size={14} strokeWidth={1.75} />
-              {p.dormitorios}
+              {p.dormitorios} dorm.
             </span>
           )}
           {p.cochera && (
             <span style={feat}>
               <Car size={14} strokeWidth={1.75} />
-              1
+              Cochera
             </span>
           )}
         </div>

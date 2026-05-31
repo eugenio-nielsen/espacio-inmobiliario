@@ -171,16 +171,20 @@ export default function PropertyForm({ mode, property }: Props) {
         <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Características</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Ambientes</label>
+            <input name="ambientes" type="number" min={1} max={30} defaultValue={v?.ambientes ?? ""} className={inp} placeholder="Ej: 4" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Dormitorios</label>
+            <input name="dormitorios" type="number" min={0} max={20} defaultValue={v?.dormitorios ?? ""} className={inp} />
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Sup. total (m²)</label>
             <input name="superficie_total" type="number" min={0} step="0.01" defaultValue={v?.superficie_total ?? ""} className={inp} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Sup. cubierta (m²)</label>
             <input name="superficie_cubierta" type="number" min={0} step="0.01" defaultValue={v?.superficie_cubierta ?? ""} className={inp} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Dormitorios</label>
-            <input name="dormitorios" type="number" min={0} max={20} defaultValue={v?.dormitorios ?? ""} className={inp} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Baños</label>

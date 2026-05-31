@@ -5,7 +5,7 @@ import type { Property, Profile } from "@/lib/types";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import InquiryForm from "@/components/properties/InquiryForm";
 import Navbar from "@/components/Navbar";
-import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, Calendar } from "lucide-react";
+import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, Calendar, LayoutGrid } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -81,6 +81,7 @@ export default async function PropiedadPage({ params }: PageProps) {
     : null;
 
   const feats: [React.ReactNode, string][] = [
+    ...(p.ambientes != null ? [[<LayoutGrid key="amb" size={18} strokeWidth={1.75} />, `${p.ambientes} ${p.ambientes === 1 ? "ambiente" : "ambientes"}`] as [React.ReactNode, string]] : []),
     [<BedDouble key="bed" size={18} strokeWidth={1.75} />, `${p.dormitorios ?? "—"} ${p.dormitorios === 1 ? "dormitorio" : "dormitorios"}`],
     [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`],
     [<Ruler key="ruler" size={18} strokeWidth={1.75} />, p.superficie_total ? `${p.superficie_total} m² totales` : "— m²"],
@@ -97,12 +98,25 @@ export default async function PropiedadPage({ params }: PageProps) {
 
         <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "28px 24px 64px" }}>
           {/* Breadcrumb */}
-          <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", marginBottom: 18 }}>
+          <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", marginBottom: 18, display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 0" }}>
             <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
-            <span style={{ color: "var(--gold-500)", margin: "0 6px" }}>/</span>
+            <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
             <a href="/propiedades" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Propiedades</a>
-            <span style={{ color: "var(--gold-500)", margin: "0 6px" }}>/</span>
-            {p.titulo.slice(0, 40)}{p.titulo.length > 40 ? "…" : ""}
+            {p.barrio && (
+              <>
+                <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
+                <a
+                  href={`/propiedades?provincia=${encodeURIComponent(p.provincia)}`}
+                  style={{ color: "var(--ink-500)", textDecoration: "none" }}
+                >
+                  {p.barrio}
+                </a>
+              </>
+            )}
+            <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
+            <span style={{ color: "var(--ink-800)", fontWeight: 500 }}>
+              {p.titulo.slice(0, 45)}{p.titulo.length > 45 ? "…" : ""}
+            </span>
           </div>
 
           {/* Gallery */}
