@@ -2,6 +2,7 @@ export type PropertyTipo = "casa" | "departamento" | "terreno" | "local" | "ofic
 export type PropertyOperacion = "venta" | "alquiler";
 export type PropertyStatus = "activa" | "pausada" | "vendida";
 export type Moneda = "USD" | "ARS";
+export type InquiryStatus = "nuevo" | "visto" | "contactado" | "cerrado";
 
 export interface Profile {
   id: string;
@@ -33,6 +34,7 @@ export interface Property {
   cochera: boolean;
   status: PropertyStatus;
   fotos: string[];
+  views?: number;
   created_at: string;
   updated_at: string;
   profiles?: Pick<Profile, "nombre" | "email" | "telefono">;
@@ -46,6 +48,15 @@ export interface Inquiry {
   telefono?: string;
   mensaje: string;
   leida: boolean;
+  status: InquiryStatus;
+  favorito: boolean;
   created_at: string;
-  properties?: Pick<Property, "titulo" | "slug">;
+  properties?: Pick<Property, "titulo" | "slug" | "barrio" | "ciudad">;
+}
+
+export interface PropertyWithInquiries extends Property {
+  inquiries: Inquiry[];
+  total_inquiries: number;
+  week_inquiries: number;
+  new_inquiries: number;
 }
