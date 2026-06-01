@@ -5,7 +5,7 @@ import type { Property, Profile } from "@/lib/types";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import InquiryForm from "@/components/properties/InquiryForm";
 import Navbar from "@/components/Navbar";
-import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, Calendar, LayoutGrid } from "lucide-react";
+import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, Calendar, LayoutGrid, Compass, AlignCenter, BadgeCheck } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -86,6 +86,9 @@ export default async function PropiedadPage({ params }: PageProps) {
     [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`],
     [<Ruler key="ruler" size={18} strokeWidth={1.75} />, p.superficie_total ? `${p.superficie_total} m² totales` : "— m²"],
     [<Car key="car" size={18} strokeWidth={1.75} />, p.cochera ? "Cochera incluida" : "Sin cochera"],
+    ...(p.orientacion ? [[<Compass key="ori" size={18} strokeWidth={1.75} />, p.orientacion] as [React.ReactNode, string]] : []),
+    ...(p.disposicion ? [[<AlignCenter key="dis" size={18} strokeWidth={1.75} />, `Disposición ${p.disposicion}`] as [React.ReactNode, string]] : []),
+    ...(p.apto_credito ? [[<BadgeCheck key="cred" size={18} strokeWidth={1.75} />, "Apto crédito hipotecario"] as [React.ReactNode, string]] : []),
     [TIPO_ICON[p.tipo], TIPO_LABEL[p.tipo]],
     [<Calendar key="cal" size={18} strokeWidth={1.75} />, "Disponible ya"],
   ];

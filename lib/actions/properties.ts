@@ -71,6 +71,9 @@ export async function createProperty(formData: FormData) {
       dormitorios: formData.get("dormitorios") ? Number(formData.get("dormitorios")) : null,
       banos: formData.get("banos") ? Number(formData.get("banos")) : null,
       cochera: formData.get("cochera") === "true",
+      apto_credito: formData.get("apto_credito") === "true",
+      orientacion: formData.get("orientacion") || null,
+      disposicion: formData.get("disposicion") || null,
       fotos: fotoUrls,
     })
     .select("id, operacion, barrio, tipo, slug, titulo, precio, moneda, ciudad")
@@ -142,6 +145,9 @@ export async function updateProperty(id: string, formData: FormData) {
       dormitorios: formData.get("dormitorios") ? Number(formData.get("dormitorios")) : null,
       banos: formData.get("banos") ? Number(formData.get("banos")) : null,
       cochera: formData.get("cochera") === "true",
+      apto_credito: formData.get("apto_credito") === "true",
+      orientacion: formData.get("orientacion") || null,
+      disposicion: formData.get("disposicion") || null,
       status: formData.get("status") as string,
       fotos: fotoUrls,
     })

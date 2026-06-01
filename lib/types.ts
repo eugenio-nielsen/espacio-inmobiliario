@@ -32,6 +32,9 @@ export interface Property {
   dormitorios?: number;
   banos?: number;
   cochera: boolean;
+  apto_credito: boolean;
+  orientacion?: string;
+  disposicion?: "frente" | "contrafrente" | "lateral" | "otra";
   status: PropertyStatus;
   fotos: string[];
   views?: number;

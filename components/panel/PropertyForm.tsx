@@ -191,11 +191,48 @@ export default function PropertyForm({ mode, property }: Props) {
             <input name="banos" type="number" min={0} max={10} defaultValue={v?.banos ?? ""} className={inp} />
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <input type="hidden" name="cochera" value="false" />
-          <input id="cochera" name="cochera" type="checkbox" value="true" defaultChecked={v?.cochera}
-            className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
-          <label htmlFor="cochera" className="text-sm text-gray-700">Tiene cochera / garage</label>
+        {/* Orientación y Disposición */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Orientación</label>
+            <select name="orientacion" defaultValue={v?.orientacion || ""} className={sel}>
+              <option value="">Sin especificar</option>
+              <option value="Norte">Norte</option>
+              <option value="Sur">Sur</option>
+              <option value="Este">Este</option>
+              <option value="Oeste">Oeste</option>
+              <option value="Noreste">Noreste</option>
+              <option value="Noroeste">Noroeste</option>
+              <option value="Sureste">Sureste</option>
+              <option value="Suroeste">Suroeste</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Disposición</label>
+            <select name="disposicion" defaultValue={v?.disposicion || ""} className={sel}>
+              <option value="">Sin especificar</option>
+              <option value="frente">Frente</option>
+              <option value="contrafrente">Contrafrente</option>
+              <option value="lateral">Lateral</option>
+              <option value="otra">Otra</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Checkboxes */}
+        <div className="flex flex-wrap gap-6">
+          <div className="flex items-center gap-3">
+            <input type="hidden" name="cochera" value="false" />
+            <input id="cochera" name="cochera" type="checkbox" value="true" defaultChecked={v?.cochera}
+              className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
+            <label htmlFor="cochera" className="text-sm text-gray-700">Tiene cochera / garage</label>
+          </div>
+          <div className="flex items-center gap-3">
+            <input type="hidden" name="apto_credito" value="false" />
+            <input id="apto_credito" name="apto_credito" type="checkbox" value="true" defaultChecked={v?.apto_credito}
+              className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
+            <label htmlFor="apto_credito" className="text-sm text-gray-700">Apto crédito hipotecario</label>
+          </div>
         </div>
       </section>
 

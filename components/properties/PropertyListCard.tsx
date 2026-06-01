@@ -60,7 +60,7 @@ export default function PropertyListCard({ property: p }: { property: Property }
         }} />
 
         {/* Badges — top left */}
-        <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 6 }}>
+        <div style={{ position: "absolute", top: 12, left: 12, display: "flex", gap: 6, flexWrap: "wrap" }}>
           <span style={{
             fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
             padding: "5px 10px", borderRadius: 999,
@@ -68,6 +68,15 @@ export default function PropertyListCard({ property: p }: { property: Property }
           }}>
             Venta
           </span>
+          {p.apto_credito && (
+            <span style={{
+              fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
+              padding: "5px 10px", borderRadius: 999,
+              background: "#22c55e", color: "#fff",
+            }}>
+              Apto crédito
+            </span>
+          )}
           <span style={{
             fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 11.5,
             padding: "5px 10px", borderRadius: 999,
