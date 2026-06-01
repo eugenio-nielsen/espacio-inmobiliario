@@ -293,9 +293,9 @@ function PropertyCard({ p, searchQuery }: { p: PropertyWithInquiries; searchQuer
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
           <a href={`/panel/propiedades/${p.slug}/editar`}
-            title="Editar"
-            style={{ ...iconBtn, color: "var(--ink-500)" }}>
-            <Edit2 size={15} strokeWidth={1.75} />
+            style={{ ...iconBtn, gap: 6, padding: "7px 12px", color: "var(--ink-600)", width: "auto" }}>
+            <Edit2 size={14} strokeWidth={1.75} />
+            <span style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 500 }}>Editar</span>
           </a>
           <a href={buildPropertyUrl(p)} target="_blank" rel="noopener noreferrer"
             title="Ver publicación"
@@ -306,17 +306,16 @@ function PropertyCard({ p, searchQuery }: { p: PropertyWithInquiries; searchQuer
             onClick={handleOpen}
             style={{
               ...iconBtn,
-              display: "flex", alignItems: "center", gap: 5,
-              padding: "7px 12px",
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "7px 14px", width: "auto",
               background: open ? "var(--navy-50)" : "transparent",
               color: open ? "var(--navy-800)" : "var(--ink-600)",
               borderColor: open ? "var(--navy-100)" : "var(--line-200)",
             }}
-            title={open ? "Ocultar consultas" : "Ver consultas"}
           >
             <MessageSquare size={14} strokeWidth={1.75} />
             <span style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 500 }}>
-              {p.total_inquiries}
+              Consultas{p.total_inquiries > 0 ? ` (${p.total_inquiries})` : ""}
             </span>
             {open ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
