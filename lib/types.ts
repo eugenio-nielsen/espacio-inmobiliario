@@ -34,7 +34,7 @@ export interface Property {
   cochera: boolean;
   apto_credito: boolean;
   orientacion?: string;
-  disposicion?: "frente" | "contrafrente" | "lateral" | "otra";
+  disposicion?: "Frente" | "Contrafrente" | "Lateral" | "Otra";
   status: PropertyStatus;
   fotos: string[];
   views?: number;

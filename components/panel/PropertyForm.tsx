@@ -211,10 +211,10 @@ export default function PropertyForm({ mode, property }: Props) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Disposición</label>
             <select name="disposicion" defaultValue={v?.disposicion || ""} className={sel}>
               <option value="">Sin especificar</option>
-              <option value="frente">Frente</option>
-              <option value="contrafrente">Contrafrente</option>
-              <option value="lateral">Lateral</option>
-              <option value="otra">Otra</option>
+              <option value="Frente">Frente</option>
+              <option value="Contrafrente">Contrafrente</option>
+              <option value="Lateral">Lateral</option>
+              <option value="Otra">Otra</option>
             </select>
           </div>
         </div>
