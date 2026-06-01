@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Inicialización lazy — evita crash si la key no está configurada en el entorno
+function getResend() {
+  if (!process.env.RESEND_API_KEY) return null;
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 const FROM    = process.env.FROM_EMAIL    || "onboarding@resend.dev";
 const ADMIN   = process.env.ADMIN_EMAIL   || "eugenio@espacioinmobiliario.com.ar";
@@ -79,6 +83,7 @@ export async function sendInquiryToOwner(data: {
     </div>
   `);
 
+  const resend = getResend(); if (!resend) return;
   await resend.emails.send({
     from: FROM,
     to: data.ownerEmail,
@@ -112,6 +117,7 @@ export async function sendInquiryConfirmation(data: {
     </div>
   `);
 
+  const resend = getResend(); if (!resend) return;
   await resend.emails.send({
     from: FROM,
     to: data.interesadoEmail,
@@ -170,6 +176,7 @@ export async function sendNewPropertyToAdmin(data: {
     </div>
   `);
 
+  const resend = getResend(); if (!resend) return;
   await resend.emails.send({
     from: FROM,
     to: ADMIN,
