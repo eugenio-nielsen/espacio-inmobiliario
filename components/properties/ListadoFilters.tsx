@@ -37,12 +37,7 @@ export default function ListadoFilters({ current }: Props) {
   };
 
   return (
-    <div style={{
-      background: "#fff", borderRadius: "var(--radius-md)",
-      border: "1px solid var(--line-200)", boxShadow: "var(--shadow-sm)",
-      padding: 16, display: "grid",
-      gridTemplateColumns: "repeat(5,1fr) auto", gap: 12, alignItems: "center",
-    }}>
+    <div className="grid-filters">
       {/* Tipo */}
       <div style={{ position: "relative" }}>
         <select style={sel} value={f.tipo} onChange={e => setF(p => ({ ...p, tipo: e.target.value }))}>

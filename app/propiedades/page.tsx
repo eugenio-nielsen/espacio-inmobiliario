@@ -52,7 +52,7 @@ export default async function PropiedadesPage({
     <div style={{ minHeight: "100vh", background: "var(--cream)" }}>
       <Navbar />
 
-      <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "32px 24px 64px" }}>
+      <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(20px,4vw,32px) 20px clamp(40px,6vw,64px)" }}>
         {/* Breadcrumb */}
         <div style={{
           fontFamily: "var(--font-sans)", fontSize: 13,
@@ -69,7 +69,8 @@ export default async function PropiedadesPage({
           justifyContent: "space-between", marginBottom: 22,
         }}>
           <h1 style={{
-            fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 34,
+            fontFamily: "var(--font-display)", fontWeight: 600,
+            fontSize: "clamp(22px,4vw,34px)",
             letterSpacing: "-.02em", color: "var(--navy-800)", margin: 0,
           }}>
             Propiedades en venta
@@ -117,7 +118,7 @@ export default async function PropiedadesPage({
             </a>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+          <div className="grid-properties">
             {(properties as Property[]).map(p => (
               <PropertyListCard key={p.id} property={p} />
             ))}

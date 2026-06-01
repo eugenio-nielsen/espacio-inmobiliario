@@ -53,11 +53,7 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
       <div>
         {/* Primary photo */}
         <div
-          style={{
-            position: "relative", height: 420,
-            borderRadius: "var(--radius-lg)", overflow: "hidden",
-            background: "var(--fill-100)", cursor: "zoom-in",
-          }}
+          className="property-gallery-main"
           onClick={() => setLightbox(true)}
           title="Clic para ampliar"
         >

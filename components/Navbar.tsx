@@ -32,9 +32,9 @@ export default async function Navbar() {
           <Logo className="h-12 w-auto" />
         </a>
 
-        <nav style={{ display: "flex", alignItems: "center", gap: 22 }}>
-          <a href="/propiedades" style={navLink}>Propiedades</a>
-          <a href="#" style={navLink}>Cómo funciona</a>
+        <nav className="nav-links-desktop">
+          <a href="/propiedades" style={navLink} className="nav-hide-mobile">Propiedades</a>
+          <a href="#" style={navLink} className="nav-hide-mobile">Cómo funciona</a>
 
           {user ? (
             // — Usuario logueado —

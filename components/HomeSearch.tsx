@@ -6,15 +6,14 @@ import { Search } from "lucide-react";
 
 export default function HomeSearch() {
   const router = useRouter();
-  const [operacion, setOperacion] = useState("");
   const [tipo, setTipo] = useState("");
   const [zona, setZona] = useState("");
 
   function handleSearch() {
     const params = new URLSearchParams();
-    if (operacion) params.set("operacion", operacion);
-    if (tipo)      params.set("tipo", tipo);
-    if (zona)      params.set("q", zona);
+    params.set("operacion", "venta");
+    if (tipo) params.set("tipo", tipo);
+    if (zona) params.set("q", zona);
     router.push(`/propiedades?${params.toString()}`);
   }
 
@@ -30,20 +29,15 @@ export default function HomeSearch() {
   };
 
   return (
-    <div style={{
-      maxWidth: 720, margin: "0 auto", background: "#fff",
-      borderRadius: "var(--radius-md)", padding: 10,
-      display: "flex", gap: 8, boxShadow: "var(--shadow-lg)",
-    }}>
-      {/* Operación — solo venta */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px" }}>
+    <div className="home-search-bar">
+      {/* Operación — fija en Venta, oculta en mobile */}
+      <div className="search-field home-search-field-operacion" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px" }}>
         <span style={fieldLabel}>Operación</span>
         <span style={{ ...fieldValue, color: "var(--ink-600)" }}>Venta</span>
-        <input type="hidden" value="venta" />
       </div>
 
       {/* Tipo */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px", borderLeft: "1px solid var(--line-100)" }}>
+      <div className="search-field" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px", borderLeft: "1px solid var(--line-100)" }}>
         <span style={fieldLabel}>Tipo</span>
         <select value={tipo} onChange={e => setTipo(e.target.value)} style={fieldValue}>
           <option value="">Todos</option>
@@ -56,7 +50,7 @@ export default function HomeSearch() {
       </div>
 
       {/* Zona */}
-      <div style={{ flex: 2, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px", borderLeft: "1px solid var(--line-100)" }}>
+      <div className="search-field" style={{ flex: 2, display: "flex", flexDirection: "column", justifyContent: "center", padding: "6px 14px", borderLeft: "1px solid var(--line-100)" }}>
         <span style={fieldLabel}>Zona o barrio</span>
         <input
           value={zona}

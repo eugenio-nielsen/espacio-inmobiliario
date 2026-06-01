@@ -222,7 +222,7 @@ function PropertyCard({ p, searchQuery }: { p: PropertyWithInquiries; searchQuer
       boxShadow: "var(--shadow-sm)",
     }}>
       {/* Property row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px" }}>
+      <div className="crm-property-row">
         {/* Thumbnail */}
         <div style={{
           width: 72, height: 56, borderRadius: "var(--radius-sm)",
@@ -275,7 +275,7 @@ function PropertyCard({ p, searchQuery }: { p: PropertyWithInquiries; searchQuer
         </div>
 
         {/* Weekly stats */}
-        <div style={{ textAlign: "center", flexShrink: 0, minWidth: 80 }}>
+        <div className="crm-week-stats">
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 3 }}>
             <span style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 22, color: p.week_inquiries > 0 ? "var(--gold-700)" : "var(--ink-400)" }}>
               {p.week_inquiries}
@@ -434,10 +434,7 @@ export default function CRMPanel({
 
       {/* Stats strip */}
       {properties.length > 0 && (
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 12, marginBottom: 20,
-        }}>
+        <div className="grid-stats">
           {[
             { label: "Propiedades activas", value: properties.filter(p => p.status === "activa").length, color: "#22c55e" },
             { label: "Consultas esta semana", value: totalWeek, color: "var(--gold-700)" },

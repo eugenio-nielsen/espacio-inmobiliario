@@ -99,9 +99,9 @@ export default async function PropiedadPage({ params }: PageProps) {
       <div style={{ minHeight: "100vh", background: "var(--cream)" }}>
         <Navbar />
 
-        <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "28px 24px 64px" }}>
+        <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(16px,4vw,28px) 20px clamp(40px,6vw,64px)" }}>
           {/* Breadcrumb */}
-          <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", marginBottom: 18, display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 0" }}>
+          <div style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", marginBottom: 18, display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 0", overflow: "hidden" }}>
             <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
             <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
             <a href="/propiedades" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Propiedades</a>
@@ -126,7 +126,7 @@ export default async function PropiedadPage({ params }: PageProps) {
           <PropertyGallery fotos={p.fotos} titulo={p.titulo} />
 
           {/* 2-column layout */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 40, marginTop: 32, alignItems: "start" }}>
+          <div className="grid-detail">
             {/* Left — content */}
             <div>
               {/* Badges */}
@@ -145,7 +145,8 @@ export default async function PropiedadPage({ params }: PageProps) {
 
               {/* Title */}
               <h1 style={{
-                fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 34,
+                fontFamily: "var(--font-display)", fontWeight: 600,
+                fontSize: "clamp(22px,4vw,34px)",
                 lineHeight: 1.15, letterSpacing: "-.02em", color: "var(--navy-800)", margin: "0 0 10px",
               }}>
                 {p.titulo}
@@ -159,11 +160,7 @@ export default async function PropiedadPage({ params }: PageProps) {
               </div>
 
               {/* Specs grid */}
-              <div style={{
-                display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14,
-                padding: "22px 0", borderTop: "1px solid var(--line-200)",
-                borderBottom: "1px solid var(--line-200)", marginBottom: 28,
-              }}>
+              <div className="grid-specs">
                 {feats.map(([icon, text], i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{
@@ -203,7 +200,7 @@ export default async function PropiedadPage({ params }: PageProps) {
             </div>
 
             {/* Right — sticky sidebar */}
-            <div style={{ position: "sticky", top: 90, display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="detail-sidebar">
               <div style={{
                 background: "#fff", border: "1px solid var(--line-200)",
                 borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-md)", padding: 24,
