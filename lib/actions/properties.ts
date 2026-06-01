@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
 import { buildPropertyUrl } from "@/lib/utils/urls";
+import { sendNewPropertyToAdmin } from "@/lib/email";
 
 function slugify(str: string): string {
   return str
@@ -72,10 +73,38 @@ export async function createProperty(formData: FormData) {
       cochera: formData.get("cochera") === "true",
       fotos: fotoUrls,
     })
-    .select("id, operacion, barrio, tipo, slug")
+    .select("id, operacion, barrio, tipo, slug, titulo, precio, moneda, ciudad")
     .single();
 
   if (error) return { error: error.message };
+
+  // Email al admin sobre la nueva propiedad
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("nombre, email")
+      .eq("id", user.id)
+      .single();
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://espacio-inmobiliario-one.vercel.app";
+    const publicUrl = `${siteUrl}${buildPropertyUrl({ ...data, id: tempId })}`;
+    const panelUrl = `${siteUrl}/panel`;
+
+    await sendNewPropertyToAdmin({
+      titulo: data.titulo,
+      tipo: formData.get("tipo") as string,
+      precio: Number(formData.get("precio")),
+      moneda: (formData.get("moneda") as string) || "USD",
+      barrio: formData.get("barrio") as string,
+      ciudad: formData.get("ciudad") as string,
+      ownerNombre: profile?.nombre || "Sin nombre",
+      ownerEmail: profile?.email || "",
+      publicUrl,
+      panelUrl,
+    });
+  } catch (emailError) {
+    console.error("Error enviando email de nueva propiedad:", emailError);
+  }
 
   revalidatePath("/panel");
   redirect(`/panel/propiedades/${data.slug}/editar?creada=1`);
