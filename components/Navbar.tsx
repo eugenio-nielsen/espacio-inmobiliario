@@ -1,7 +1,22 @@
 import Logo from "@/components/Logo";
-import { UserRound, Plus } from "lucide-react";
+import { UserRound, Plus, LayoutDashboard, LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { signOut } from "@/lib/actions/auth";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let profile: { nombre: string | null } | null = null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("nombre")
+      .eq("id", user.id)
+      .single();
+    profile = data;
+  }
+
   return (
     <header style={{
       background: "#fff",
@@ -20,26 +35,61 @@ export default function Navbar() {
         <nav style={{ display: "flex", alignItems: "center", gap: 22 }}>
           <a href="/propiedades" style={navLink}>Propiedades</a>
           <a href="#" style={navLink}>Cómo funciona</a>
-          <a href="/auth/login" style={{ ...navLink, display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <UserRound size={16} strokeWidth={1.75} />
-            Ingresar
-          </a>
-          <a
-            href="/auth/registro"
-            className="esbtn esbtn-primary"
-            style={{
-              fontFamily: "var(--font-sans)", fontWeight: 600,
-              borderRadius: "var(--radius-sm)", border: "1.5px solid transparent",
-              cursor: "pointer", display: "inline-flex", alignItems: "center",
-              justifyContent: "center", gap: 8, fontSize: 13.5,
-              padding: "9px 18px", background: "var(--navy-800)", color: "#fff",
-              transition: "all var(--dur) var(--ease-out)",
-              textDecoration: "none", whiteSpace: "nowrap",
-            }}
-          >
-            <Plus size={15} strokeWidth={2} />
-            Publicar propiedad
-          </a>
+
+          {user ? (
+            // — Usuario logueado —
+            <>
+              <a
+                href="/panel"
+                style={{ ...navLink, display: "inline-flex", alignItems: "center", gap: 6 }}
+              >
+                <LayoutDashboard size={16} strokeWidth={1.75} />
+                {profile?.nombre ? profile.nombre.split(" ")[0] : "Mi panel"}
+              </a>
+              <form action={signOut} style={{ margin: 0 }}>
+                <button
+                  type="submit"
+                  style={{
+                    ...navLink,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    background: "none", border: "1.5px solid var(--line-200)",
+                    borderRadius: "var(--radius-sm)", padding: "8px 14px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <LogOut size={15} strokeWidth={1.75} />
+                  Salir
+                </button>
+              </form>
+            </>
+          ) : (
+            // — Usuario no logueado —
+            <>
+              <a
+                href="/auth/login"
+                style={{ ...navLink, display: "inline-flex", alignItems: "center", gap: 6 }}
+              >
+                <UserRound size={16} strokeWidth={1.75} />
+                Ingresar
+              </a>
+              <a
+                href="/auth/registro"
+                className="esbtn esbtn-primary"
+                style={{
+                  fontFamily: "var(--font-sans)", fontWeight: 600,
+                  borderRadius: "var(--radius-sm)", border: "1.5px solid transparent",
+                  cursor: "pointer", display: "inline-flex", alignItems: "center",
+                  justifyContent: "center", gap: 8, fontSize: 13.5,
+                  padding: "9px 18px", background: "var(--navy-800)", color: "#fff",
+                  transition: "all var(--dur) var(--ease-out)",
+                  textDecoration: "none", whiteSpace: "nowrap",
+                }}
+              >
+                <Plus size={15} strokeWidth={2} />
+                Publicar propiedad
+              </a>
+            </>
+          )}
         </nav>
       </div>
     </header>
