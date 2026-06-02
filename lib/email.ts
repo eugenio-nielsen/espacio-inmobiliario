@@ -126,7 +126,45 @@ export async function sendInquiryConfirmation(data: {
   });
 }
 
-// ── 3. Nueva propiedad → al admin ─────────────────────────────
+// ── 3. Interés en servicio del ecosistema → al admin ──────────
+export async function sendServiceInterest(data: {
+  nombre: string;
+  email: string;
+  servicio: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Nuevo interés en servicio del ecosistema</h1>
+      <p style="${styles.lead}">
+        Un dueño solicitó ser conectado con un profesional de
+        <strong style="color:#0E2C50;">${data.servicio}</strong>.
+      </p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Nombre</p>
+        <p style="${styles.value}">${data.nombre}</p>
+
+        <p style="${styles.label}">Email</p>
+        <p style="${styles.value}"><a href="mailto:${data.email}" style="color:#0E2C50;">${data.email}</a></p>
+
+        <p style="${styles.label}">Servicio solicitado</p>
+        <p style="${styles.value}">${data.servicio}</p>
+      </div>
+    </div>
+  `);
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: ADMIN,
+    subject: `Interés en servicio: ${data.servicio} — ${data.nombre}`,
+    html,
+  });
+}
+
+// ── 4. Nueva propiedad → al admin ─────────────────────────────
 export async function sendNewPropertyToAdmin(data: {
   titulo: string;
   tipo: string;

@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useMemo } from "react";
 import Image from "next/image";
-import { Plus, Search, ChevronDown, ChevronUp, Star, Edit2, ExternalLink, MessageSquare, Phone, Mail } from "lucide-react";
+import { Plus, Search, ChevronDown, ChevronUp, Star, Edit2, ExternalLink, MessageSquare, Phone, Mail, Sparkles } from "lucide-react";
 import { updateInquiryStatus, toggleFavorito, markPropertyInquiriesVisto } from "@/lib/actions/inquiries";
 import { deleteProperty } from "@/lib/actions/properties";
 import type { PropertyWithInquiries, Inquiry, InquiryStatus } from "@/lib/types";
@@ -514,6 +514,55 @@ export default function CRMPanel({
           ))}
         </div>
       )}
+
+      {/* ── Banner ecosistema de servicios ────────────────────── */}
+      <div style={{
+        marginTop: 32,
+        background: "var(--navy-800)",
+        borderRadius: "var(--radius-lg)",
+        padding: "20px 24px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 16,
+        flexWrap: "wrap",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{
+            width: 40, height: 40,
+            background: "rgba(185,159,102,.15)",
+            borderRadius: "var(--radius-md)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0,
+          }}>
+            <Sparkles size={20} strokeWidth={1.75} color="var(--gold-400)" />
+          </div>
+          <div>
+            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14.5, color: "#fff", margin: "0 0 2px" }}>
+              Ecosistema de servicios
+            </p>
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "rgba(255,255,255,.60)", margin: 0 }}>
+              Fotografía, escribanía, mudanzas y más — para cada etapa de tu venta.
+            </p>
+          </div>
+        </div>
+        <a
+          href="/#servicios"
+          style={{
+            fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13,
+            color: "var(--gold-300)",
+            background: "rgba(185,159,102,.12)",
+            border: "1px solid rgba(185,159,102,.35)",
+            borderRadius: "var(--radius-sm)",
+            padding: "9px 18px",
+            textDecoration: "none",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          Ver servicios →
+        </a>
+      </div>
     </div>
   );
 }

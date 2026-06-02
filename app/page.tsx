@@ -6,6 +6,7 @@ import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
 import Logo from "@/components/Logo";
 import { BadgeCheck, Handshake, MapPin, Plus, ArrowRight } from "lucide-react";
+import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
 
 export const revalidate = 60;
 
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const { data: properties } = await supabase
     .from("properties").select("*").eq("status", "activa")
     .order("created_at", { ascending: false }).limit(6);
@@ -132,6 +134,9 @@ export default async function HomePage() {
           </a>
         </div>
       </section>
+
+      {/* ── Ecosistema de servicios ───────────────────────────── */}
+      <ServiciosEcosistema isLoggedIn={!!user} />
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <footer style={{ background: "var(--navy-800)", color: "#fff" }}>
