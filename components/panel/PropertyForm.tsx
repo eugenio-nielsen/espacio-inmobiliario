@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
+import { Star } from "lucide-react";
 import { createProperty, updateProperty } from "@/lib/actions/properties";
 import type { Property } from "@/lib/types";
 import { ZONAS, UBICACIONES, type Zona } from "@/lib/ubicaciones";
@@ -16,6 +17,7 @@ export default function PropertyForm({ mode, property }: Props) {
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [fotosExistentes, setFotosExistentes] = useState<string[]>(property?.fotos || []);
+  const [nuevasFiles, setNuevasFiles] = useState<File[]>([]);
   const [nuevasPreviews, setNuevasPreviews] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -31,12 +33,47 @@ export default function PropertyForm({ mode, property }: Props) {
   const barrios = zona ? UBICACIONES[zona as Zona] : [];
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files || []);
-    setNuevasPreviews(files.map((f) => URL.createObjectURL(f)));
+    const added = Array.from(e.target.files || []);
+    if (!added.length) return;
+    setNuevasFiles(prev => [...prev, ...added]);
+    setNuevasPreviews(prev => [...prev, ...added.map(f => URL.createObjectURL(f))]);
+    // reset input so the same file can be re-added if needed
+    e.target.value = "";
   }
 
-  function removeFotoExistente(url: string) {
-    setFotosExistentes((prev) => prev.filter((f) => f !== url));
+  function removeFotoExistente(idx: number) {
+    setFotosExistentes(prev => prev.filter((_, i) => i !== idx));
+  }
+
+  function removeNuevaFoto(idx: number) {
+    setNuevasFiles(prev => prev.filter((_, i) => i !== idx));
+    setNuevasPreviews(prev => prev.filter((_, i) => i !== idx));
+  }
+
+  function setPortadaExistente(idx: number) {
+    if (idx === 0) return;
+    setFotosExistentes(prev => {
+      const next = [...prev];
+      const [item] = next.splice(idx, 1);
+      next.unshift(item);
+      return next;
+    });
+  }
+
+  function setPortadaNueva(idx: number) {
+    if (idx === 0 && fotosExistentes.length > 0) return; // no-op: existing always precede new
+    setNuevasFiles(prev => {
+      const next = [...prev];
+      const [item] = next.splice(idx, 1);
+      next.unshift(item);
+      return next;
+    });
+    setNuevasPreviews(prev => {
+      const next = [...prev];
+      const [item] = next.splice(idx, 1);
+      next.unshift(item);
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -44,7 +81,12 @@ export default function PropertyForm({ mode, property }: Props) {
     setError(null);
     setSuccess(null);
     const formData = new FormData(e.currentTarget);
+    // Fotos existentes en orden (portada = [0])
     fotosExistentes.forEach((url) => formData.append("fotos_existentes", url));
+    // Fotos nuevas en orden (portada entre nuevas = [0]), usando el array de estado (no el input)
+    nuevasFiles.forEach((file) => {
+      formData.append(mode === "crear" ? "fotos" : "fotos_nuevas", file);
+    });
 
     startTransition(async () => {
       if (mode === "crear") {
@@ -250,25 +292,103 @@ export default function PropertyForm({ mode, property }: Props) {
 
       {/* Fotos */}
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Fotos</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Fotos</h2>
+          {(fotosExistentes.length + nuevasPreviews.length) > 1 && (
+            <span className="text-xs text-gray-400">Hacé clic en ★ para elegir la portada</span>
+          )}
+        </div>
 
         {(fotosExistentes.length > 0 || nuevasPreviews.length > 0) && (
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-            {fotosExistentes.map((url) => (
-              <div key={url} className="relative group aspect-square">
-                <Image src={url} alt="Foto existente" fill className="object-cover rounded-lg" sizes="150px" />
-                <button type="button" onClick={() => removeFotoExistente(url)}
-                  className="absolute top-1 right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  ×
-                </button>
-              </div>
-            ))}
-            {nuevasPreviews.map((url, i) => (
-              <div key={i} className="relative aspect-square">
-                <Image src={url} alt="Foto nueva" fill className="object-cover rounded-lg opacity-80" sizes="150px" />
-                <span className="absolute bottom-1 left-1 text-xs bg-black/50 text-white px-1 rounded">Nueva</span>
-              </div>
-            ))}
+            {/* Fotos existentes */}
+            {fotosExistentes.map((url, idx) => {
+              const isPortada = idx === 0;
+              return (
+                <div key={url} className="relative group aspect-square">
+                  <Image src={url} alt="Foto" fill className="object-cover rounded-lg" sizes="150px" />
+
+                  {/* Overlay oscuro al hover */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 rounded-lg transition-all" />
+
+                  {/* Badge portada */}
+                  {isPortada && (
+                    <span className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-[#B99F66] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+                      <Star size={9} fill="white" strokeWidth={0} /> Portada
+                    </span>
+                  )}
+
+                  {/* Botón hacer portada (aparece al hover si no es portada) */}
+                  {!isPortada && (
+                    <button
+                      type="button"
+                      onClick={() => setPortadaExistente(idx)}
+                      title="Hacer portada"
+                      className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/60 hover:bg-[#B99F66] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      <Star size={9} strokeWidth={2} /> Portada
+                    </button>
+                  )}
+
+                  {/* Botón eliminar */}
+                  <button
+                    type="button"
+                    onClick={() => removeFotoExistente(idx)}
+                    title="Eliminar foto"
+                    className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
+
+            {/* Fotos nuevas (pendientes de subir) */}
+            {nuevasPreviews.map((previewUrl, idx) => {
+              const globalIsPortada = fotosExistentes.length === 0 && idx === 0;
+              return (
+                <div key={previewUrl} className="relative group aspect-square">
+                  <Image src={previewUrl} alt="Foto nueva" fill className="object-cover rounded-lg" sizes="150px" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 rounded-lg transition-all" />
+
+                  {/* Badge nueva */}
+                  {!globalIsPortada && (
+                    <span className="absolute bottom-1.5 left-1.5 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded-full">
+                      Nueva
+                    </span>
+                  )}
+
+                  {/* Badge portada (solo si no hay existentes y es la primera nueva) */}
+                  {globalIsPortada && (
+                    <span className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-[#B99F66] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
+                      <Star size={9} fill="white" strokeWidth={0} /> Portada
+                    </span>
+                  )}
+
+                  {/* Hacer portada entre nuevas (solo si no hay existentes) */}
+                  {!globalIsPortada && fotosExistentes.length === 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setPortadaNueva(idx)}
+                      title="Hacer portada"
+                      className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/60 hover:bg-[#B99F66] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      <Star size={9} strokeWidth={2} /> Portada
+                    </button>
+                  )}
+
+                  {/* Botón eliminar */}
+                  <button
+                    type="button"
+                    onClick={() => removeNuevaFoto(idx)}
+                    title="Eliminar foto"
+                    className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -278,8 +398,8 @@ export default function PropertyForm({ mode, property }: Props) {
         >
           <p className="text-gray-400 text-sm">📷 Hacé clic para agregar fotos</p>
           <p className="text-gray-300 text-xs mt-1">JPG, PNG o WEBP · Máximo 10 fotos</p>
-          <input ref={fileRef} name={mode === "crear" ? "fotos" : "fotos_nuevas"}
-            type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
+          {/* Input sin name — los files se agregan manualmente al FormData en handleSubmit */}
+          <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
         </div>
       </section>
 
