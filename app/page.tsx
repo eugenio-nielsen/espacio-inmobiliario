@@ -44,8 +44,8 @@ export default async function HomePage() {
             fontSize: "clamp(28px, 5vw, 52px)", lineHeight: 1.16,
             letterSpacing: "-.02em", margin: "0 0 20px", maxWidth: 760,
           }}>
-            Encontrá tu próximo espacio,{" "}
-            <span style={{ fontStyle: "italic", color: "var(--gold-300)" }}>sin intermediarios</span>
+            Dueños Directos.{" "}
+            <span style={{ fontStyle: "italic", color: "var(--gold-300)" }}>Publicá tu propiedad Gratis</span>
           </h1>
           <p className="hero-subtitle">
             Comprá, vendé o alquilá tratando directamente con los dueños.
