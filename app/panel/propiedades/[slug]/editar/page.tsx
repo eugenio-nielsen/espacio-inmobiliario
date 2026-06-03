@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import PropertyForm from "@/components/panel/PropertyForm";
 import type { Property } from "@/lib/types";
+import { buildPropertyUrl } from "@/lib/utils/urls";
 
 export const metadata: Metadata = {
   title: "Editar propiedad",
@@ -41,7 +42,7 @@ export default async function EditarPage({
         {creada && (
           <div className="mt-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
             ✅ Propiedad publicada exitosamente. Podés seguir editando los datos o{" "}
-            <a href={`/propiedades/${property.slug}`} className="font-semibold underline">
+            <a href={buildPropertyUrl(property as Property)} className="font-semibold underline">
               ver la publicación
             </a>
             .
