@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -59,6 +60,16 @@ export default async function PropiedadPage({ params }: PageProps) {
 
   if (propError) console.error("Property fetch error:", propError);
   if (!property) notFound();
+
+  // Incrementar vistas después de enviar la respuesta (no bloquea el render)
+  after(async () => {
+    try {
+      const db = await createClient();
+      await db.rpc("increment_property_views", { property_id: property.id });
+    } catch (e) {
+      console.error("Error incrementando views:", e);
+    }
+  });
 
   const p = property as Property & { profiles: Profile };
   const precio = `${p.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p.precio))}`;

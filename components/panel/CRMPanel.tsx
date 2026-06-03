@@ -288,6 +288,20 @@ function PropertyCard({ p, searchQuery }: { p: PropertyWithInquiries; searchQuer
             <div style={{ width: `${weekBar}%`, height: "100%", borderRadius: 999, background: p.week_inquiries > 0 ? "var(--gold-500)" : "var(--line-200)", transition: "width 0.5s ease" }} />
           </div>
           <span style={{ fontFamily: "var(--font-sans)", fontSize: 10.5, color: "var(--ink-400)" }}>esta semana</span>
+
+          {/* Vistas totales */}
+          {p.views != null && (
+            <div style={{
+              marginTop: 6,
+              fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+            }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              {p.views} vista{p.views !== 1 ? "s" : ""}
+            </div>
+          )}
         </div>
 
         {/* Actions */}
@@ -372,6 +386,7 @@ export default function CRMPanel({
 
   const totalNew = properties.reduce((acc, p) => acc + p.new_inquiries, 0);
   const totalWeek = properties.reduce((acc, p) => acc + p.week_inquiries, 0);
+  const totalViews = properties.reduce((acc, p) => acc + (p.views ?? 0), 0);
 
   // Filter properties: match title/barrio/ciudad OR has matching inquiries
   const filtered = useMemo(() => {
@@ -437,6 +452,7 @@ export default function CRMPanel({
         <div className="grid-stats">
           {[
             { label: "Propiedades activas", value: properties.filter(p => p.status === "activa").length, color: "#22c55e" },
+            { label: "Visitas totales", value: totalViews, color: "var(--navy-600)" },
             { label: "Consultas esta semana", value: totalWeek, color: "var(--gold-700)" },
             { label: "Consultas nuevas", value: totalNew, color: "#3B82F6" },
           ].map(s => (

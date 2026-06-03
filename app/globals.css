@@ -150,14 +150,17 @@ select:focus, input:focus, textarea:focus {
   .grid-specs { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 0; }
 }
 
-/* Panel stats: 3col → 3col small → 1col */
+/* Panel stats: 4col → 2col tablet → 1col mobile */
 .grid-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 20px;
 }
-@media (max-width: 639px) {
+@media (max-width: 767px) {
+  .grid-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 479px) {
   .grid-stats { grid-template-columns: 1fr; gap: 8px; }
 }
 
