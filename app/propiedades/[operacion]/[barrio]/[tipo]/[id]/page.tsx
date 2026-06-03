@@ -1,5 +1,6 @@
 import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { Property, Profile } from "@/lib/types";
@@ -62,10 +63,11 @@ export default async function PropiedadPage({ params }: PageProps) {
   if (!property) notFound();
 
   // Incrementar vistas después de enviar la respuesta (no bloquea el render)
+  // Usamos admin client porque after() corre fuera del contexto de request (sin cookies)
   after(async () => {
     try {
-      const db = await createClient();
-      await db.rpc("increment_property_views", { property_id: property.id });
+      const admin = createAdminClient();
+      await admin.rpc("increment_property_views", { property_id: property.id });
     } catch (e) {
       console.error("Error incrementando views:", e);
     }
