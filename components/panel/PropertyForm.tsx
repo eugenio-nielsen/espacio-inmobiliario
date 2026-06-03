@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { createProperty, updateProperty } from "@/lib/actions/properties";
 import type { Property } from "@/lib/types";
 import { ZONAS, UBICACIONES, type Zona } from "@/lib/ubicaciones";
+import MapFormPreview from "@/components/map/MapFormPreview";
 
 interface Props {
   mode: "crear" | "editar";
@@ -30,6 +31,7 @@ export default function PropertyForm({ mode, property }: Props) {
     return "Provincia de Buenos Aires";
   });
   const [barrio, setBarrio] = useState(property?.barrio || "");
+  const [direccion, setDireccion] = useState(property?.direccion || "");
   const barrios = zona ? UBICACIONES[zona as Zona] : [];
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -204,8 +206,17 @@ export default function PropertyForm({ mode, property }: Props) {
             Dirección <span className="text-gray-400 font-normal">(opcional — solo calle y número, sin barrio)</span>
           </label>
           <input name="direccion" type="text" defaultValue={v?.direccion}
-            className={inp} placeholder="Ej: Av. Corrientes 1234" />
+            className={inp} placeholder="Ej: Av. Corrientes 1234"
+            onChange={e => setDireccion(e.target.value)} />
         </div>
+
+        {/* Preview del mapa */}
+        <MapFormPreview
+          direccion={direccion}
+          barrio={barrio}
+          ciudad={zona}
+          provincia={zona}
+        />
       </section>
 
       {/* Características */}

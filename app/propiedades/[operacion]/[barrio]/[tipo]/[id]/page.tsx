@@ -2,6 +2,8 @@ import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
+import PropertyMapWrapper from "@/components/map/PropertyMapWrapper";
+import { geocodeProperty } from "@/lib/utils/geocode";
 import type { Metadata } from "next";
 import type { Property, Profile } from "@/lib/types";
 import PropertyGallery from "@/components/properties/PropertyGallery";
@@ -74,6 +76,14 @@ export default async function PropiedadPage({ params }: PageProps) {
   });
 
   const p = property as Property & { profiles: Profile };
+
+  // Geocodificación server-side (cacheada 24h por fetch)
+  const geoResult = await geocodeProperty({
+    direccion: p.direccion,
+    barrio: p.barrio,
+    ciudad: p.ciudad,
+    provincia: p.provincia,
+  });
   const precio = `${p.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p.precio))}`;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -201,6 +211,24 @@ export default async function PropiedadPage({ params }: PageProps) {
                     {p.descripcion}
                   </p>
                 </>
+              )}
+
+              {/* Mapa */}
+              {geoResult && (
+                <div style={{ marginTop: 32, marginBottom: 8 }}>
+                  <h3 style={{
+                    fontFamily: "var(--font-display)", fontWeight: 600,
+                    fontSize: 22, color: "var(--navy-800)", margin: "0 0 14px",
+                  }}>
+                    Ubicación
+                  </h3>
+                  <PropertyMapWrapper
+                    lat={geoResult.lat}
+                    lng={geoResult.lng}
+                    titulo={p.titulo}
+                    aproximada={geoResult.aproximada}
+                  />
+                </div>
               )}
 
               {/* Publisher tag */}
