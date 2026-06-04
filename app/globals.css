@@ -164,19 +164,16 @@ select:focus, input:focus, textarea:focus {
   .grid-stats { grid-template-columns: 1fr; gap: 8px; }
 }
 
-/* Scrollytelling: 2col desktop → 1col mobile (sticky desactivado) */
-.scrolly-grid {
-  grid-template-columns: 1fr 1fr;
-}
+/* Scrollytelling */
 @media (max-width: 767px) {
-  .scrolly-grid {
-    grid-template-columns: 1fr;
-  }
-  .scrolly-grid > div:first-child {
-    position: relative !important;
-    height: auto !important;
-    padding: 40px 24px 0 !important;
-  }
+  .scrolly-outer  { display: none !important; }
+  .scrolly-mobile { display: block !important; }
+}
+@media (min-width: 768px) {
+  .scrolly-mobile { display: none !important; }
+}
+.scrolly-sticky {
+  grid-template-columns: 1fr 1fr;
 }
 
 /* Hero animate-in */
