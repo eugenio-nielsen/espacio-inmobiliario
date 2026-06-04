@@ -20,7 +20,6 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Pr
   const [activeStep, setActiveStep] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll listener — calcula el paso activo por posición del contenedor en el viewport
   useEffect(() => {
     function onScroll() {
       const el = containerRef.current;
@@ -29,8 +28,7 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Pr
       const scrollable = height - window.innerHeight;
       if (scrollable <= 0) return;
       const progress = Math.max(0, Math.min(1, -top / scrollable));
-      const step = Math.min(steps.length - 1, Math.floor(progress * steps.length));
-      setActiveStep(step);
+      setActiveStep(Math.min(steps.length - 1, Math.floor(progress * steps.length)));
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -39,27 +37,25 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Pr
 
   return (
     <>
-      {/* ── Desktop: scrollytelling ──────────────────────────── */}
-      <div
-        ref={containerRef}
-        className="scrolly-outer"
-        style={{ position: "relative", height: `${steps.length * 100}vh` }}
-      >
+      {/* ── Desktop ──────────────────────────────────────────── */}
+      <div ref={containerRef} className="scrolly-outer"
+        style={{ position: "relative", height: `${steps.length * 100}vh` }}>
+
+        {/* Sticky wrapper — cubre exactamente 100vh */}
         <div style={{
-          position: "sticky",
-          top: 0,
+          position: "sticky", top: 0,
           height: "100vh",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
+          gridTemplateRows: "100%",   /* fuerza a las columnas a tomar todo el alto */
+          overflow: "hidden",
         }}>
 
-          {/* ── Left: heading + indicadores ─────────────────── */}
+          {/* ── Columna izquierda ────────────────────────────── */}
           <div style={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            display: "flex", flexDirection: "column", justifyContent: "center",
             padding: "0 clamp(28px,5vw,72px)",
+            overflow: "hidden",
           }}>
             <div className="es-eyebrow" style={{ marginBottom: 14 }}>{eyebrow}</div>
             <h2 style={{
@@ -90,66 +86,53 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Pr
                     fontSize: i === activeStep ? 26 : 16,
                     color: i === activeStep ? "var(--navy-800)" : "var(--ink-300)",
                     transition: "all 0.4s ease", minWidth: 32, lineHeight: 1,
-                  }}>
-                    {step.num}
-                  </span>
+                  }}>{step.num}</span>
                   <span style={{
                     fontFamily: "var(--font-sans)",
                     fontWeight: i === activeStep ? 700 : 500,
                     fontSize: i === activeStep ? 14.5 : 13,
                     color: i === activeStep ? "var(--navy-800)" : "var(--ink-400)",
                     transition: "all 0.4s ease",
-                  }}>
-                    {step.titulo}
-                  </span>
+                  }}>{step.titulo}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── Right: card activa con crossfade ────────────── */}
+          {/* ── Columna derecha — cards superpuestas ─────────── */}
           <div style={{
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            position: "relative",
-            padding: "40px clamp(20px,4vw,56px) 40px 0",
+            position: "relative",   /* containing block para absolutos */
+            overflow: "hidden",
           }}>
             {steps.map((step, i) => (
-              <div
-                key={step.num}
-                style={{
-                  position: "absolute",
-                  top: 40, bottom: 40,
-                  left: 0, right: "clamp(20px,4vw,56px)",
-                  display: "flex",
-                  alignItems: "center",
-                  opacity: i === activeStep ? 1 : 0,
-                  transform: i === activeStep
-                    ? "translateY(0)"
-                    : i < activeStep ? "translateY(-20px)" : "translateY(20px)",
-                  transition: "opacity 0.5s cubic-bezier(.4,0,.2,1), transform 0.5s cubic-bezier(.4,0,.2,1)",
-                  pointerEvents: i === activeStep ? "auto" : "none",
-                }}
-              >
+              <div key={step.num} style={{
+                /* ocupa TODO el espacio de la columna */
+                position: "absolute", inset: 0,
+                display: "flex", alignItems: "center",
+                padding: "40px clamp(20px,4vw,56px)",
+                /* crossfade + slide */
+                opacity: i === activeStep ? 1 : 0,
+                transform: i === activeStep
+                  ? "translateY(0)"
+                  : i < activeStep ? "translateY(-20px)" : "translateY(20px)",
+                transition: "opacity 0.5s cubic-bezier(.4,0,.2,1), transform 0.5s cubic-bezier(.4,0,.2,1)",
+                pointerEvents: i === activeStep ? "auto" : "none",
+              }}>
+                {/* Tarjeta navy */}
                 <div style={{
                   background: "var(--navy-800)",
                   borderRadius: "var(--radius-lg)",
                   padding: "clamp(32px,4vw,52px)",
                   width: "100%",
                   boxShadow: "0 24px 64px rgba(14,44,80,.22)",
-                  position: "relative",
-                  overflow: "hidden",
+                  position: "relative", overflow: "hidden",
                 }}>
                   <span style={{
                     position: "absolute", bottom: -12, right: 20,
                     fontFamily: "var(--font-display)", fontWeight: 800,
                     fontSize: 120, lineHeight: 1,
-                    color: "rgba(255,255,255,.04)",
-                    userSelect: "none",
-                  }}>
-                    {step.num}
-                  </span>
+                    color: "rgba(255,255,255,.04)", userSelect: "none",
+                  }}>{step.num}</span>
 
                   <div style={{
                     width: 56, height: 56,
@@ -165,21 +148,16 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Pr
                     fontFamily: "var(--font-sans)", fontWeight: 700,
                     fontSize: "clamp(18px,2vw,24px)",
                     color: "#fff", margin: "0 0 14px",
-                  }}>
-                    {step.titulo}
-                  </h3>
+                  }}>{step.titulo}</h3>
                   <p style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "clamp(14px,1.5vw,16px)",
-                    color: "rgba(255,255,255,.70)",
-                    lineHeight: 1.75, margin: 0,
-                  }}>
-                    {step.descripcion}
-                  </p>
+                    fontFamily: "var(--font-sans)", fontSize: "clamp(14px,1.5vw,16px)",
+                    color: "rgba(255,255,255,.70)", lineHeight: 1.75, margin: 0,
+                  }}>{step.descripcion}</p>
                 </div>
               </div>
             ))}
           </div>
+
         </div>
       </div>
 
@@ -190,49 +168,26 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Pr
           fontFamily: "var(--font-display)", fontWeight: 700,
           fontSize: "clamp(22px,6vw,30px)", letterSpacing: "-.02em",
           color: "var(--navy-800)", margin: "0 0 10px",
-        }}>
-          {heading}
-        </h2>
+        }}>{heading}</h2>
         <p style={{
           fontFamily: "var(--font-sans)", fontSize: 14,
           color: "var(--ink-500)", lineHeight: 1.65, margin: "0 0 28px",
-        }}>
-          {subheading}
-        </p>
+        }}>{subheading}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {steps.map(step => (
             <div key={step.num} style={{
-              background: "var(--navy-800)",
-              borderRadius: "var(--radius-lg)",
-              padding: "28px 24px",
+              background: "var(--navy-800)", borderRadius: "var(--radius-lg)", padding: "28px 24px",
             }}>
               <div style={{
-                width: 48, height: 48,
-                background: "rgba(185,159,102,.18)",
+                width: 48, height: 48, background: "rgba(185,159,102,.18)",
                 borderRadius: "var(--radius-md)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                marginBottom: 16,
+                display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
               }}>
                 <span style={{ color: "var(--gold-400)" }}>{step.icon}</span>
               </div>
-              <p style={{
-                fontFamily: "var(--font-display)", fontWeight: 800,
-                fontSize: 12, color: "var(--gold-500)", margin: "0 0 6px",
-              }}>
-                {step.num}
-              </p>
-              <h3 style={{
-                fontFamily: "var(--font-sans)", fontWeight: 700,
-                fontSize: 17, color: "#fff", margin: "0 0 10px",
-              }}>
-                {step.titulo}
-              </h3>
-              <p style={{
-                fontFamily: "var(--font-sans)", fontSize: 14,
-                color: "rgba(255,255,255,.68)", lineHeight: 1.65, margin: 0,
-              }}>
-                {step.descripcion}
-              </p>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, color: "var(--gold-500)", margin: "0 0 6px" }}>{step.num}</p>
+              <h3 style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 17, color: "#fff", margin: "0 0 10px" }}>{step.titulo}</h3>
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "rgba(255,255,255,.68)", lineHeight: 1.65, margin: 0 }}>{step.descripcion}</p>
             </div>
           ))}
         </div>
