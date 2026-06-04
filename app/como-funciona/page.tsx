@@ -165,7 +165,8 @@ export default function ComoFuncionaPage() {
       </section>
 
       {/* ── Para dueños — Scrollytelling ──────────────────────── */}
-      <section style={{ background: "#fff", overflow: "hidden" }}>
+      {/* NO poner overflow:hidden — rompe el position:sticky interno */}
+      <section style={{ background: "#fff" }}>
         <ScrollySteps
           eyebrow="Para propietarios"
           heading="Vendé tu propiedad con visibilidad real"
@@ -248,7 +249,8 @@ export default function ComoFuncionaPage() {
       </section>
 
       {/* ── Para compradores — Scrollytelling ─────────────────── */}
-      <section style={{ background: "var(--cream)", overflow: "hidden" }}>
+      {/* NO poner overflow:hidden — rompe el position:sticky interno */}
+      <section style={{ background: "var(--cream)" }}>
         <ScrollySteps
           eyebrow="Para compradores"
           heading="Accedé a propiedades a precio real"
