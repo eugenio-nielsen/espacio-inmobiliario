@@ -5,8 +5,11 @@ import PropertyListCard from "@/components/properties/PropertyListCard";
 import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
 import Logo from "@/components/Logo";
-import { BadgeCheck, Handshake, MapPin, Plus, ArrowRight } from "lucide-react";
+import { BadgeCheck, Handshake, MapPin, Plus, ArrowRight, Building2, Eye, Map as MapIcon, Percent } from "lucide-react";
 import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
+import Counter from "@/components/ui/Counter";
+import FadeIn from "@/components/ui/FadeIn";
+import { BARRIOS_CABA, PARTIDOS_PBA } from "@/lib/ubicaciones";
 
 export const revalidate = 60;
 
@@ -28,20 +31,35 @@ export default async function HomePage() {
     .from("properties").select("*").eq("status", "activa")
     .order("created_at", { ascending: false }).limit(6);
 
+  // Datos para la banda de estadísticas
+  const { count: activeCount } = await supabase
+    .from("properties").select("*", { count: "exact", head: true }).eq("status", "activa");
+  const { data: viewsRows } = await supabase
+    .from("properties").select("views").eq("status", "activa");
+  const totalViews = (viewsRows || []).reduce((acc, r) => acc + (r.views ?? 0), 0);
+  const totalZonas = BARRIOS_CABA.length + PARTIDOS_PBA.length;
+
+  const stats: { icon: typeof Building2; to: number; suffix: string; label: string; static?: string }[] = [
+    { icon: Building2, to: activeCount ?? 0, suffix: "", label: "Propiedades publicadas" },
+    { icon: Eye,       to: totalViews,        suffix: "", label: "Visitas totales" },
+    { icon: MapIcon,   to: totalZonas,        suffix: "", label: "Barrios y partidos" },
+    { icon: Percent,   to: 0,                 suffix: "%", label: "Comisiones", static: "0%" },
+  ];
+
   return (
     <div>
       <Navbar />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section style={{ background: "var(--navy-800)", color: "#fff", position: "relative", overflow: "hidden", padding: "clamp(48px,8vw,84px) 20px clamp(56px,9vw,96px)" }}>
-        {/* Imagen de fondo */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url('/hero-bg.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.22, pointerEvents: "none" }} />
+        {/* Imagen de fondo con Ken Burns (zoom lento infinito) */}
+        <div className="hero-kenburns" style={{ position: "absolute", inset: 0, backgroundImage: "url('/hero-bg.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.22, pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% -10%, rgba(185,159,102,.16), transparent 55%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <div className="es-eyebrow es-eyebrow-light" style={{ marginBottom: 14 }}>
+          <div className="es-eyebrow es-eyebrow-light hero-animate" style={{ marginBottom: 14 }}>
             Propiedades directas de dueños
           </div>
-          <h1 style={{
+          <h1 className="hero-animate hero-animate-delay-1" style={{
             fontFamily: "var(--font-display)", fontWeight: 700,
             fontSize: "clamp(28px, 5vw, 52px)", lineHeight: 1.16,
             letterSpacing: "-.02em", margin: "0 0 20px", maxWidth: 760,
@@ -49,14 +67,14 @@ export default async function HomePage() {
             Dueños Directos.{" "}
             <span style={{ fontStyle: "italic", color: "var(--gold-300)" }}>Publicá tu propiedad Gratis</span>
           </h1>
-          <p className="hero-subtitle">
+          <p className="hero-subtitle hero-animate hero-animate-delay-2">
             Comprá, vendé o alquilá tratando directamente con los dueños.
             Sin comisiones en toda la Argentina.
           </p>
-          <div style={{ width: "100%" }}>
+          <div className="hero-animate hero-animate-delay-2" style={{ width: "100%" }}>
             <HomeSearch />
           </div>
-          <div className="trust-strip">
+          <div className="trust-strip hero-animate hero-animate-delay-3">
             {([
               [BadgeCheck, "Sin comisiones"],
               [Handshake, "Trato directo con el dueño"],
@@ -71,6 +89,33 @@ export default async function HomePage() {
               </span>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── Banda de estadísticas ─────────────────────────────── */}
+      <section style={{ background: "var(--navy-900)", borderBottom: "1px solid var(--gold-200)" }}>
+        <div className="grid-stats-band" style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(28px,4vw,40px) 24px" }}>
+          {stats.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <FadeIn key={s.label} delay={i * 100} direction="up"
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 8 }}>
+                <Icon size={22} strokeWidth={1.75} color="var(--gold-400)" />
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 700,
+                  fontSize: "clamp(28px,4vw,40px)", color: "#fff", lineHeight: 1,
+                }}>
+                  {s.static ?? <Counter to={s.to} suffix={s.suffix} />}
+                </span>
+                <span style={{
+                  fontFamily: "var(--font-sans)", fontSize: 13,
+                  color: "rgba(255,255,255,.62)", letterSpacing: ".01em",
+                }}>
+                  {s.label}
+                </span>
+              </FadeIn>
+            );
+          })}
         </div>
       </section>
 
@@ -101,7 +146,13 @@ export default async function HomePage() {
           </div>
         ) : (
           <div className="grid-properties">
-            {(properties as Property[]).map(p => <PropertyListCard key={p.id} property={p} />)}
+            {(properties as Property[]).map((p, i) => (
+              <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
+                <div className="card-lift">
+                  <PropertyListCard property={p} />
+                </div>
+              </FadeIn>
+            ))}
           </div>
         )}
       </section>

@@ -227,6 +227,41 @@ select:focus, input:focus, textarea:focus {
 .hero-animate-delay-2 { animation-delay: 0.30s; }
 .hero-animate-delay-3 { animation-delay: 0.50s; }
 
+/* Hero Ken Burns — zoom lento e infinito de la imagen de fondo */
+@keyframes kenburns {
+  0%   { transform: scale(1)    translateY(0); }
+  50%  { transform: scale(1.12) translateY(-1.5%); }
+  100% { transform: scale(1)    translateY(0); }
+}
+.hero-kenburns {
+  animation: kenburns 28s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Banda de estadísticas: 4col → 2col → 2col */
+.grid-stats-band {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 639px) {
+  .grid-stats-band { grid-template-columns: repeat(2, 1fr); gap: 28px 16px; }
+}
+
+/* Lift sutil de cards al hover */
+.card-lift {
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+}
+
+/* Respeta usuarios con reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns { animation: none; }
+  .hero-animate  { animation: none; opacity: 1; transform: none; }
+}
+
 /* Como funciona — sección profesional: 2col → 1col */
 .como-funciona-pro {
   grid-template-columns: auto 1fr;
