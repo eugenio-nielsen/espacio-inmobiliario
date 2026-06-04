@@ -164,6 +164,33 @@ select:focus, input:focus, textarea:focus {
   .grid-stats { grid-template-columns: 1fr; gap: 8px; }
 }
 
+/* Scrollytelling: 2col desktop → 1col mobile (sticky desactivado) */
+.scrolly-grid {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 767px) {
+  .scrolly-grid {
+    grid-template-columns: 1fr;
+  }
+  .scrolly-grid > div:first-child {
+    position: relative !important;
+    height: auto !important;
+    padding: 40px 24px 0 !important;
+  }
+}
+
+/* Hero animate-in */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-animate {
+  animation: heroFadeUp 0.8s ease both;
+}
+.hero-animate-delay-1 { animation-delay: 0.15s; }
+.hero-animate-delay-2 { animation-delay: 0.30s; }
+.hero-animate-delay-3 { animation-delay: 0.50s; }
+
 /* Como funciona — sección profesional: 2col → 1col */
 .como-funciona-pro {
   grid-template-columns: auto 1fr;
