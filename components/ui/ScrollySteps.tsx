@@ -14,110 +14,90 @@ interface Props {
   eyebrow: string;
   heading: string;
   subheading: string;
-  dark?: boolean; // para sección con fondo oscuro
 }
 
-export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark = false }: Props) {
+export default function ScrollySteps({ steps, eyebrow, heading, subheading }: Props) {
   const [activeStep, setActiveStep] = useState(0);
-  const triggerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Scroll listener — calcula el paso activo por posición del contenedor en el viewport
   useEffect(() => {
-    const observers = triggerRefs.current.map((el, i) => {
-      if (!el) return null;
-      const observer = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveStep(i); },
-        { threshold: 0.5 }
-      );
-      observer.observe(el);
-      return observer;
-    });
-    return () => observers.forEach(o => o?.disconnect());
-  }, []);
-
-  const ink = dark ? "rgba(255,255,255,.65)" : "var(--ink-500)";
-  const heading_c = dark ? "#fff" : "var(--navy-800)";
-  const eyebrow_c = dark ? "es-eyebrow es-eyebrow-light" : "es-eyebrow";
+    function onScroll() {
+      const el = containerRef.current;
+      if (!el) return;
+      const { top, height } = el.getBoundingClientRect();
+      const scrollable = height - window.innerHeight;
+      if (scrollable <= 0) return;
+      const progress = Math.max(0, Math.min(1, -top / scrollable));
+      const step = Math.min(steps.length - 1, Math.floor(progress * steps.length));
+      setActiveStep(step);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [steps.length]);
 
   return (
     <>
-      {/* ── Desktop scrollytelling ───────────────────────── */}
+      {/* ── Desktop: scrollytelling ──────────────────────────── */}
       <div
         ref={containerRef}
         className="scrolly-outer"
         style={{ position: "relative", height: `${steps.length * 100}vh` }}
       >
-        {/* Invisible scroll triggers — one per step, evenly distributed */}
-        {steps.map((_, i) => (
-          <div
-            key={i}
-            ref={el => { triggerRefs.current[i] = el; }}
-            style={{
-              position: "absolute",
-              top: `${(i / steps.length) * 100}%`,
-              height: `${100 / steps.length}%`,
-              width: 1,
-              pointerEvents: "none",
-              left: "50%",
-            }}
-          />
-        ))}
-
-        {/* Sticky viewport — both panels stick together */}
         <div style={{
           position: "sticky",
           top: 0,
           height: "100vh",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          overflow: "hidden",
-        }}
-          className="scrolly-sticky"
-        >
-          {/* ── Left panel ──────────────────────────────── */}
+        }}>
+
+          {/* ── Left: heading + indicadores ─────────────────── */}
           <div style={{
+            height: "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             padding: "0 clamp(28px,5vw,72px)",
           }}>
-            <div className={eyebrow_c} style={{ marginBottom: 14 }}>{eyebrow}</div>
+            <div className="es-eyebrow" style={{ marginBottom: 14 }}>{eyebrow}</div>
             <h2 style={{
               fontFamily: "var(--font-display)", fontWeight: 700,
               fontSize: "clamp(22px,3vw,36px)", letterSpacing: "-.02em",
-              color: heading_c, margin: "0 0 16px", lineHeight: 1.18,
+              color: "var(--navy-800)", margin: "0 0 16px", lineHeight: 1.18,
             }}>
               {heading}
             </h2>
             <p style={{
               fontFamily: "var(--font-sans)", fontSize: "clamp(13px,1.4vw,15px)",
-              color: ink, lineHeight: 1.7, margin: "0 0 44px", maxWidth: 340,
+              color: "var(--ink-500)", lineHeight: 1.7,
+              margin: "0 0 44px", maxWidth: 340,
             }}>
               {subheading}
             </p>
 
-            {/* Step indicators */}
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {steps.map((step, i) => (
                 <div key={step.num} style={{
                   display: "flex", alignItems: "center", gap: 16,
                   padding: "12px 0 12px 20px",
-                  borderLeft: `3px solid ${i === activeStep ? "var(--gold-500)" : dark ? "rgba(255,255,255,.12)" : "var(--line-200)"}`,
-                  transition: "border-color 0.45s ease",
+                  borderLeft: `3px solid ${i === activeStep ? "var(--gold-500)" : "var(--line-200)"}`,
+                  transition: "border-color 0.4s ease",
                 }}>
                   <span style={{
                     fontFamily: "var(--font-display)", fontWeight: 800,
                     fontSize: i === activeStep ? 26 : 16,
-                    color: i === activeStep ? heading_c : ink,
-                    transition: "all 0.4s ease",
-                    minWidth: 32, lineHeight: 1,
+                    color: i === activeStep ? "var(--navy-800)" : "var(--ink-300)",
+                    transition: "all 0.4s ease", minWidth: 32, lineHeight: 1,
                   }}>
                     {step.num}
                   </span>
                   <span style={{
-                    fontFamily: "var(--font-sans)", fontWeight: i === activeStep ? 700 : 500,
+                    fontFamily: "var(--font-sans)",
+                    fontWeight: i === activeStep ? 700 : 500,
                     fontSize: i === activeStep ? 14.5 : 13,
-                    color: i === activeStep ? heading_c : ink,
+                    color: i === activeStep ? "var(--navy-800)" : "var(--ink-400)",
                     transition: "all 0.4s ease",
                   }}>
                     {step.titulo}
@@ -127,26 +107,28 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark
             </div>
           </div>
 
-          {/* ── Right panel — crossfade cards ───────────── */}
+          {/* ── Right: card activa con crossfade ────────────── */}
           <div style={{
-            display: "flex", alignItems: "center",
-            padding: "0 clamp(20px,4vw,60px) 0 0",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
             position: "relative",
+            padding: "40px clamp(20px,4vw,56px) 40px 0",
           }}>
             {steps.map((step, i) => (
               <div
                 key={step.num}
                 style={{
                   position: "absolute",
-                  inset: "0 clamp(20px,4vw,60px) 0 0",
-                  display: "flex", alignItems: "center",
+                  top: 40, bottom: 40,
+                  left: 0, right: "clamp(20px,4vw,56px)",
+                  display: "flex",
+                  alignItems: "center",
                   opacity: i === activeStep ? 1 : 0,
                   transform: i === activeStep
-                    ? "translateY(0) scale(1)"
-                    : i < activeStep
-                      ? "translateY(-28px) scale(.97)"
-                      : "translateY(28px) scale(.97)",
-                  transition: "opacity 0.55s cubic-bezier(.4,0,.2,1), transform 0.55s cubic-bezier(.4,0,.2,1)",
+                    ? "translateY(0)"
+                    : i < activeStep ? "translateY(-20px)" : "translateY(20px)",
+                  transition: "opacity 0.5s cubic-bezier(.4,0,.2,1), transform 0.5s cubic-bezier(.4,0,.2,1)",
                   pointerEvents: i === activeStep ? "auto" : "none",
                 }}
               >
@@ -159,9 +141,8 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark
                   position: "relative",
                   overflow: "hidden",
                 }}>
-                  {/* Número decorativo */}
                   <span style={{
-                    position: "absolute", bottom: -8, right: 24,
+                    position: "absolute", bottom: -12, right: 20,
                     fontFamily: "var(--font-display)", fontWeight: 800,
                     fontSize: 120, lineHeight: 1,
                     color: "rgba(255,255,255,.04)",
@@ -170,7 +151,6 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark
                     {step.num}
                   </span>
 
-                  {/* Ícono */}
                   <div style={{
                     width: 56, height: 56,
                     background: "rgba(185,159,102,.18)",
@@ -189,8 +169,10 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark
                     {step.titulo}
                   </h3>
                   <p style={{
-                    fontFamily: "var(--font-sans)", fontSize: "clamp(14px,1.5vw,16px)",
-                    color: "rgba(255,255,255,.70)", lineHeight: 1.75, margin: 0,
+                    fontFamily: "var(--font-sans)",
+                    fontSize: "clamp(14px,1.5vw,16px)",
+                    color: "rgba(255,255,255,.70)",
+                    lineHeight: 1.75, margin: 0,
                   }}>
                     {step.descripcion}
                   </p>
@@ -201,23 +183,23 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark
         </div>
       </div>
 
-      {/* ── Mobile fallback — cards apiladas ────────────────── */}
-      <div className="scrolly-mobile" style={{ padding: "48px 20px", display: "none" }}>
-        <div className={eyebrow_c} style={{ marginBottom: 10 }}>{eyebrow}</div>
+      {/* ── Mobile: cards apiladas ───────────────────────────── */}
+      <div className="scrolly-mobile" style={{ padding: "48px 20px" }}>
+        <div className="es-eyebrow" style={{ marginBottom: 10 }}>{eyebrow}</div>
         <h2 style={{
           fontFamily: "var(--font-display)", fontWeight: 700,
           fontSize: "clamp(22px,6vw,30px)", letterSpacing: "-.02em",
-          color: heading_c, margin: "0 0 10px",
+          color: "var(--navy-800)", margin: "0 0 10px",
         }}>
           {heading}
         </h2>
         <p style={{
           fontFamily: "var(--font-sans)", fontSize: 14,
-          color: ink, lineHeight: 1.65, margin: "0 0 32px",
+          color: "var(--ink-500)", lineHeight: 1.65, margin: "0 0 28px",
         }}>
           {subheading}
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {steps.map(step => (
             <div key={step.num} style={{
               background: "var(--navy-800)",
@@ -233,13 +215,22 @@ export default function ScrollySteps({ steps, eyebrow, heading, subheading, dark
               }}>
                 <span style={{ color: "var(--gold-400)" }}>{step.icon}</span>
               </div>
-              <p style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: "var(--gold-500)", margin: "0 0 6px" }}>
+              <p style={{
+                fontFamily: "var(--font-display)", fontWeight: 800,
+                fontSize: 12, color: "var(--gold-500)", margin: "0 0 6px",
+              }}>
                 {step.num}
               </p>
-              <h3 style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 17, color: "#fff", margin: "0 0 10px" }}>
+              <h3 style={{
+                fontFamily: "var(--font-sans)", fontWeight: 700,
+                fontSize: 17, color: "#fff", margin: "0 0 10px",
+              }}>
                 {step.titulo}
               </h3>
-              <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "rgba(255,255,255,.68)", lineHeight: 1.65, margin: 0 }}>
+              <p style={{
+                fontFamily: "var(--font-sans)", fontSize: 14,
+                color: "rgba(255,255,255,.68)", lineHeight: 1.65, margin: 0,
+              }}>
                 {step.descripcion}
               </p>
             </div>
