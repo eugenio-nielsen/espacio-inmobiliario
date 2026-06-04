@@ -5,15 +5,18 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-le
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix Leaflet's default icon path broken by webpack/next
-const icon = L.icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
+// Pin SVG con color navy institucional #0E2C50
+const icon = L.divIcon({
+  className: "",
+  html: `
+    <svg width="32" height="44" viewBox="0 0 32 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 0C7.163 0 0 7.163 0 16c0 10.627 14.016 26.25 15.285 27.646a.999.999 0 001.43 0C17.984 42.25 32 26.627 32 16 32 7.163 24.837 0 16 0z" fill="#0E2C50"/>
+      <circle cx="16" cy="16" r="6" fill="#B99F66"/>
+    </svg>
+  `,
+  iconSize: [32, 44],
+  iconAnchor: [16, 44],
+  popupAnchor: [0, -44],
 });
 
 // Componente que centra el mapa cuando las coordenadas cambian (útil en el form)

@@ -201,21 +201,9 @@ export default async function PropiedadPage({ params }: PageProps) {
                 ))}
               </div>
 
-              {/* Description */}
-              {p.descripcion && (
-                <>
-                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: "var(--navy-800)", margin: "0 0 12px" }}>
-                    Descripción
-                  </h3>
-                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 15.5, lineHeight: 1.75, color: "var(--ink-600)", margin: "0 0 18px", maxWidth: 560, whiteSpace: "pre-line" }}>
-                    {p.descripcion}
-                  </p>
-                </>
-              )}
-
               {/* Mapa */}
               {geoResult && (
-                <div style={{ marginTop: 32, marginBottom: 8 }}>
+                <div style={{ marginBottom: 32 }}>
                   <h3 style={{
                     fontFamily: "var(--font-display)", fontWeight: 600,
                     fontSize: 22, color: "var(--navy-800)", margin: "0 0 14px",
@@ -229,6 +217,18 @@ export default async function PropiedadPage({ params }: PageProps) {
                     aproximada={geoResult.aproximada}
                   />
                 </div>
+              )}
+
+              {/* Description */}
+              {p.descripcion && (
+                <>
+                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: "var(--navy-800)", margin: "0 0 12px" }}>
+                    Descripción
+                  </h3>
+                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 15.5, lineHeight: 1.75, color: "var(--ink-600)", margin: "0 0 18px", maxWidth: 560, whiteSpace: "pre-line" }}>
+                    {p.descripcion}
+                  </p>
+                </>
               )}
 
               {/* Publisher tag */}
