@@ -34,6 +34,8 @@ export default async function HomePage() {
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section style={{ background: "var(--navy-800)", color: "#fff", position: "relative", overflow: "hidden", padding: "clamp(48px,8vw,84px) 20px clamp(56px,9vw,96px)" }}>
+        {/* Imagen de fondo */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url('/hero-bg.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.22, pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% -10%, rgba(185,159,102,.16), transparent 55%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <div className="es-eyebrow es-eyebrow-light" style={{ marginBottom: 14 }}>
