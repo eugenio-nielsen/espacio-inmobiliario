@@ -37,6 +37,16 @@ const AMENITIES = [
   { k: "parrilla", l: "Parrilla" },
 ] as const;
 
+// Características especiales: cada una con su leyenda. Las claves deben ser
+// campos booleanos de EstimadorInput.
+const ESPECIALES: { k: "vecinosEspeciales"; label: string; legend: string }[] = [
+  {
+    k: "vecinosEspeciales",
+    label: "Vecinos especiales",
+    legend: "Marcá esta opción si la propiedad está a menos de 3 cuadras de estaciones de bomberos, cementerios, hospitales o terminales de transporte.",
+  },
+];
+
 const CONFIANZA_STYLE = {
   alta:  { l: "Alta",  bg: "#F0FDF4", color: "#15803D", dot: "#22c55e" },
   media: { l: "Media", bg: "#FFFBEB", color: "#B45309", dot: "#f59e0b" },
@@ -221,11 +231,20 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
           {/* ── c) Características especiales ────────────────────── */}
           <div style={{ marginTop: 26 }}>
             <SubHeader icon={<Sparkles size={15} />} title="Características especiales" />
-            <Toggle label="Vecinos especiales" on={input.vecinosEspeciales} onClick={() => set("vecinosEspeciales", !input.vecinosEspeciales)} />
-            <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-400)", margin: "8px 0 0", lineHeight: 1.5 }}>
-              Marcá esta opción si la propiedad está a menos de 3 cuadras de estaciones de bomberos,
-              cementerios, hospitales o terminales de transporte.
-            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {ESPECIALES.map(esp => (
+                <div key={esp.k} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <Toggle
+                    label={esp.label}
+                    on={input[esp.k] as boolean}
+                    onClick={() => set(esp.k, !(input[esp.k] as boolean))}
+                  />
+                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-400)", margin: 0, lineHeight: 1.5 }}>
+                    {esp.legend}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <NavRow
