@@ -126,6 +126,55 @@ export async function sendInquiryConfirmation(data: {
   });
 }
 
+// ── Lead del Estimador de Precios → al admin (martillero) ─────
+export async function sendEstimacionLead(data: {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  barrio: string;
+  resultado: { estimado: number; rangoMin: number; rangoMax: number };
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const fmt = (n: number) => `US$ ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n)}`;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Nueva solicitud del Estimador</h1>
+      <p style="${styles.lead}">
+        Alguien usó el Estimador de Precios y pidió que revises su estimación.
+      </p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Nombre</p>
+        <p style="${styles.value}">${data.nombre}</p>
+
+        <p style="${styles.label}">Email</p>
+        <p style="${styles.value}"><a href="mailto:${data.email}" style="color:#0E2C50;">${data.email}</a></p>
+
+        ${data.telefono ? `
+        <p style="${styles.label}">Teléfono / WhatsApp</p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.telefono.replace(/\D/g,"")}" style="color:#15803D;">${data.telefono}</a></p>
+        ` : ""}
+
+        <p style="${styles.label}">Barrio</p>
+        <p style="${styles.value}">${data.barrio}</p>
+
+        <p style="${styles.label}">Estimación generada</p>
+        <p style="${styles.value}">${fmt(data.resultado.estimado)} <span style="color:#8C7641;font-weight:400;">(rango ${fmt(data.resultado.rangoMin)} – ${fmt(data.resultado.rangoMax)})</span></p>
+      </div>
+    </div>
+  `);
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: ADMIN,
+    subject: `Estimador: ${data.nombre} — ${data.barrio} (${fmt(data.resultado.estimado)})`,
+    html,
+  });
+}
+
 // ── 3. Interés en servicio del ecosistema → al admin ──────────
 export async function sendServiceInterest(data: {
   nombre: string;

@@ -27,7 +27,7 @@ export default function Footer() {
         </div>
         <div>
           <h5 style={footH}>Espacio</h5>
-          {[["Cómo funciona", "/como-funciona"], ["Publicar gratis", "/auth/registro"], ["Contacto", "#"]].map(([t, href]) => (
+          {[["Cómo funciona", "/como-funciona"], ["Estimador de precios", "/estimador"], ["Publicar gratis", "/auth/registro"], ["Contacto", "#"]].map(([t, href]) => (
             <a key={t} href={href} style={footLink}>{t}</a>
           ))}
           <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>

@@ -262,6 +262,22 @@ select:focus, input:focus, textarea:focus {
   .hero-animate  { animation: none; opacity: 1; transform: none; }
 }
 
+/* Estimador */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin .8s linear infinite; }
+
+.est-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.estimador-factores { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.estimador-lead-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) {
+  .est-grid2 { grid-template-columns: 1fr; }
+  .estimador-factores { grid-template-columns: 1fr; }
+  .estimador-lead-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .estimador-step-label { display: none; }
+}
+
 /* Como funciona — sección profesional: 2col → 1col */
 .como-funciona-pro {
   grid-template-columns: auto 1fr;
