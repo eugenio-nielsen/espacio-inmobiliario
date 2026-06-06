@@ -6,6 +6,7 @@ import PropertyMapWrapper from "@/components/map/PropertyMapWrapper";
 import { geocodeProperty } from "@/lib/utils/geocode";
 import type { Metadata } from "next";
 import type { Property, Profile } from "@/lib/types";
+import Footer from "@/components/Footer";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import InquiryForm from "@/components/properties/InquiryForm";
 import Navbar from "@/components/Navbar";
@@ -310,11 +311,7 @@ export default async function PropiedadPage({ params }: PageProps) {
           </div>
         </main>
 
-        <footer style={{ background: "var(--navy-800)" }}>
-          <div style={{ borderTop: "1px solid var(--navy-700)", padding: "18px 24px", textAlign: "center", fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--navy-300)" }}>
-            © {new Date().getFullYear()} Espacio Inmobiliario — espacioinmobiliario.com.ar
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

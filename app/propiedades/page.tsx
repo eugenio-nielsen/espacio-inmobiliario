@@ -4,6 +4,7 @@ import type { Property } from "@/lib/types";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import ListadoFilters from "@/components/properties/ListadoFilters";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const revalidate = 60;
 
@@ -153,11 +154,7 @@ export default async function PropiedadesPage({
         )}
       </main>
 
-      <footer style={{ background: "var(--navy-800)", color: "#fff" }}>
-        <div style={{ borderTop: "1px solid var(--navy-700)", padding: "18px 24px", textAlign: "center", fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--navy-300)" }}>
-          © {new Date().getFullYear()} Espacio Inmobiliario — espacioinmobiliario.com.ar
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

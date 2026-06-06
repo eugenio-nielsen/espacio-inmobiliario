@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Logo from "@/components/Logo";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Página no encontrada",
@@ -42,9 +43,7 @@ export default function NotFound() {
         </div>
       </main>
 
-      <footer className="text-center py-4 text-xs text-gray-400">
-        © {new Date().getFullYear()} Espacio Inmobiliario
-      </footer>
+      <Footer />
     </div>
   );
 }

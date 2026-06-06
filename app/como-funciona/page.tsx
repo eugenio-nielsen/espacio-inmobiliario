@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
-import Logo from "@/components/Logo";
+import Footer from "@/components/Footer";
 import FadeIn from "@/components/ui/FadeIn";
 import ScrollySteps from "@/components/ui/ScrollySteps";
 import {
@@ -384,33 +384,7 @@ export default function ComoFuncionaPage() {
       </section>
 
       {/* ── Footer ────────────────────────────────────────────── */}
-      <footer style={{ background: "var(--navy-800)" }}>
-        <div style={{
-          maxWidth: "var(--container)", margin: "0 auto",
-          padding: "32px 24px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 16,
-        }}>
-          <Logo className="h-12 w-auto" />
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            {[["Propiedades", "/propiedades"], ["Publicar gratis", "/auth/registro"], ["Inicio", "/"]].map(([label, href]) => (
-              <a key={label} href={href} style={{
-                fontFamily: "var(--font-sans)", fontSize: 13.5,
-                color: "rgba(255,255,255,.7)", textDecoration: "none",
-              }}>
-                {label}
-              </a>
-            ))}
-          </div>
-        </div>
-        <div style={{
-          borderTop: "1px solid var(--navy-700)", padding: "16px 24px",
-          textAlign: "center", fontFamily: "var(--font-sans)",
-          fontSize: 12.5, color: "var(--navy-300)",
-        }}>
-          © {new Date().getFullYear()} Espacio Inmobiliario · Martillero Público Matriculado
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
