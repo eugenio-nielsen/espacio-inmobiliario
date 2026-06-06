@@ -148,7 +148,9 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
         <div style={card}>
           <StepTitle icon={<Home size={20} />} title="Características" subtitle="Contanos sobre el departamento" />
 
-          <div className="est-grid2" style={{ marginBottom: 16 }}>
+          {/* ── a) Características de la unidad ──────────────────── */}
+          <SubHeader icon={<Home size={15} />} title="Características de la unidad" />
+          <div className="est-grid2" style={{ marginBottom: 26 }}>
             <Field label="M² cubiertos *">
               <input style={inputStyle} type="number" min={1} value={input.m2Cubiertos || ""} onChange={e => set("m2Cubiertos", Number(e.target.value))} placeholder="Ej: 65" />
             </Field>
@@ -164,9 +166,6 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
             <Field label="Baños">
               <input style={inputStyle} type="number" min={1} value={input.banos || ""} onChange={e => set("banos", Number(e.target.value))} placeholder="Ej: 1" />
             </Field>
-            <Field label="Antigüedad (años)">
-              <input style={inputStyle} type="number" min={0} value={input.antiguedad || ""} onChange={e => set("antiguedad", Number(e.target.value))} placeholder="0 = a estrenar" />
-            </Field>
             <Field label="Piso (0 = PB)">
               <input style={inputStyle} type="number" min={0} value={input.piso || ""} onChange={e => set("piso", Number(e.target.value))} placeholder="Ej: 5" />
             </Field>
@@ -175,14 +174,22 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
                 {ORIENTACIONES.map(o => <option key={o} value={o.toLowerCase()}>{o || "Sin especificar"}</option>)}
               </select>
             </Field>
-            <Field label="Estado de conservación">
-              <select style={inputStyle} value={input.estado} onChange={e => set("estado", e.target.value as EstimadorInput["estado"])}>
-                {ESTADOS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
-              </select>
-            </Field>
             <Field label="Disposición">
               <select style={inputStyle} value={input.disposicion} onChange={e => set("disposicion", e.target.value as EstimadorInput["disposicion"])}>
                 {DISPOSICIONES.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </Field>
+          </div>
+
+          {/* ── b) Características del edificio ──────────────────── */}
+          <SubHeader icon={<Building2 size={15} />} title="Características del edificio" />
+          <div className="est-grid2" style={{ marginBottom: 18 }}>
+            <Field label="Antigüedad (años)">
+              <input style={inputStyle} type="number" min={0} value={input.antiguedad || ""} onChange={e => set("antiguedad", Number(e.target.value))} placeholder="0 = a estrenar" />
+            </Field>
+            <Field label="Estado de conservación">
+              <select style={inputStyle} value={input.estado} onChange={e => set("estado", e.target.value as EstimadorInput["estado"])}>
+                {ESTADOS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
               </select>
             </Field>
             <Field label="Categoría del edificio">
@@ -274,6 +281,17 @@ function StepTitle({ icon, title, subtitle }: { icon: React.ReactNode; title: st
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><label style={labelStyle}>{label}</label>{children}</div>;
+}
+
+function SubHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, paddingBottom: 10, borderBottom: "1px solid var(--line-100)" }}>
+      <span style={{ color: "var(--gold-600)", display: "flex" }}>{icon}</span>
+      <h3 style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: ".08em", color: "var(--navy-700)", margin: 0 }}>
+        {title}
+      </h3>
+    </div>
+  );
 }
 
 function Toggle({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
