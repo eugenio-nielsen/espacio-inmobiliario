@@ -262,6 +262,54 @@ select:focus, input:focus, textarea:focus {
   .hero-animate  { animation: none; opacity: 1; transform: none; }
 }
 
+/* Blog — contenido renderizado desde Markdown */
+.blog-prose {
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.8;
+  color: var(--ink-700);
+}
+.blog-prose > *:first-child { margin-top: 0; }
+.blog-prose h2 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(22px, 3vw, 28px); letter-spacing: -.01em;
+  color: var(--navy-800); margin: 2em 0 .6em; line-height: 1.25;
+}
+.blog-prose h3 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(18px, 2.4vw, 22px);
+  color: var(--navy-800); margin: 1.6em 0 .5em;
+}
+.blog-prose h4 {
+  font-family: var(--font-sans); font-weight: 700; font-size: 17px;
+  color: var(--navy-800); margin: 1.4em 0 .4em;
+}
+.blog-prose p { margin: 0 0 1.2em; }
+.blog-prose a { color: var(--gold-700); text-decoration: underline; text-underline-offset: 2px; }
+.blog-prose a:hover { color: var(--gold-600); }
+.blog-prose ul, .blog-prose ol { margin: 0 0 1.2em; padding-left: 1.4em; }
+.blog-prose li { margin: 0 0 .5em; }
+.blog-prose strong { color: var(--ink-900); font-weight: 700; }
+.blog-prose blockquote {
+  margin: 1.6em 0; padding: 4px 0 4px 20px;
+  border-left: 3px solid var(--gold-500);
+  color: var(--ink-600); font-style: italic;
+}
+.blog-prose img { max-width: 100%; height: auto; border-radius: var(--radius-md); margin: 1.5em 0; }
+.blog-prose hr { border: none; border-top: 1px solid var(--line-200); margin: 2.4em 0; }
+.blog-prose code {
+  font-family: ui-monospace, monospace; font-size: .9em;
+  background: var(--navy-50); padding: 2px 6px; border-radius: 5px;
+}
+.blog-prose pre {
+  background: var(--navy-800); color: #fff; padding: 16px 18px;
+  border-radius: var(--radius-md); overflow-x: auto; margin: 1.5em 0; font-size: 14px;
+}
+.blog-prose pre code { background: none; padding: 0; color: inherit; }
+.blog-prose table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 15px; }
+.blog-prose th, .blog-prose td { border: 1px solid var(--line-200); padding: 9px 12px; text-align: left; }
+.blog-prose th { background: var(--navy-50); font-weight: 700; color: var(--navy-800); }
+
 /* Superadmin: ocultar mini-stats del dueño en pantallas chicas */
 @media (max-width: 600px) {
   .superadmin-owner-stats { display: none !important; }

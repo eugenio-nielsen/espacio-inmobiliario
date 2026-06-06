@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Property, Inquiry } from "@/lib/types";
 import SuperadminDashboard, { type OwnerData, type EstimacionRow } from "@/components/panel/SuperadminDashboard";
+import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
+import type { Post } from "@/lib/blog/types";
 
 export const metadata: Metadata = {
   title: "Superadmin",
@@ -20,12 +22,20 @@ export default async function SuperadminPage() {
 
   // Service role → ve TODO, sin RLS
   const admin = createAdminClient();
-  const [{ data: profiles }, { data: properties }, { data: inquiries }, { data: estimaciones }] = await Promise.all([
+  const [{ data: profiles }, { data: properties }, { data: inquiries }, { data: estimaciones }, { data: postsData }, precios, config] = await Promise.all([
     admin.from("profiles").select("*").order("created_at", { ascending: true }),
     admin.from("properties").select("*").order("created_at", { ascending: false }),
     admin.from("inquiries").select("*").order("created_at", { ascending: false }),
     admin.from("estimaciones").select("*").order("created_at", { ascending: false }),
+    admin.from("posts").select("*").order("updated_at", { ascending: false }),
+    getPreciosBarrios(),
+    getEstimadorConfig(),
   ]);
+
+  const preciosArray = Object.entries(precios)
+    .map(([barrio, precio]) => ({ barrio, precio }))
+    .sort((a, b) => a.barrio.localeCompare(b.barrio, "es"));
+  const posts = (postsData || []) as Post[];
 
   const props = (properties || []) as Property[];
   const inqs = (inquiries || []) as Inquiry[];
@@ -77,7 +87,14 @@ export default async function SuperadminPage() {
         </p>
       </div>
 
-      <SuperadminDashboard owners={owners} totals={totals} estimaciones={(estimaciones || []) as EstimacionRow[]} />
+      <SuperadminDashboard
+        owners={owners}
+        totals={totals}
+        estimaciones={(estimaciones || []) as EstimacionRow[]}
+        precios={preciosArray}
+        config={config}
+        posts={posts}
+      />
     </div>
   );
 }

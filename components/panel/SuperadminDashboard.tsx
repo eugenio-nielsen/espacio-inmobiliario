@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, ExternalLink, Phone, Mail, Calculator } from "lucide-react";
+import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, ExternalLink, Phone, Mail, Calculator, Sliders, FileText } from "lucide-react";
 import type { Property, Inquiry } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
+import EstimadorAdmin from "@/components/panel/EstimadorAdmin";
+import BlogAdmin from "@/components/panel/BlogAdmin";
+import type { EstimadorConfig } from "@/lib/estimador/types";
+import type { Post } from "@/lib/blog/types";
 
 export interface EstimacionRow {
   id: string;
@@ -40,18 +44,30 @@ const INQ_STATUS: Record<string, { label: string; bg: string; color: string }> =
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 const fmtPrecio = (p: number, m: string) => `${m === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p))}`;
 
-export default function SuperadminDashboard({ owners, totals, estimaciones }: {
+type HubTab = "usuarios" | "estimaciones" | "config" | "blog";
+
+export default function SuperadminDashboard({ owners, totals, estimaciones, precios, config, posts }: {
   owners: OwnerData[];
   totals: { usuarios: number; propiedades: number; consultas: number; vistas: number };
   estimaciones: EstimacionRow[];
+  precios: { barrio: string; precio: number }[];
+  config: EstimadorConfig;
+  posts: Post[];
 }) {
-  const [tab, setTab] = useState<"usuarios" | "estimador">("usuarios");
+  const [tab, setTab] = useState<HubTab>("usuarios");
+
+  const tabs: [HubTab, string, typeof Users][] = [
+    ["usuarios", `Usuarios (${owners.length})`, Users],
+    ["estimaciones", `Estimaciones (${estimaciones.length})`, Calculator],
+    ["config", "Config Estimador", Sliders],
+    ["blog", `Blog (${posts.length})`, FileText],
+  ];
 
   return (
     <div>
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        {([["usuarios", `Usuarios (${owners.length})`, Users], ["estimador", `Estimador (${estimaciones.length})`, Calculator]] as const).map(([k, l, Icon]) => (
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+        {tabs.map(([k, l, Icon]) => (
           <button key={k} onClick={() => setTab(k)} style={{
             display: "inline-flex", alignItems: "center", gap: 7,
             fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13.5,
@@ -65,9 +81,10 @@ export default function SuperadminDashboard({ owners, totals, estimaciones }: {
         ))}
       </div>
 
-      {tab === "usuarios"
-        ? <UsuariosTab owners={owners} totals={totals} />
-        : <EstimadorTab estimaciones={estimaciones} />}
+      {tab === "usuarios" && <UsuariosTab owners={owners} totals={totals} />}
+      {tab === "estimaciones" && <EstimadorTab estimaciones={estimaciones} />}
+      {tab === "config" && <EstimadorAdmin initialPrecios={precios} initialConfig={config} />}
+      {tab === "blog" && <BlogAdmin initialPosts={posts} />}
     </div>
   );
 }

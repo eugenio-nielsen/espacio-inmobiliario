@@ -13,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/propiedades`, lastModified: new Date(), changeFrequency: "hourly", priority: 0.9 },
     { url: `${SITE}/como-funciona`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE}/estimador`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE}/auth/registro`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
   ];
 
@@ -33,7 +34,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
 
-    return [...static_pages, ...property_pages];
+    // Notas del blog publicadas
+    const { data: posts } = await supabase
+      .from("posts")
+      .select("slug, updated_at, published_at")
+      .eq("status", "publicado")
+      .order("published_at", { ascending: false })
+      .limit(2000);
+
+    const blog_pages: MetadataRoute.Sitemap = (posts || []).map((p) => ({
+      url: `${SITE}/blog/${p.slug}`,
+      lastModified: new Date(p.updated_at || p.published_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+
+    return [...static_pages, ...property_pages, ...blog_pages];
   } catch {
     return static_pages;
   }
