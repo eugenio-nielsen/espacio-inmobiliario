@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Property, Inquiry } from "@/lib/types";
-import SuperadminDashboard, { type OwnerData } from "@/components/panel/SuperadminDashboard";
+import SuperadminDashboard, { type OwnerData, type EstimacionRow } from "@/components/panel/SuperadminDashboard";
 
 export const metadata: Metadata = {
   title: "Superadmin",
@@ -20,10 +20,11 @@ export default async function SuperadminPage() {
 
   // Service role → ve TODO, sin RLS
   const admin = createAdminClient();
-  const [{ data: profiles }, { data: properties }, { data: inquiries }] = await Promise.all([
+  const [{ data: profiles }, { data: properties }, { data: inquiries }, { data: estimaciones }] = await Promise.all([
     admin.from("profiles").select("*").order("created_at", { ascending: true }),
     admin.from("properties").select("*").order("created_at", { ascending: false }),
     admin.from("inquiries").select("*").order("created_at", { ascending: false }),
+    admin.from("estimaciones").select("*").order("created_at", { ascending: false }),
   ]);
 
   const props = (properties || []) as Property[];
@@ -76,7 +77,7 @@ export default async function SuperadminPage() {
         </p>
       </div>
 
-      <SuperadminDashboard owners={owners} totals={totals} />
+      <SuperadminDashboard owners={owners} totals={totals} estimaciones={(estimaciones || []) as EstimacionRow[]} />
     </div>
   );
 }
