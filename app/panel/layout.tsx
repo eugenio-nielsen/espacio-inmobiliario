@@ -28,9 +28,14 @@ export default async function PanelLayout({ children }: { children: React.ReactN
               Mis propiedades
             </a>
             {profile?.email === "eugenio@espacioinmobiliario.com.ar" && (
-              <a href="/panel/estimador" className="text-gray-600 hover:text-[#0E2C50] font-medium">
-                Estimador
-              </a>
+              <>
+                <a href="/panel/estimador" className="text-gray-600 hover:text-[#0E2C50] font-medium">
+                  Estimador
+                </a>
+                <a href="/panel/admin" className="text-gray-600 hover:text-[#0E2C50] font-medium">
+                  Superadmin
+                </a>
+              </>
             )}
             <span className="text-gray-400 hidden sm:block">
               {profile?.nombre || profile?.email}

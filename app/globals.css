@@ -262,6 +262,11 @@ select:focus, input:focus, textarea:focus {
   .hero-animate  { animation: none; opacity: 1; transform: none; }
 }
 
+/* Superadmin: ocultar mini-stats del dueño en pantallas chicas */
+@media (max-width: 600px) {
+  .superadmin-owner-stats { display: none !important; }
+}
+
 /* Estimador */
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { animation: spin .8s linear infinite; }
