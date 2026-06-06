@@ -47,10 +47,11 @@ const fmtUSD = (n: number) => `US$ ${new Intl.NumberFormat("es-AR", { maximumFra
 
 const defaultInput: EstimadorInput = {
   barrio: "", direccion: "",
-  m2Cubiertos: 0, m2Descubiertos: 0,
+  m2Cubiertos: 0, m2Semicubierto: 0, m2Descubiertos: 0,
   ambientes: undefined, dormitorios: undefined, banos: 1,
   antiguedad: 0, estado: "bueno", piso: 0, ultimoPiso: false,
   disposicion: "frente", orientacion: "", cochera: false, baulera: false,
+  vecinosEspeciales: false,
   categoria: "estandar",
   amenities: { pileta: false, sum: false, gimnasio: false, seguridad: false, parrilla: false },
 };
@@ -154,8 +155,11 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
             <Field label="M² cubiertos *">
               <input style={inputStyle} type="number" min={1} value={input.m2Cubiertos || ""} onChange={e => set("m2Cubiertos", Number(e.target.value))} placeholder="Ej: 65" />
             </Field>
-            <Field label="M² descubiertos">
-              <input style={inputStyle} type="number" min={0} value={input.m2Descubiertos || ""} onChange={e => set("m2Descubiertos", Number(e.target.value))} placeholder="Balcón, terraza" />
+            <Field label="M² balcón (semicubierto)">
+              <input style={inputStyle} type="number" min={0} value={input.m2Semicubierto || ""} onChange={e => set("m2Semicubierto", Number(e.target.value))} placeholder="Ej: 6" />
+            </Field>
+            <Field label="M² patio o terraza (descubiertos)">
+              <input style={inputStyle} type="number" min={0} value={input.m2Descubiertos || ""} onChange={e => set("m2Descubiertos", Number(e.target.value))} placeholder="Ej: 20" />
             </Field>
             <Field label="Ambientes">
               <input style={inputStyle} type="number" min={1} value={input.ambientes || ""} onChange={e => set("ambientes", Number(e.target.value) || undefined)} placeholder="Ej: 3" />
@@ -212,6 +216,16 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
             {AMENITIES.map(a => (
               <Toggle key={a.k} label={a.l} on={input.amenities[a.k]} onClick={() => setAmenity(a.k, !input.amenities[a.k])} />
             ))}
+          </div>
+
+          {/* ── c) Características especiales ────────────────────── */}
+          <div style={{ marginTop: 26 }}>
+            <SubHeader icon={<Sparkles size={15} />} title="Características especiales" />
+            <Toggle label="Vecinos especiales" on={input.vecinosEspeciales} onClick={() => set("vecinosEspeciales", !input.vecinosEspeciales)} />
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-400)", margin: "8px 0 0", lineHeight: 1.5 }}>
+              Marcá esta opción si la propiedad está a menos de 3 cuadras de estaciones de bomberos,
+              cementerios, hospitales o terminales de transporte.
+            </p>
           </div>
 
           <NavRow

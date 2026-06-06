@@ -122,7 +122,9 @@ function ConfigEditor({ config: initial }: { config: EstimadorConfig }) {
       <div style={sectionCard}>
         <h2 style={h2}>Parámetros generales</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))", gap: 14, marginTop: 14 }}>
-          <NumField label="Factor m² descubiertos" value={config.superficieDescubiertaFactor} step={0.05}
+          <NumField label="Factor m² balcón (semicubierto)" value={config.superficieSemicubiertaFactor ?? 0.5} step={0.05}
+            onChange={v => update(c => { c.superficieSemicubiertaFactor = v; })} />
+          <NumField label="Factor m² patio/terraza (descubiertos)" value={config.superficieDescubiertaFactor} step={0.05}
             onChange={v => update(c => { c.superficieDescubiertaFactor = v; })} />
           <NumField label="Tope mínimo del índice" value={config.topeMin} step={0.05}
             onChange={v => update(c => { c.topeMin = v; })} />

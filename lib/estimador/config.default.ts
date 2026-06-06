@@ -6,7 +6,8 @@ import type { EstimadorConfig } from "./types";
  * Desde el panel de admin se puede sobrescribir (modificar / sumar / quitar coeficientes).
  */
 export const DEFAULT_CONFIG: EstimadorConfig = {
-  superficieDescubiertaFactor: 0.35,
+  superficieSemicubiertaFactor: 0.5,
+  superficieDescubiertaFactor: 0.3,
   topeMin: 0.55,
   topeMax: 1.6,
   rango: { alta: 0.05, media: 0.08, baja: 0.12 },
@@ -132,6 +133,15 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       input: "baulera",
       activo: true,
       coefTrue: 1.02,
+      coefFalse: 1.00,
+    },
+    {
+      id: "vecinos_especiales",
+      label: "Vecinos especiales",
+      tipo: "booleano",
+      input: "vecinosEspeciales",
+      activo: true,
+      coefTrue: 0.93,
       coefFalse: 1.00,
     },
     {

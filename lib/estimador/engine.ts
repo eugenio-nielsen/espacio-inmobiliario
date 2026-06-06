@@ -82,10 +82,13 @@ export function estimarPrecio(
     return { error: "Los metros cubiertos deben ser mayores a 0." };
   }
 
-  // 1. Valor base
+  // 1. Valor base (cubierto + balcón ponderado + patio/terraza ponderado)
+  const semiFactor = config.superficieSemicubiertaFactor ?? 0.5;
+  const descFactor = config.superficieDescubiertaFactor ?? 0.3;
   const valorBase =
     input.m2Cubiertos * precioM2 +
-    (input.m2Descubiertos || 0) * precioM2 * config.superficieDescubiertaFactor;
+    (input.m2Semicubierto || 0) * precioM2 * semiFactor +
+    (input.m2Descubiertos || 0) * precioM2 * descFactor;
 
   // 2. Índice de ajuste = producto de coeficientes
   let indice = 1;

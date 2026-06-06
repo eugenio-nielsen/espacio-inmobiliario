@@ -9,7 +9,8 @@ export interface EstimadorInput {
   barrio: string;
   direccion?: string;
   m2Cubiertos: number;
-  m2Descubiertos: number;
+  m2Semicubierto: number;      // balcón
+  m2Descubiertos: number;      // patio / terraza
   ambientes?: number;
   dormitorios?: number;
   banos: number;
@@ -21,6 +22,7 @@ export interface EstimadorInput {
   orientacion?: string;        // "norte", "sur", etc. o ""
   cochera: boolean;
   baulera: boolean;
+  vecinosEspeciales: boolean;  // a < 3 cuadras de bomberos, cementerio, hospital o terminal
   categoria: CategoriaEdificio;
   amenities: {
     pileta: boolean;
@@ -58,7 +60,8 @@ export interface Factor {
 }
 
 export interface EstimadorConfig {
-  superficieDescubiertaFactor: number;  // peso de m² descubiertos (0.35 = 35% del cubierto)
+  superficieSemicubiertaFactor: number; // peso de m² de balcón (ej 0.50 = 50% del cubierto)
+  superficieDescubiertaFactor: number;  // peso de m² patio/terraza (ej 0.30 = 30% del cubierto)
   topeMin: number;                      // tope inferior del índice (ej 0.55)
   topeMax: number;                      // tope superior del índice (ej 1.60)
   rango: { alta: number; media: number; baja: number }; // spread del rango por confianza
