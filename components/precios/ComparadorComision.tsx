@@ -65,21 +65,34 @@ export default function ComparadorComision() {
 
       {/* dos lados */}
       <div className="comparador-cols">
-        {/* Tradicional */}
-        <div style={{ background: "var(--cream)", border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)", padding: "18px 20px", textAlign: "center" }}>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", margin: "0 0 2px" }}>Inmobiliaria tradicional</p>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "var(--ink-400)", margin: "0 0 8px" }}>comisión del 4%</p>
-          <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(24px,5vw,32px)", color: "#B91C1C", margin: 0, lineHeight: 1 }}>{fmtUSD(comision)}</p>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "#B91C1C", margin: "8px 0 0" }}>sube con el valor ↑</p>
+        {/* Tradicional — secundario, apagado */}
+        <div style={{ background: "var(--cream)", border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)", padding: "16px 18px", textAlign: "center", opacity: 0.9 }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)", margin: "0 0 2px" }}>Inmobiliaria tradicional</p>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: "0 0 8px" }}>comisión del 4%</p>
+          <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(20px,4vw,26px)", color: "#B91C1C", margin: 0, lineHeight: 1 }}>{fmtUSD(comision)}</p>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "#B91C1C", margin: "8px 0 0" }}>sube con el valor ↑</p>
         </div>
 
-        {/* Nuestro (destacado) */}
-        <div style={{ background: "rgba(185,159,102,.10)", border: "1.5px solid var(--gold-400)", borderRadius: "var(--radius-md)", padding: "18px 20px", textAlign: "center" }}>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-600)", margin: "0 0 2px" }}>Con nosotros</p>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "var(--ink-400)", margin: "0 0 8px" }}>siempre igual</p>
-          <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(24px,5vw,32px)", color: "var(--gold-700)", margin: 0, lineHeight: 1 }}>Precio fijo</p>
-          <p style={{ display: "inline-flex", alignItems: "center", gap: 4, fontFamily: "var(--font-sans)", fontSize: 11.5, color: "#15803D", fontWeight: 600, margin: "8px 0 0" }}>
-            <Check size={13} strokeWidth={3} /> no cambia
+        {/* Nuestro — destacado y dominante */}
+        <div className="comparador-destacado" style={{
+          background: "var(--navy-800)", border: "1.5px solid var(--gold-400)",
+          borderRadius: "var(--radius-md)", padding: "26px 22px", textAlign: "center",
+          position: "relative", boxShadow: "0 18px 44px rgba(14,44,80,.28)",
+        }}>
+          <span style={{
+            position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)",
+            fontFamily: "var(--font-sans)", fontSize: 10.5, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase",
+            background: "var(--gold-500)", color: "var(--navy-900)", padding: "4px 12px", borderRadius: 999, whiteSpace: "nowrap",
+          }}>
+            Lo nuestro
+          </span>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "rgba(255,255,255,.7)", margin: "4px 0 2px" }}>Con nosotros</p>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "rgba(255,255,255,.5)", margin: "0 0 10px" }}>sin importar el valor</p>
+          <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(28px,6vw,40px)", color: "#fff", margin: 0, lineHeight: 1 }}>
+            Precio <span style={{ fontStyle: "italic", color: "var(--gold-300)" }}>fijo</span>
+          </p>
+          <p style={{ display: "inline-flex", alignItems: "center", gap: 5, fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--gold-300)", fontWeight: 600, margin: "12px 0 0" }}>
+            <Check size={14} strokeWidth={3} /> no cambia nunca
           </p>
         </div>
       </div>
