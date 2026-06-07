@@ -120,36 +120,64 @@ function PostEditor({ post, onClose, onSaved, onDeleted }: {
     setForm(f => ({ ...f, titulo: v, slug: f.slugTouched ? f.slug : slugify(v) }));
   }
 
-  async function fileToDataUrl(file: File): Promise<string> {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result as string);
-      r.onerror = rej;
-      r.readAsDataURL(file);
+  // Comprime y redimensiona en el cliente → payload liviano y subida rápida/confiable
+  function compressImage(file: File, maxW = 1600, quality = 0.82): Promise<{ dataUrl: string; filename: string }> {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new window.Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("No se pudo procesar la imagen."));
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        const base = file.name.replace(/\.[^.]+$/, "") || "imagen";
+        resolve({ dataUrl, filename: `${base}.jpg` });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Archivo de imagen inválido.")); };
+      img.src = url;
     });
   }
 
   async function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return;
     setUploading(true); setError(null);
-    const r = await uploadBlogImage(await fileToDataUrl(file), file.name);
-    setUploading(false);
-    if (r.ok && r.url) up("cover", r.url); else setError(r.error || "Error subiendo la portada.");
-    e.target.value = "";
+    try {
+      const { dataUrl, filename } = await compressImage(file);
+      const r = await uploadBlogImage(dataUrl, filename);
+      if (r.ok && r.url) up("cover", r.url);
+      else setError(r.error || "Error subiendo la portada.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo subir la portada.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   }
 
   async function handleInline(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return;
     setUploading(true); setError(null);
-    const r = await uploadBlogImage(await fileToDataUrl(file), file.name);
-    setUploading(false);
-    if (r.ok && r.url) {
-      const md = `\n\n![${file.name.replace(/\.[^.]+$/, "")}](${r.url})\n\n`;
-      const ta = contentRef.current;
-      const pos = ta ? ta.selectionStart : form.contenido.length;
-      up("contenido", form.contenido.slice(0, pos) + md + form.contenido.slice(pos));
-    } else setError(r.error || "Error subiendo la imagen.");
-    e.target.value = "";
+    try {
+      const { dataUrl, filename } = await compressImage(file);
+      const r = await uploadBlogImage(dataUrl, filename);
+      if (r.ok && r.url) {
+        const md = `\n\n![${filename.replace(/\.[^.]+$/, "")}](${r.url})\n\n`;
+        const ta = contentRef.current;
+        const pos = ta ? ta.selectionStart : form.contenido.length;
+        up("contenido", form.contenido.slice(0, pos) + md + form.contenido.slice(pos));
+      } else setError(r.error || "Error subiendo la imagen.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo subir la imagen.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   }
 
   function save(status?: "borrador" | "publicado") {
