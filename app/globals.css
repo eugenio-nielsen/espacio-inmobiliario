@@ -391,18 +391,13 @@ select:focus, input:focus, textarea:focus {
 }
 @media (max-width: 767px) {
   .grid-footer {
-    display: flex;
-    grid-template-columns: none;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 26px 20px;
     padding: 36px 20px 24px;
   }
-  .grid-footer::-webkit-scrollbar { display: none; }
-  .grid-footer > * { flex: 0 0 72%; scroll-snap-align: start; }
-  .grid-footer > *:first-child { flex-basis: 82%; }
+  /* el bloque del logo + descripción ocupa las 2 columnas */
+  .grid-footer > *:first-child { grid-column: 1 / -1; }
+  .grid-footer a { overflow-wrap: anywhere; }
 }
 
 /* Filters: 5+1col → 2col+button */
