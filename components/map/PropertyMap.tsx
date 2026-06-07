@@ -46,7 +46,7 @@ export default function PropertyMap({
   zoom = 15,
 }: PropertyMapProps) {
   return (
-    <div style={{ position: "relative", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+    <div style={{ position: "relative", borderRadius: "var(--radius-lg)", overflow: "hidden", isolation: "isolate", zIndex: 0 }}>
       {/* Badge ubicación aproximada */}
       {aproximada && (
         <div style={{
