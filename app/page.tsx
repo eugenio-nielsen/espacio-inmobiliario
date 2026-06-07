@@ -145,7 +145,7 @@ export default async function HomePage() {
             </a>
           </div>
         ) : (
-          <div className="grid-properties">
+          <div className="grid-properties home-destacados">
             {(properties as Property[]).map((p, i) => (
               <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
                 <div className="card-lift">

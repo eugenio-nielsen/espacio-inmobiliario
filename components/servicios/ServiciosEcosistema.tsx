@@ -110,12 +110,8 @@ export default function ServiciosEcosistema({ isLoggedIn }: Props) {
             </p>
           </div>
 
-          {/* grid de cards */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 16,
-          }}>
+          {/* grid de cards (carrusel horizontal en mobile) */}
+          <div className="hscroll-cards">
             {SERVICIOS.map(s => {
               const Icon = s.icon;
               const done = success === s.id;

@@ -7,6 +7,7 @@ import { geocodeProperty } from "@/lib/utils/geocode";
 import type { Metadata } from "next";
 import type { Property, Profile } from "@/lib/types";
 import Footer from "@/components/Footer";
+import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import InquiryForm from "@/components/properties/InquiryForm";
 import Navbar from "@/components/Navbar";
@@ -120,7 +121,7 @@ export default async function PropiedadPage({ params }: PageProps) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div style={{ minHeight: "100vh", background: "var(--cream)" }}>
+      <div className="property-page-pad" style={{ minHeight: "100vh", background: "var(--cream)" }}>
         <Navbar />
 
         <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(16px,4vw,28px) 20px clamp(40px,6vw,64px)" }}>
@@ -242,7 +243,7 @@ export default async function PropiedadPage({ params }: PageProps) {
             </div>
 
             {/* Right — sticky sidebar */}
-            <div className="detail-sidebar">
+            <div className="detail-sidebar" id="consultar">
               <div style={{
                 background: "#fff", border: "1px solid var(--line-200)",
                 borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-md)", padding: 24,
@@ -313,6 +314,9 @@ export default async function PropiedadPage({ params }: PageProps) {
 
         <Footer />
       </div>
+
+      {/* Barra fija mobile con precio + contacto */}
+      <StickyPropertyBar precio={precio} whatsappUrl={whatsappUrl} />
     </>
   );
 }

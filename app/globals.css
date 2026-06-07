@@ -127,6 +127,39 @@ select:focus, input:focus, textarea:focus {
   .grid-properties { grid-template-columns: 1fr; gap: 16px; }
 }
 
+/* ── Carrusel horizontal en mobile (regla general: 3+ bloques → scroll-x) ── */
+.hscroll-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+@media (max-width: 767px) {
+  .hscroll-cards {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 12px;
+    padding-bottom: 6px;
+  }
+  .hscroll-cards::-webkit-scrollbar { display: none; }
+  .hscroll-cards > * { flex: 0 0 80%; scroll-snap-align: start; }
+}
+
+/* Home: 'Últimas propiedades' como carrusel SOLO en mobile (catálogo queda vertical) */
+@media (max-width: 639px) {
+  .home-destacados {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 14px;
+    padding-bottom: 6px;
+  }
+  .home-destacados::-webkit-scrollbar { display: none; }
+  .home-destacados > * { flex: 0 0 82%; scroll-snap-align: start; }
+}
+
 /* Detail page: content + sidebar → stacked */
 .grid-detail {
   display: grid;
@@ -161,10 +194,18 @@ select:focus, input:focus, textarea:focus {
   margin-bottom: 20px;
 }
 @media (max-width: 767px) {
-  .grid-stats { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 479px) {
-  .grid-stats { grid-template-columns: 1fr; gap: 8px; }
+  .grid-stats {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 10px;
+    padding-bottom: 4px;
+  }
+  .grid-stats::-webkit-scrollbar { display: none; }
+  .grid-stats > * { flex: 0 0 44%; scroll-snap-align: start; }
 }
 
 /* ── Scrollytelling (ScrollySteps) ──────────────────────────
@@ -349,7 +390,19 @@ select:focus, input:focus, textarea:focus {
   gap: 40px;
 }
 @media (max-width: 767px) {
-  .grid-footer { grid-template-columns: 1fr; gap: 28px; padding: 40px 20px 24px; }
+  .grid-footer {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 24px;
+    padding: 36px 20px 24px;
+  }
+  .grid-footer::-webkit-scrollbar { display: none; }
+  .grid-footer > * { flex: 0 0 72%; scroll-snap-align: start; }
+  .grid-footer > *:first-child { flex-basis: 82%; }
 }
 
 /* Filters: 5+1col → 2col+button */
@@ -375,9 +428,50 @@ select:focus, input:focus, textarea:focus {
 
 /* Navbar: hide secondary links on mobile */
 .nav-links-desktop { display: flex; align-items: center; gap: 22px; }
+.mobile-menu-btn { display: none; }
 @media (max-width: 767px) {
-  .nav-links-desktop { gap: 10px; }
-  .nav-hide-mobile   { display: none !important; }
+  .nav-links-desktop { display: none !important; }
+  .mobile-menu-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; border-radius: var(--radius-sm);
+    background: transparent; border: 1px solid var(--line-200); cursor: pointer; color: var(--navy-800);
+  }
+}
+
+/* Panel deslizable del menú mobile */
+.mobile-menu-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(14,44,80,.5); backdrop-filter: blur(3px);
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.mobile-menu-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 51;
+  width: min(82vw, 320px); background: #fff;
+  box-shadow: -8px 0 32px rgba(14,44,80,.18);
+  display: flex; flex-direction: column; padding: 20px;
+  animation: slideInRight .28s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+.mobile-menu-link {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-sans); font-size: 16px; font-weight: 500;
+  color: var(--ink-800); text-decoration: none;
+  padding: 14px 6px; border-bottom: 1px solid var(--line-100);
+}
+
+/* Barra fija de la ficha de propiedad (mobile) */
+.property-sticky-bar { display: none; }
+@media (max-width: 1023px) {
+  .property-sticky-bar {
+    display: flex; align-items: center; gap: 10px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    background: #fff; border-top: 1px solid var(--line-200);
+    box-shadow: 0 -4px 24px rgba(14,44,80,.10);
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+  /* espacio para que el contenido no quede tapado por la barra */
+  .property-page-pad { padding-bottom: 88px; }
 }
 
 /* Search bar: horizontal → vertical on mobile */
@@ -392,10 +486,19 @@ select:focus, input:focus, textarea:focus {
   box-shadow: var(--shadow-lg);
 }
 @media (max-width: 639px) {
-  .home-search-bar { flex-direction: column; gap: 0; padding: 8px; border-radius: var(--radius-sm); }
-  .home-search-bar .search-field { border-left: none !important; border-top: 1px solid var(--line-100); }
-  .home-search-bar .search-field:first-child { border-top: none; }
-  .home-search-field-operacion { display: none; } /* hide Venta fixed field on mobile */
+  .home-search-bar { flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--radius-md); }
+  .home-search-field-operacion { display: none !important; } /* hide Venta fixed field on mobile */
+  /* cada campo se vuelve una caja clara y tappable */
+  .home-search-bar .search-field {
+    border-left: none !important;
+    border: 1px solid var(--line-200) !important;
+    border-radius: var(--radius-sm);
+    background: var(--cream);
+    padding: 10px 14px !important;
+  }
+  .home-search-bar .search-field select,
+  .home-search-bar .search-field input { font-size: 16px !important; } /* evita zoom iOS */
+  .home-search-bar > button { width: 100%; justify-content: center; padding: 14px !important; }
 }
 
 /* Gallery: shorter on mobile */

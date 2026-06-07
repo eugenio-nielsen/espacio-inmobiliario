@@ -2,6 +2,7 @@ import Logo from "@/components/Logo";
 import { UserRound, Plus, LayoutDashboard, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/lib/actions/auth";
+import MobileMenu from "@/components/MobileMenu";
 
 export default async function Navbar() {
   const supabase = await createClient();
@@ -31,6 +32,8 @@ export default async function Navbar() {
         <a href="/" style={{ flexShrink: 0 }}>
           <Logo className="h-12 w-auto" />
         </a>
+
+        <MobileMenu loggedIn={!!user} nombre={profile?.nombre} />
 
         <nav className="nav-links-desktop">
           <a href="/propiedades" style={navLink} className="nav-hide-mobile">Propiedades</a>
