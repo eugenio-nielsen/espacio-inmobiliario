@@ -2,7 +2,7 @@
 
 import { useState, useRef, useTransition } from "react";
 import { marked } from "marked";
-import { Plus, Save, Check, Trash2, Edit2, ArrowLeft, Image as ImageIcon, Eye, Loader2 } from "lucide-react";
+import { Plus, Save, Check, Trash2, Edit2, ArrowLeft, Image as ImageIcon, Eye, Loader2, ExternalLink } from "lucide-react";
 import { savePost, deletePost, uploadBlogImage, type PostInput } from "@/lib/actions/blog";
 import { CATEGORIAS_BLOG, type Post } from "@/lib/blog/types";
 
@@ -76,6 +76,11 @@ export default function BlogAdmin({ initialPosts }: { initialPosts: Post[] }) {
                   {p.categoria || "Sin categoría"} · {fmtDate(p.published_at || p.updated_at)} · /{p.slug}
                 </p>
               </div>
+              {p.status === "publicado" && (
+                <a href={`/blog/${p.slug}`} target="_blank" rel="noopener noreferrer" title="Ver la nota" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer", background: "#fff", color: "var(--ink-600)", border: "1px solid var(--line-200)", textDecoration: "none" }}>
+                  <ExternalLink size={13} /> Ver
+                </a>
+              )}
               <button onClick={() => setEditing(p)} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 600, padding: "7px 12px", borderRadius: "var(--radius-sm)", cursor: "pointer", background: "var(--navy-50)", color: "var(--navy-800)", border: "1px solid var(--navy-100)" }}>
                 <Edit2 size={13} /> Editar
               </button>
