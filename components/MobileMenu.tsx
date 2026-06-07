@@ -6,7 +6,7 @@ import { signOut } from "@/lib/actions/auth";
 
 const LINKS = [
   { href: "/propiedades", label: "Propiedades", icon: Building2 },
-  { href: "/estimador", label: "Estimador", icon: Calculator },
+  { href: "/estimador", label: "Tasador CABA", icon: Calculator },
   { href: "/blog", label: "Blog", icon: FileText },
   { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
 ];
