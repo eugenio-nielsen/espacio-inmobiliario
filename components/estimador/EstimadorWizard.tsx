@@ -231,15 +231,18 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
           {/* ── c) Características especiales ────────────────────── */}
           <div style={{ marginTop: 26 }}>
             <SubHeader icon={<Sparkles size={15} />} title="Características especiales" />
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {ESPECIALES.map(esp => (
-                <div key={esp.k} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <div key={esp.k} style={{
+                  border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)",
+                  background: "#fff", padding: "14px 16px",
+                }}>
                   <Toggle
                     label={esp.label}
                     on={input[esp.k] as boolean}
                     onClick={() => set(esp.k, !(input[esp.k] as boolean))}
                   />
-                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-400)", margin: 0, lineHeight: 1.5 }}>
+                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-400)", margin: "10px 0 0", lineHeight: 1.5 }}>
                     {esp.legend}
                   </p>
                 </div>
