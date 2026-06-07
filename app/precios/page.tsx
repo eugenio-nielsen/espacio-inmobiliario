@@ -63,6 +63,22 @@ export default function PreciosPage() {
         </div>
       </section>
 
+      {/* ── Diferencial: precio fijo (comparador) ─────────────── */}
+      <section style={{ background: "#fff", borderBottom: "1px solid var(--line-200)", padding: "clamp(48px,7vw,80px) 20px" }}>
+        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
+          <FadeIn style={{ textAlign: "center", marginBottom: "clamp(28px,4vw,44px)", maxWidth: 640, marginLeft: "auto", marginRight: "auto" }}>
+            <div className="es-eyebrow" style={{ marginBottom: 12 }}>Nuestro diferencial</div>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(24px,4vw,38px)", letterSpacing: "-.02em", color: "var(--navy-800)", margin: "0 0 14px" }}>
+              Un precio fijo, no un porcentaje de tu propiedad
+            </h2>
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(14px,2vw,16px)", color: "var(--ink-600)", lineHeight: 1.65, margin: 0 }}>
+              Movés el valor de tu propiedad y mirá la diferencia:
+            </p>
+          </FadeIn>
+          <FadeIn><ComparadorComision /></FadeIn>
+        </div>
+      </section>
+
       {/* ── Lo principal: SIEMPRE GRATIS ──────────────────────── */}
       <section className="section-pad" style={{ maxWidth: "var(--container)", margin: "0 auto", width: "100%" }}>
         <FadeIn style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
@@ -122,20 +138,6 @@ export default function PreciosPage() {
             })}
           </div>
         </div>
-      </section>
-
-      {/* ── Diferencial: precio fijo (comparador) ─────────────── */}
-      <section className="section-pad" style={{ maxWidth: "var(--container)", margin: "0 auto", width: "100%" }}>
-        <FadeIn style={{ textAlign: "center", marginBottom: "clamp(28px,4vw,44px)", maxWidth: 640, marginLeft: "auto", marginRight: "auto" }}>
-          <div className="es-eyebrow" style={{ marginBottom: 12 }}>Nuestro diferencial</div>
-          <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(24px,4vw,38px)", letterSpacing: "-.02em", color: "var(--navy-800)", margin: "0 0 14px" }}>
-            Un precio fijo, no un porcentaje de tu propiedad
-          </h2>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(14px,2vw,16px)", color: "var(--ink-600)", lineHeight: 1.65, margin: 0 }}>
-            Movés el valor de tu propiedad y mirá la diferencia:
-          </p>
-        </FadeIn>
-        <FadeIn><ComparadorComision /></FadeIn>
       </section>
 
       {/* ── Contacto ──────────────────────────────────────────── */}
