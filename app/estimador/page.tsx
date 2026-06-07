@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "Estimá el valor de venta de un departamento en Capital Federal en menos de 30 segundos. Herramienta gratuita y orientativa basada en datos de mercado.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/estimador` },
   openGraph: {
-    title: "Estimador de Precios de Deptos en CABA — Espacio Inmobiliario",
+    title: "Estimador de Precios de Deptos en CABA · Espacio Inmobiliario",
     description: "Estimá el valor de venta de tu departamento en CABA en 30 segundos. Gratis y orientativo.",
     type: "website",
   },

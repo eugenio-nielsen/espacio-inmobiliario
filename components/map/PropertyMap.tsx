@@ -57,7 +57,7 @@ export default function PropertyMap({
           padding: "5px 10px", borderRadius: 999,
           pointerEvents: "none",
         }}>
-          📍 Ubicación aproximada — zona del barrio
+          📍 Ubicación aproximada · zona del barrio
         </div>
       )}
 

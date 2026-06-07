@@ -12,11 +12,11 @@ import {
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
 export const metadata: Metadata = {
-  title: "Precios — Publicar es gratis, vender con acompañamiento",
+  title: "Precios · Publicar es gratis, vender con acompañamiento",
   description: "Publicar tu propiedad en Espacio Inmobiliario es y será siempre gratis. Si querés, sumás el acompañamiento de un martillero público matriculado con un precio fijo por la venta, no un porcentaje.",
   alternates: { canonical: `${SITE}/precios` },
   openGraph: {
-    title: "Precios — Espacio Inmobiliario",
+    title: "Precios · Espacio Inmobiliario",
     description: "Publicar siempre gratis. Acompañamiento profesional con precio fijo, no un porcentaje.",
     type: "website",
   },

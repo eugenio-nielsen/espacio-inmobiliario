@@ -393,7 +393,7 @@ function ResultadoView({ input, result, onReset }: { input: EstimadorInput; resu
           {fmtUSD(result.estimado)}
         </p>
         <p style={{ fontFamily: "var(--font-sans)", fontSize: 15, color: "var(--gold-300)", margin: "0 0 20px" }}>
-          Rango sugerido: {fmtUSD(result.rangoMin)} — {fmtUSD(result.rangoMax)}
+          Rango sugerido: {fmtUSD(result.rangoMin)} a {fmtUSD(result.rangoMax)}
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10 }}>
           <Chip label="Valor por m²" value={fmtUSD(result.precioM2Resultante)} />

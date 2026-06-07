@@ -59,7 +59,7 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
         >
           <Image
             src={fotos[current]}
-            alt={`${titulo} — foto ${current + 1}`}
+            alt={`${titulo} · foto ${current + 1}`}
             fill
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 66vw"
@@ -164,7 +164,7 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
           >
             <Image
               src={fotos[current]}
-              alt={`${titulo} — foto ${current + 1}`}
+              alt={`${titulo} · foto ${current + 1}`}
               fill
               className="object-contain"
               sizes="92vw"

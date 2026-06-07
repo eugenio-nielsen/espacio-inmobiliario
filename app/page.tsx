@@ -14,11 +14,11 @@ import { BARRIOS_CABA, PARTIDOS_PBA } from "@/lib/ubicaciones";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Espacio Inmobiliario — Propiedades directas de dueños en Argentina",
+  title: "Espacio Inmobiliario · Propiedades directas de dueños en Argentina",
   description: "Comprá, vendé o alquilá propiedades directamente con los dueños. Sin comisiones ni intermediarios. Espacio Inmobiliario, Buenos Aires.",
   alternates: { canonical: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000" },
   openGraph: {
-    title: "Espacio Inmobiliario — Dueños Directos",
+    title: "Espacio Inmobiliario · Dueños Directos",
     description: "Propiedades directas de dueños en Buenos Aires. Sin comisiones.",
     type: "website",
   },

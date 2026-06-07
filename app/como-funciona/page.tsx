@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Cómo funciona — Espacio Inmobiliario",
+  title: "Cómo funciona · Espacio Inmobiliario",
   description: "Publicá tu propiedad gratis con el respaldo de un martillero público matriculado. Sin comisiones ni intermediarios. Conocé cómo funciona Espacio Inmobiliario.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/como-funciona` },
   openGraph: {
-    title: "Cómo funciona — Espacio Inmobiliario",
+    title: "Cómo funciona · Espacio Inmobiliario",
     description: "Publicá tu propiedad gratis con el respaldo de un martillero público matriculado.",
     type: "website",
   },
@@ -40,7 +40,7 @@ const STEPS_DUENO = [
     icon: <MessageSquare size={24} strokeWidth={1.75} />,
     titulo: "Recibí consultas directamente",
     descripcion:
-      "Los interesados te escriben a vos — sin pasar por una agencia ni pagar comisión. Cada consulta llega a tu email y a tu panel en tiempo real.",
+      "Los interesados te escriben a vos, sin pasar por una agencia ni pagar comisión. Cada consulta llega a tu email y a tu panel en tiempo real.",
   },
   {
     num: "04",
@@ -80,7 +80,7 @@ const DIFERENCIALES = [
     icon: ShieldCheck,
     titulo: "Auditado por un martillero público",
     descripcion:
-      "Eugenio Nielsen, martillero público matriculado, revisa y respalda cada publicación. No somos solo una plataforma — hay un profesional responsable detrás.",
+      "Eugenio Nielsen, martillero público matriculado, revisa y respalda cada publicación. No somos solo una plataforma: hay un profesional responsable detrás.",
   },
   {
     icon: Scale,

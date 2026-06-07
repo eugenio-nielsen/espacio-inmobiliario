@@ -558,7 +558,7 @@ export default function CRMPanel({
               Ecosistema de servicios
             </p>
             <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "rgba(255,255,255,.60)", margin: 0 }}>
-              Fotografía, escribanía, mudanzas y más — para cada etapa de tu venta.
+              Fotografía, escribanía, mudanzas y más, para cada etapa de tu venta.
             </p>
           </div>
         </div>

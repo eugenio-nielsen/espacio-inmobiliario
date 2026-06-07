@@ -49,7 +49,7 @@ export default function Footer() {
         </div>
       </div>
       <div style={{ borderTop: "1px solid var(--navy-700)", padding: "18px 24px", textAlign: "center", fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--navy-300)" }}>
-        © {new Date().getFullYear()} Espacio Inmobiliario — espacioinmobiliario.com.ar
+        © {new Date().getFullYear()} Espacio Inmobiliario · espacioinmobiliario.com.ar
       </div>
     </footer>
   );

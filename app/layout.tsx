@@ -23,7 +23,7 @@ const GA_ID = "G-EV1LYND1S5";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
   title: {
-    default: "Espacio Inmobiliario — Propiedades directas de dueños",
+    default: "Espacio Inmobiliario · Propiedades directas de dueños",
     template: "%s | Espacio Inmobiliario",
   },
   description:

@@ -181,7 +181,7 @@ export default async function PropiedadPage({ params }: PageProps) {
               <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 15, color: "var(--ink-600)", marginBottom: 28 }}>
                 <MapPin size={17} strokeWidth={1.75} color="var(--gold-600)" />
                 {[p.barrio, p.ciudad, p.provincia].filter(Boolean).join(", ")}
-                {p.direccion && ` — ${p.direccion}`}
+                {p.direccion && ` · ${p.direccion}`}
               </div>
 
               {/* Specs grid */}

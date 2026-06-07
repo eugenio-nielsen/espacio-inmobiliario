@@ -10,11 +10,11 @@ export const revalidate = 300;
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
 export const metadata: Metadata = {
-  title: "Blog — Guías y consejos inmobiliarios",
+  title: "Blog · Guías y consejos inmobiliarios",
   description: "Guías, análisis de mercado y consejos para vender, comprar y gestionar propiedades en Argentina, por Espacio Inmobiliario. Información confiable de fuente profesional.",
   alternates: { canonical: `${SITE}/blog` },
   openGraph: {
-    title: "Blog — Espacio Inmobiliario",
+    title: "Blog · Espacio Inmobiliario",
     description: "Guías y consejos inmobiliarios de fuente profesional.",
     type: "website",
   },

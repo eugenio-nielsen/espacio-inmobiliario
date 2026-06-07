@@ -203,7 +203,7 @@ export default function PropertyForm({ mode, property }: Props) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Dirección <span className="text-gray-400 font-normal">(opcional — solo calle y número, sin barrio)</span>
+            Dirección <span className="text-gray-400 font-normal">(opcional · solo calle y número, sin barrio)</span>
           </label>
           <input name="direccion" type="text" defaultValue={v?.direccion}
             className={inp} placeholder="Ej: Av. Corrientes 1234"
@@ -294,8 +294,8 @@ export default function PropertyForm({ mode, property }: Props) {
         <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
           <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Estado de la publicación</h2>
           <select name="status" defaultValue={v?.status || "activa"} className={sel}>
-            <option value="activa">Activa — visible en el listado público</option>
-            <option value="pausada">Pausada — oculta temporalmente</option>
+            <option value="activa">Activa · visible en el listado público</option>
+            <option value="pausada">Pausada · oculta temporalmente</option>
             <option value="vendida">Vendida</option>
           </select>
         </section>
