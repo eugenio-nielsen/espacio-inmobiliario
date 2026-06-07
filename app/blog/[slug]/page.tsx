@@ -4,7 +4,9 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/data";
-import { markdownToHtml, readingTime, stripMarkdown } from "@/lib/blog/markdown";
+import { renderPost, readingTime, stripMarkdown } from "@/lib/blog/markdown";
+import TableOfContents from "@/components/blog/TableOfContents";
+import ShareButtons from "@/components/blog/ShareButtons";
 
 export const revalidate = 300;
 
@@ -48,7 +50,7 @@ export default async function PostPage({ params }: Props) {
   const post = await getPublishedPostBySlug(slug);
   if (!post) notFound();
 
-  const html = markdownToHtml(post.contenido);
+  const { html, toc } = renderPost(post.contenido);
   const min = readingTime(post.contenido);
   const url = `${SITE}/blog/${post.slug}`;
   const description = post.meta_description || post.resumen || stripMarkdown(post.contenido);
@@ -105,7 +107,7 @@ export default async function PostPage({ params }: Props) {
             <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(28px,4.5vw,44px)", letterSpacing: "-.02em", lineHeight: 1.15, color: "var(--navy-800)", margin: "0 0 16px" }}>
               {post.titulo}
             </h1>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", flexWrap: "wrap" }}>
               <span>Por {post.autor}</span>
               <span style={{ width: 3, height: 3, borderRadius: 999, background: "var(--ink-300)" }} />
               <time dateTime={post.published_at || undefined}>{fmtDate(post.published_at)}</time>
@@ -115,12 +117,25 @@ export default async function PostPage({ params }: Props) {
           </header>
 
           {post.cover && (
-            <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 32, background: "var(--navy-50)" }}>
+            <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24, background: "var(--navy-50)" }}>
               <Image src={post.cover} alt={post.titulo} fill className="object-cover" sizes="760px" priority />
             </div>
           )}
 
+          {/* Compartir (arriba) */}
+          <div style={{ marginBottom: 28, paddingBottom: 22, borderBottom: "1px solid var(--line-200)" }}>
+            <ShareButtons url={url} title={post.titulo} />
+          </div>
+
+          {/* Índice de contenidos */}
+          <TableOfContents items={toc} />
+
           <div className="blog-prose" dangerouslySetInnerHTML={{ __html: html }} />
+
+          {/* Compartir (abajo) */}
+          <div style={{ marginTop: 36, paddingTop: 24, borderTop: "1px solid var(--line-200)" }}>
+            <ShareButtons url={url} title={post.titulo} />
+          </div>
         </article>
 
         {/* CTA */}
