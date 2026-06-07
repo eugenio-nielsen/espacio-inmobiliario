@@ -515,21 +515,21 @@ function LeadForm({ input, result }: { input: EstimadorInput; result: EstimadorR
 
   return (
     <div style={{ ...card, background: "var(--cream)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: open ? 18 : 0 }}>
-        <Sparkles size={18} color="var(--gold-600)" />
-        <div style={{ flex: 1 }}>
-          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14.5, color: "var(--navy-800)", margin: 0 }}>
+      <div style={{ marginBottom: open ? 18 : 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <Sparkles size={18} color="var(--gold-600)" style={{ flexShrink: 0 }} />
+          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 15, color: "var(--navy-800)", margin: 0 }}>
             ¿Querés una valuación profesional?
           </p>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", margin: 0 }}>
-            Un martillero público matriculado revisa tu estimación sin cargo.
-          </p>
         </div>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", margin: "0 0 14px", lineHeight: 1.55 }}>
+          Un martillero público matriculado revisa tu estimación sin cargo.
+        </p>
         {!open && (
           <button type="button" onClick={() => setOpen(true)} style={{
-            fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 13.5,
-            padding: "10px 18px", borderRadius: "var(--radius-sm)", cursor: "pointer",
-            background: "var(--navy-800)", color: "#fff", border: "none", whiteSpace: "nowrap",
+            fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14,
+            padding: "12px 22px", borderRadius: "var(--radius-sm)", cursor: "pointer",
+            background: "var(--navy-800)", color: "#fff", border: "none",
           }}>
             Quiero que la revisen
           </button>
