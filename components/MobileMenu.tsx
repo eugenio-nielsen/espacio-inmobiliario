@@ -5,7 +5,7 @@ import { Menu, X, Building2, Calculator, FileText, HelpCircle, LayoutDashboard, 
 import { signOut } from "@/lib/actions/auth";
 
 const LINKS = [
-  { href: "/propiedades", label: "Propiedades", icon: Building2 },
+  { href: "/propiedades", label: "Propiedades", icon: Building2, highlight: true },
   { href: "/estimador", label: "Tasador CABA", icon: Calculator },
   { href: "/blog", label: "Blog", icon: FileText },
   { href: "/precios", label: "Precios", icon: Tag },
@@ -40,8 +40,13 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
               </button>
             </div>
 
-            {LINKS.map(({ href, label, icon: Icon }) => (
-              <a key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}>
+            {LINKS.map(({ href, label, icon: Icon, highlight }) => (
+              <a key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}
+                style={highlight ? {
+                  background: "rgba(185,159,102,.14)", borderRadius: "var(--radius-sm)",
+                  fontWeight: 700, color: "var(--navy-800)", borderBottom: "none",
+                  padding: "14px 12px", marginBottom: 4,
+                } : undefined}>
                 <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
                 {label}
               </a>

@@ -36,7 +36,10 @@ export default async function Navbar() {
         <MobileMenu loggedIn={!!user} nombre={profile?.nombre} />
 
         <nav className="nav-links-desktop">
-          <a href="/propiedades" style={navLink} className="nav-hide-mobile">Propiedades</a>
+          <a href="/propiedades" className="nav-hide-mobile" style={{
+            ...navLink, color: "var(--navy-800)", fontWeight: 700,
+            background: "rgba(185,159,102,.16)", padding: "8px 16px", borderRadius: 999,
+          }}>Propiedades</a>
           <a href="/estimador" style={navLink} className="nav-hide-mobile">Tasador CABA</a>
           <a href="/blog" style={navLink} className="nav-hide-mobile">Blog</a>
           <a href="/precios" style={navLink} className="nav-hide-mobile">Precios</a>
