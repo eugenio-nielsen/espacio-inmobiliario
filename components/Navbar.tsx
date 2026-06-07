@@ -39,6 +39,7 @@ export default async function Navbar() {
           <a href="/propiedades" style={navLink} className="nav-hide-mobile">Propiedades</a>
           <a href="/estimador" style={navLink} className="nav-hide-mobile">Tasador CABA</a>
           <a href="/blog" style={navLink} className="nav-hide-mobile">Blog</a>
+          <a href="/precios" style={navLink} className="nav-hide-mobile">Precios</a>
           <a href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</a>
 
           {user ? (

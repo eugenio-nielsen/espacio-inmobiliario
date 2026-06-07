@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, Calculator, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus } from "lucide-react";
+import { Menu, X, Building2, Calculator, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
 
 const LINKS = [
   { href: "/propiedades", label: "Propiedades", icon: Building2 },
   { href: "/estimador", label: "Tasador CABA", icon: Calculator },
   { href: "/blog", label: "Blog", icon: FileText },
+  { href: "/precios", label: "Precios", icon: Tag },
   { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
 ];
 

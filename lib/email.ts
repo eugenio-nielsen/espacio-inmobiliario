@@ -175,6 +175,48 @@ export async function sendEstimacionLead(data: {
   });
 }
 
+// ── Consulta de asesoría / acompañamiento → al admin ──────────
+export async function sendAsesoriaLead(data: {
+  nombre: string;
+  email: string;
+  telefono?: string;
+  mensaje: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Nueva consulta de asesoría</h1>
+      <p style="${styles.lead}">Un propietario quiere conversar sobre el acompañamiento para vender.</p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Nombre</p>
+        <p style="${styles.value}">${data.nombre}</p>
+
+        <p style="${styles.label}">Email</p>
+        <p style="${styles.value}"><a href="mailto:${data.email}" style="color:#0E2C50;">${data.email}</a></p>
+
+        ${data.telefono ? `
+        <p style="${styles.label}">Teléfono / WhatsApp</p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.telefono.replace(/\D/g,"")}" style="color:#15803D;">${data.telefono}</a></p>
+        ` : ""}
+      </div>
+
+      <p style="${styles.label}">Mensaje</p>
+      <p style="${styles.message}">"${data.mensaje}"</p>
+    </div>
+  `);
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: ADMIN,
+    replyTo: data.email,
+    subject: `Asesoría: ${data.nombre}`,
+    html,
+  });
+}
+
 // ── 3. Interés en servicio del ecosistema → al admin ──────────
 export async function sendServiceInterest(data: {
   nombre: string;
