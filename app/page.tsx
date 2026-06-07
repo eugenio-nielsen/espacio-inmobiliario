@@ -93,24 +93,19 @@ export default async function HomePage() {
       </section>
 
       {/* ── Banda de estadísticas ─────────────────────────────── */}
-      <section style={{ background: "var(--navy-900)", borderBottom: "1px solid var(--gold-200)" }}>
-        <div className="grid-stats-band" style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(28px,4vw,40px) 24px" }}>
+      <section style={{ background: "var(--navy-900)", borderTop: "1px solid rgba(185,159,102,.25)", borderBottom: "1px solid rgba(185,159,102,.25)", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(185,159,102,.10), transparent 60%)", pointerEvents: "none" }} />
+        <div className="grid-stats-band" style={{ position: "relative", maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(36px,5vw,52px) 24px" }}>
           {stats.map((s, i) => {
             const Icon = s.icon;
             return (
-              <FadeIn key={s.label} delay={i * 100} direction="up"
-                style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 8 }}>
-                <Icon size={22} strokeWidth={1.75} color="var(--gold-400)" />
-                <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 700,
-                  fontSize: "clamp(28px,4vw,40px)", color: "#fff", lineHeight: 1,
-                }}>
+              <FadeIn key={s.label} delay={i * 100} direction="up" className="stat-cell">
+                <span className="stat-number">
                   {s.static ?? <Counter to={s.to} suffix={s.suffix} />}
                 </span>
-                <span style={{
-                  fontFamily: "var(--font-sans)", fontSize: 13,
-                  color: "rgba(255,255,255,.62)", letterSpacing: ".01em",
-                }}>
+                <span className="stat-rule" />
+                <span className="stat-label">
+                  <Icon size={13} strokeWidth={2} color="var(--gold-400)" />
                   {s.label}
                 </span>
               </FadeIn>
