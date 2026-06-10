@@ -25,13 +25,16 @@ jobs:
           sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
           sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client-17
+          sudo apt-get install -y postgresql-client-17
+          /usr/lib/postgresql/17/bin/pg_dump --version
 
       - name: Generar dump
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
-          pg_dump "$SUPABASE_DB_URL" \
+          # Ruta explícita: el runner trae pg_dump 16 preinstalado y el
+          # wrapper de PATH puede elegirlo en vez del 17 (la base es PG 17)
+          /usr/lib/postgresql/17/bin/pg_dump "$SUPABASE_DB_URL" \
             --no-owner --no-privileges \
             --schema=public \
             --file=backup-$(date +%Y%m%d).sql
