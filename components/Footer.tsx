@@ -50,6 +50,10 @@ export default function Footer() {
       </div>
       <div style={{ borderTop: "1px solid var(--navy-700)", padding: "18px 24px", textAlign: "center", fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--navy-300)" }}>
         © {new Date().getFullYear()} Espacio Inmobiliario · espacioinmobiliario.com.ar
+        <span style={{ margin: "0 8px", color: "var(--navy-600)" }}>·</span>
+        <a href="/terminos" style={{ color: "var(--navy-300)", textDecoration: "none" }}>Términos y condiciones</a>
+        <span style={{ margin: "0 8px", color: "var(--navy-600)" }}>·</span>
+        <a href="/privacidad" style={{ color: "var(--navy-300)", textDecoration: "none" }}>Privacidad</a>
       </div>
     </footer>
   );
