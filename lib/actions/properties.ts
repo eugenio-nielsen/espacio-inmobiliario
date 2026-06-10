@@ -83,6 +83,11 @@ export async function createProperty(formData: FormData) {
       apto_credito: formData.getAll("apto_credito").includes("true"),
       orientacion: formData.get("orientacion") || null,
       disposicion: formData.get("disposicion") || null,
+      expensas: formData.get("expensas") ? Number(formData.get("expensas")) : null,
+      antiguedad: formData.get("antiguedad") !== null && formData.get("antiguedad") !== "" ? Number(formData.get("antiguedad")) : null,
+      estado: formData.get("estado") || null,
+      piso: (formData.get("piso") as string)?.trim() || null,
+      plano: (await uploadFotos(supabase, user.id, formData.getAll("plano") as File[]))[0] || null,
       fotos: fotoUrls,
       lat: geo?.lat ?? null,
       lng: geo?.lng ?? null,
@@ -168,6 +173,14 @@ export async function updateProperty(id: string, formData: FormData) {
       apto_credito: formData.getAll("apto_credito").includes("true"),
       orientacion: formData.get("orientacion") || null,
       disposicion: formData.get("disposicion") || null,
+      expensas: formData.get("expensas") ? Number(formData.get("expensas")) : null,
+      antiguedad: formData.get("antiguedad") !== null && formData.get("antiguedad") !== "" ? Number(formData.get("antiguedad")) : null,
+      estado: formData.get("estado") || null,
+      piso: (formData.get("piso") as string)?.trim() || null,
+      plano:
+        (await uploadFotos(supabase, user.id, formData.getAll("plano") as File[]))[0] ||
+        (formData.get("plano_existente") as string) ||
+        null,
       status: formData.get("status") as string,
       fotos: fotoUrls,
       lat: geo?.lat ?? null,

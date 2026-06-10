@@ -13,8 +13,13 @@ import Footer from "@/components/Footer";
 import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import InquiryForm from "@/components/properties/InquiryForm";
+import CostosCompra from "@/components/properties/CostosCompra";
+import ShareButtons from "@/components/blog/ShareButtons";
+import PropertyListCard from "@/components/properties/PropertyListCard";
 import Navbar from "@/components/Navbar";
-import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, Calendar, LayoutGrid, Compass, AlignCenter, BadgeCheck } from "lucide-react";
+import { getPreciosBarrios } from "@/lib/estimador/data";
+import Image from "next/image";
+import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, LayoutGrid, Compass, AlignCenter, BadgeCheck, Eye, CalendarDays, Layers, Sparkles, Banknote } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -94,8 +99,41 @@ export default async function PropiedadPage({ params }: PageProps) {
           ciudad: p.ciudad,
           provincia: p.provincia,
         });
-  const precio = `${p.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p.precio))}`;
+
+  // Propiedades similares: primero mismo barrio, después mismo tipo
+  let similares: Property[] = [];
+  if (p.barrio) {
+    const { data } = await supabase
+      .from("properties").select("*")
+      .eq("status", "activa").neq("id", p.id).eq("barrio", p.barrio)
+      .order("created_at", { ascending: false }).limit(3);
+    similares = (data as Property[]) || [];
+  }
+  if (similares.length < 3) {
+    const { data } = await supabase
+      .from("properties").select("*")
+      .eq("status", "activa").neq("id", p.id).eq("tipo", p.tipo)
+      .order("created_at", { ascending: false }).limit(3);
+    for (const s of (data as Property[]) || []) {
+      if (similares.length >= 3) break;
+      if (!similares.some(x => x.id === s.id)) similares.push(s);
+    }
+  }
+
+  // Precio por m² + comparación contra la referencia del barrio (estimador)
+  const fmtNum = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n));
+  const precio = `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(p.precio)}`;
+  const precioPorM2 = p.superficie_total && p.superficie_total > 0 ? p.precio / p.superficie_total : null;
+  let comparacionBarrio: { pct: number; ref: number } | null = null;
+  if (precioPorM2 && p.moneda === "USD" && p.tipo === "departamento" && p.barrio) {
+    const precios = await getPreciosBarrios();
+    const ref = precios[p.barrio];
+    if (ref > 0) comparacionBarrio = { pct: Math.round(((precioPorM2 - ref) / ref) * 100), ref };
+  }
+
+  const diasPublicada = Math.max(0, Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000));
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const urlFicha = `${siteUrl}${buildPropertyUrl({ operacion: p.operacion, barrio: p.barrio, ciudad: p.ciudad, tipo: p.tipo, id })}`;
 
   const jsonLd = {
     "@context": "https://schema.org", "@type": "RealEstateListing",
@@ -118,12 +156,16 @@ export default async function PropiedadPage({ params }: PageProps) {
     [<BedDouble key="bed" size={18} strokeWidth={1.75} />, `${p.dormitorios ?? "—"} ${p.dormitorios === 1 ? "dormitorio" : "dormitorios"}`],
     [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`],
     [<Ruler key="ruler" size={18} strokeWidth={1.75} />, p.superficie_total ? `${p.superficie_total} m² totales` : "— m²"],
+    ...(p.superficie_cubierta ? [[<Ruler key="cub" size={18} strokeWidth={1.75} />, `${p.superficie_cubierta} m² cubiertos`] as [React.ReactNode, string]] : []),
     [<Car key="car" size={18} strokeWidth={1.75} />, p.cochera ? "Cochera incluida" : "Sin cochera"],
+    ...(p.piso ? [[<Layers key="piso" size={18} strokeWidth={1.75} />, `Piso ${p.piso}`] as [React.ReactNode, string]] : []),
+    ...(p.antiguedad != null ? [[<CalendarDays key="ant" size={18} strokeWidth={1.75} />, p.antiguedad === 0 ? "A estrenar" : `${p.antiguedad} años de antigüedad`] as [React.ReactNode, string]] : []),
+    ...(p.estado ? [[<Sparkles key="est" size={18} strokeWidth={1.75} />, `Estado: ${p.estado}`] as [React.ReactNode, string]] : []),
     ...(p.orientacion ? [[<Compass key="ori" size={18} strokeWidth={1.75} />, p.orientacion] as [React.ReactNode, string]] : []),
     ...(p.disposicion ? [[<AlignCenter key="dis" size={18} strokeWidth={1.75} />, `Disposición ${p.disposicion}`] as [React.ReactNode, string]] : []),
     ...(p.apto_credito ? [[<BadgeCheck key="cred" size={18} strokeWidth={1.75} />, "Apto crédito hipotecario"] as [React.ReactNode, string]] : []),
+    ...(p.expensas ? [[<Banknote key="exp" size={18} strokeWidth={1.75} />, `Expensas: $ ${fmtNum(p.expensas)}/mes`] as [React.ReactNode, string]] : []),
     [TIPO_ICON[p.tipo], TIPO_LABEL[p.tipo]],
-    [<Calendar key="cal" size={18} strokeWidth={1.75} />, "Disponible ya"],
   ];
 
   return (
@@ -190,10 +232,22 @@ export default async function PropiedadPage({ params }: PageProps) {
               </h1>
 
               {/* Location */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 15, color: "var(--ink-600)", marginBottom: 28 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 15, color: "var(--ink-600)", marginBottom: 10 }}>
                 <MapPin size={17} strokeWidth={1.75} color="var(--gold-600)" />
                 {[p.barrio, p.ciudad, p.provincia].filter(Boolean).join(", ")}
                 {p.direccion && ` · ${p.direccion}`}
+              </div>
+
+              {/* Social proof: vistas + antigüedad de la publicación */}
+              <div style={{ display: "flex", alignItems: "center", gap: 16, fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-400)", marginBottom: 28 }}>
+                {(p.views ?? 0) >= 20 && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                    <Eye size={14} strokeWidth={1.75} /> {fmtNum(p.views!)} visitas
+                  </span>
+                )}
+                <span>
+                  {diasPublicada === 0 ? "Publicada hoy" : diasPublicada === 1 ? "Publicada ayer" : `Publicada hace ${diasPublicada} días`}
+                </span>
               </div>
 
               {/* Specs grid */}
@@ -245,13 +299,35 @@ export default async function PropiedadPage({ params }: PageProps) {
                 </>
               )}
 
-              {/* Publisher tag */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 26 }}>
+              {/* Plano */}
+              {p.plano && (
+                <div style={{ margin: "14px 0 32px" }}>
+                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: "var(--navy-800)", margin: "0 0 14px" }}>
+                    Plano
+                  </h3>
+                  <a href={p.plano} target="_blank" rel="noopener noreferrer" title="Ver plano en tamaño completo">
+                    <Image
+                      src={p.plano}
+                      alt={`Plano de ${p.titulo}`}
+                      width={560}
+                      height={420}
+                      style={{ width: "100%", maxWidth: 560, height: "auto", borderRadius: "var(--radius-md)", border: "1px solid var(--line-200)", background: "#fff" }}
+                    />
+                  </a>
+                </div>
+              )}
+
+              {/* Costos estimados de compra */}
+              <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} />
+
+              {/* Publisher tag + compartir */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 26, marginBottom: 18 }}>
                 <span style={{ height: 1.5, width: 60, background: "var(--gold-500)", display: "block" }} />
                 <span style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "var(--ink-400)" }}>
                   Publicado por el propietario
                 </span>
               </div>
+              <ShareButtons url={urlFicha} title={`${p.titulo} · Espacio Inmobiliario`} />
             </div>
 
             {/* Right — sticky sidebar */}
@@ -266,9 +342,29 @@ export default async function PropiedadPage({ params }: PageProps) {
                 </div>
 
                 {/* Price */}
-                <div style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 34, color: "var(--gold-700)", letterSpacing: "-.01em", marginBottom: 18 }}>
+                <div style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 34, color: "var(--gold-700)", letterSpacing: "-.01em", marginBottom: precioPorM2 ? 6 : 18 }}>
                   {precio}
                 </div>
+
+                {/* Precio por m² + comparación con el barrio */}
+                {precioPorM2 && (
+                  <div style={{ fontFamily: "var(--font-sans)", marginBottom: 18 }}>
+                    <span style={{ fontSize: 14, color: "var(--ink-500)" }}>
+                      {p.moneda === "USD" ? "US$" : "$"} {fmtNum(precioPorM2)}/m²
+                    </span>
+                    {comparacionBarrio && Math.abs(comparacionBarrio.pct) >= 2 && (
+                      <span style={{
+                        display: "inline-block", marginLeft: 8, fontSize: 12, fontWeight: 600,
+                        padding: "3px 9px", borderRadius: 999,
+                        background: comparacionBarrio.pct < 0 ? "#F0FDF4" : "#FFF7ED",
+                        color: comparacionBarrio.pct < 0 ? "#15803D" : "#C2410C",
+                        border: `1px solid ${comparacionBarrio.pct < 0 ? "#BBF7D0" : "#FED7AA"}`,
+                      }}>
+                        {Math.abs(comparacionBarrio.pct)}% {comparacionBarrio.pct < 0 ? "debajo" : "sobre"} el promedio de {p.barrio}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Owner */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 0", borderTop: "1px solid var(--line-100)", marginBottom: 18 }}>
@@ -322,6 +418,24 @@ export default async function PropiedadPage({ params }: PageProps) {
               </div>
             </div>
           </div>
+
+          {/* Propiedades similares */}
+          {similares.length > 0 && (
+            <section style={{ marginTop: "clamp(40px,6vw,64px)" }}>
+              <h2 style={{
+                fontFamily: "var(--font-display)", fontWeight: 600,
+                fontSize: "clamp(20px,3.5vw,28px)", letterSpacing: "-.01em",
+                color: "var(--navy-800)", margin: "0 0 20px",
+              }}>
+                Otras propiedades que te pueden interesar
+              </h2>
+              <div className="grid-properties">
+                {similares.map((s) => (
+                  <PropertyListCard key={s.id} property={s} />
+                ))}
+              </div>
+            </section>
+          )}
         </main>
 
         <Footer />

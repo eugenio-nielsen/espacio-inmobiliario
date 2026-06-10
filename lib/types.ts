@@ -3,6 +3,7 @@ export type PropertyOperacion = "venta" | "alquiler";
 export type PropertyStatus = "activa" | "pausada" | "vendida";
 export type Moneda = "USD" | "ARS";
 export type InquiryStatus = "nuevo" | "visto" | "contactado" | "cerrado";
+export type PropertyEstado = "A estrenar" | "Excelente" | "Muy bueno" | "Bueno" | "A refaccionar";
 
 export interface Profile {
   id: string;
@@ -35,6 +36,11 @@ export interface Property {
   apto_credito: boolean;
   orientacion?: string;
   disposicion?: "Frente" | "Contrafrente" | "Lateral" | "Otra";
+  expensas?: number | null;
+  antiguedad?: number | null;
+  estado?: PropertyEstado | null;
+  piso?: string | null;
+  plano?: string | null;
   status: PropertyStatus;
   fotos: string[];
   views?: number;

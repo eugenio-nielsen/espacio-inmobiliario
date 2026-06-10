@@ -24,7 +24,34 @@ export default function PropertyForm({ mode, property }: Props) {
   const [optimizando, setOptimizando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Plano (imagen única, opcional)
+  const [planoFile, setPlanoFile] = useState<File | null>(null);
+  const [planoPreview, setPlanoPreview] = useState<string | null>(property?.plano || null);
+  const [planoExistente, setPlanoExistente] = useState<string | null>(property?.plano || null);
+  const planoRef = useRef<HTMLInputElement>(null);
+
   const MAX_FOTOS = 10;
+
+  async function handlePlanoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setOptimizando(true);
+    try {
+      const comprimido = await compressImage(file);
+      setPlanoFile(comprimido);
+      setPlanoPreview(URL.createObjectURL(comprimido));
+      setPlanoExistente(null); // el nuevo reemplaza al guardado
+    } finally {
+      setOptimizando(false);
+    }
+  }
+
+  function removePlano() {
+    setPlanoFile(null);
+    setPlanoPreview(null);
+    setPlanoExistente(null);
+  }
 
   // Ubicación
   const [zona, setZona] = useState<Zona | "">(() => {
@@ -110,6 +137,9 @@ export default function PropertyForm({ mode, property }: Props) {
     nuevasFiles.forEach((file) => {
       formData.append(mode === "crear" ? "fotos" : "fotos_nuevas", file);
     });
+    // Plano: archivo nuevo o URL existente (vacío = se quita)
+    if (planoFile) formData.append("plano", planoFile);
+    if (planoExistente) formData.append("plano_existente", planoExistente);
 
     startTransition(async () => {
       if (mode === "crear") {
@@ -263,6 +293,32 @@ export default function PropertyForm({ mode, property }: Props) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Baños</label>
             <input name="banos" type="number" min={0} max={10} defaultValue={v?.banos ?? ""} className={inp} />
+          </div>
+        </div>
+        {/* Expensas, antigüedad, estado, piso */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Expensas (ARS/mes)</label>
+            <input name="expensas" type="number" min={0} defaultValue={v?.expensas ?? ""} className={inp} placeholder="Ej: 180000" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Antigüedad (años)</label>
+            <input name="antiguedad" type="number" min={0} max={150} defaultValue={v?.antiguedad ?? ""} className={inp} placeholder="0 = a estrenar" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+            <select name="estado" defaultValue={v?.estado || ""} className={sel}>
+              <option value="">Sin especificar</option>
+              <option value="A estrenar">A estrenar</option>
+              <option value="Excelente">Excelente</option>
+              <option value="Muy bueno">Muy bueno</option>
+              <option value="Bueno">Bueno</option>
+              <option value="A refaccionar">A refaccionar</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Piso</label>
+            <input name="piso" type="text" maxLength={10} defaultValue={v?.piso ?? ""} className={inp} placeholder="PB, 3, 12…" />
           </div>
         </div>
         {/* Orientación y Disposición */}
@@ -438,6 +494,36 @@ export default function PropertyForm({ mode, property }: Props) {
           )}
           {/* Input sin name — los files se agregan manualmente al FormData en handleSubmit */}
           <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
+        </div>
+
+        {/* Plano (opcional) */}
+        <div className="pt-2">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">
+            Plano <span className="text-gray-400 font-normal">(opcional · imagen)</span>
+          </h3>
+          {planoPreview ? (
+            <div className="relative group w-40 aspect-square">
+              {/* preview puede ser blob: local, usamos img nativa */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={planoPreview} alt="Plano" className="w-full h-full object-cover rounded-lg border border-gray-200" />
+              <button
+                type="button"
+                onClick={removePlano}
+                title="Quitar plano"
+                className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold leading-none"
+              >
+                ×
+              </button>
+            </div>
+          ) : (
+            <div
+              className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center cursor-pointer hover:border-[#0E2C50] transition-colors"
+              onClick={() => !optimizando && planoRef.current?.click()}
+            >
+              <p className="text-gray-400 text-sm">📐 Agregar plano de la propiedad</p>
+            </div>
+          )}
+          <input ref={planoRef} type="file" accept="image/*" className="hidden" onChange={handlePlanoChange} />
         </div>
       </section>
 
