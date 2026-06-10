@@ -4,6 +4,7 @@ import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import { createProperty, updateProperty } from "@/lib/actions/properties";
+import { compressImage } from "@/lib/utils/compressImage";
 import type { Property } from "@/lib/types";
 import { ZONAS, UBICACIONES, type Zona } from "@/lib/ubicaciones";
 import MapFormPreview from "@/components/map/MapFormPreview";
@@ -20,7 +21,10 @@ export default function PropertyForm({ mode, property }: Props) {
   const [fotosExistentes, setFotosExistentes] = useState<string[]>(property?.fotos || []);
   const [nuevasFiles, setNuevasFiles] = useState<File[]>([]);
   const [nuevasPreviews, setNuevasPreviews] = useState<string[]>([]);
+  const [optimizando, setOptimizando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const MAX_FOTOS = 10;
 
   // Ubicación
   const [zona, setZona] = useState<Zona | "">(() => {
@@ -34,13 +38,30 @@ export default function PropertyForm({ mode, property }: Props) {
   const [direccion, setDireccion] = useState(property?.direccion || "");
   const barrios = zona ? UBICACIONES[zona as Zona] : [];
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const added = Array.from(e.target.files || []);
-    if (!added.length) return;
-    setNuevasFiles(prev => [...prev, ...added]);
-    setNuevasPreviews(prev => [...prev, ...added.map(f => URL.createObjectURL(f))]);
     // reset input so the same file can be re-added if needed
     e.target.value = "";
+    if (!added.length) return;
+
+    const lugar = MAX_FOTOS - (fotosExistentes.length + nuevasFiles.length);
+    if (lugar <= 0) {
+      setError(`Máximo ${MAX_FOTOS} fotos por publicación.`);
+      return;
+    }
+    setError(null);
+
+    setOptimizando(true);
+    try {
+      const comprimidas = await Promise.all(added.slice(0, lugar).map(compressImage));
+      setNuevasFiles(prev => [...prev, ...comprimidas]);
+      setNuevasPreviews(prev => [...prev, ...comprimidas.map(f => URL.createObjectURL(f))]);
+      if (added.length > lugar) {
+        setError(`Solo se agregaron ${lugar} fotos: el máximo es ${MAX_FOTOS} por publicación.`);
+      }
+    } finally {
+      setOptimizando(false);
+    }
   }
 
   function removeFotoExistente(idx: number) {
@@ -405,10 +426,16 @@ export default function PropertyForm({ mode, property }: Props) {
 
         <div
           className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-[#0E2C50] transition-colors"
-          onClick={() => fileRef.current?.click()}
+          onClick={() => !optimizando && fileRef.current?.click()}
         >
-          <p className="text-gray-400 text-sm">📷 Hacé clic para agregar fotos</p>
-          <p className="text-gray-300 text-xs mt-1">JPG, PNG o WEBP · Máximo 10 fotos</p>
+          {optimizando ? (
+            <p className="text-gray-500 text-sm">⏳ Optimizando fotos…</p>
+          ) : (
+            <>
+              <p className="text-gray-400 text-sm">📷 Hacé clic para agregar fotos</p>
+              <p className="text-gray-300 text-xs mt-1">JPG, PNG o WEBP · Máximo {MAX_FOTOS} fotos · Se optimizan automáticamente</p>
+            </>
+          )}
           {/* Input sin name — los files se agregan manualmente al FormData en handleSubmit */}
           <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
         </div>
@@ -425,10 +452,10 @@ export default function PropertyForm({ mode, property }: Props) {
         <a href="/panel" className="border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
           Cancelar
         </a>
-        <button type="submit" disabled={isPending}
+        <button type="submit" disabled={isPending || optimizando}
           className="text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-60"
-          style={{ background: isPending ? "#6b8fa8" : "#0E2C50" }}>
-          {isPending ? "Guardando..." : mode === "crear" ? "Publicar propiedad" : "Guardar cambios"}
+          style={{ background: isPending || optimizando ? "#6b8fa8" : "#0E2C50" }}>
+          {isPending ? "Guardando..." : optimizando ? "Optimizando fotos…" : mode === "crear" ? "Publicar propiedad" : "Guardar cambios"}
         </button>
       </div>
     </form>
