@@ -81,13 +81,17 @@ export default async function PropiedadPage({ params }: PageProps) {
 
   const p = property as Property & { profiles: Profile };
 
-  // Geocodificación server-side (cacheada 24h por fetch)
-  const geoResult = await geocodeProperty({
-    direccion: p.direccion,
-    barrio: p.barrio,
-    ciudad: p.ciudad,
-    provincia: p.provincia,
-  });
+  // Coordenadas guardadas al crear/editar; fallback a Nominatim
+  // solo para propiedades viejas que aún no fueron re-guardadas
+  const geoResult =
+    p.lat != null && p.lng != null
+      ? { lat: p.lat, lng: p.lng, aproximada: p.geo_aproximada ?? true }
+      : await geocodeProperty({
+          direccion: p.direccion,
+          barrio: p.barrio,
+          ciudad: p.ciudad,
+          provincia: p.provincia,
+        });
   const precio = `${p.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p.precio))}`;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 

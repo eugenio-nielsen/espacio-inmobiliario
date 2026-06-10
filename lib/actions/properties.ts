@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
 import { buildPropertyUrl } from "@/lib/utils/urls";
+import { geocodeProperty } from "@/lib/utils/geocode";
 import { sendNewPropertyToAdmin } from "@/lib/email";
 
 function slugify(str: string): string {
@@ -49,6 +50,14 @@ export async function createProperty(formData: FormData) {
 
   const slug = `${slugify(barrio)}-${tipo}-${tempId.slice(0, 8)}`;
 
+  // Geocodificar una sola vez al guardar (la ficha usa lat/lng de la DB)
+  const geo = await geocodeProperty({
+    direccion: formData.get("direccion") as string,
+    barrio,
+    ciudad: formData.get("ciudad") as string,
+    provincia: formData.get("provincia") as string,
+  }).catch(() => null);
+
   const { data, error } = await supabase
     .from("properties")
     .insert({
@@ -75,6 +84,9 @@ export async function createProperty(formData: FormData) {
       orientacion: formData.get("orientacion") || null,
       disposicion: formData.get("disposicion") || null,
       fotos: fotoUrls,
+      lat: geo?.lat ?? null,
+      lng: geo?.lng ?? null,
+      geo_aproximada: geo?.aproximada ?? null,
     })
     .select("id, operacion, barrio, tipo, slug, titulo, precio, moneda, ciudad")
     .single();
@@ -126,6 +138,14 @@ export async function updateProperty(id: string, formData: FormData) {
   const tipo = formData.get("tipo") as string;
   const barrio = formData.get("barrio") as string;
 
+  // Re-geocodificar al editar (la dirección puede haber cambiado)
+  const geo = await geocodeProperty({
+    direccion: formData.get("direccion") as string,
+    barrio,
+    ciudad: formData.get("ciudad") as string,
+    provincia: formData.get("provincia") as string,
+  }).catch(() => null);
+
   const { data, error } = await supabase
     .from("properties")
     .update({
@@ -150,6 +170,9 @@ export async function updateProperty(id: string, formData: FormData) {
       disposicion: formData.get("disposicion") || null,
       status: formData.get("status") as string,
       fotos: fotoUrls,
+      lat: geo?.lat ?? null,
+      lng: geo?.lng ?? null,
+      geo_aproximada: geo?.aproximada ?? null,
     })
     .eq("id", id)
     .eq("owner_id", user.id)

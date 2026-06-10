@@ -38,6 +38,9 @@ export interface Property {
   status: PropertyStatus;
   fotos: string[];
   views?: number;
+  lat?: number | null;
+  lng?: number | null;
+  geo_aproximada?: boolean | null;
   created_at: string;
   updated_at: string;
   profiles?: Pick<Profile, "nombre" | "email" | "telefono">;
