@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { Property } from "@/lib/types";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import ListadoFilters from "@/components/properties/ListadoFilters";
+import SortSelect from "@/components/properties/SortSelect";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -19,6 +20,7 @@ const PAGE_SIZE = 12;
 type SearchParams = {
   tipo?: string; operacion?: string; provincia?: string;
   dormitorios?: string; precio_min?: string; precio_max?: string;
+  apto_credito?: string; orden?: string;
   pagina?: string; q?: string;
 };
 
@@ -36,8 +38,11 @@ export default async function PropiedadesPage({
     .from("properties")
     .select("*", { count: "exact" })
     .eq("status", "activa")
-    .order("created_at", { ascending: false })
     .range(from, from + PAGE_SIZE - 1);
+
+  if (sp.orden === "precio_asc")       query = query.order("precio", { ascending: true });
+  else if (sp.orden === "precio_desc") query = query.order("precio", { ascending: false });
+  else                                 query = query.order("created_at", { ascending: false });
 
   if (sp.tipo)       query = query.eq("tipo", sp.tipo);
   if (sp.operacion)  query = query.eq("operacion", sp.operacion);
@@ -45,6 +50,17 @@ export default async function PropiedadesPage({
   if (sp.dormitorios) query = query.gte("dormitorios", Number(sp.dormitorios));
   if (sp.precio_min) query = query.gte("precio", Number(sp.precio_min));
   if (sp.precio_max) query = query.lte("precio", Number(sp.precio_max));
+  if (sp.apto_credito) query = query.eq("apto_credito", true);
+
+  if (sp.q) {
+    // comas y paréntesis rompen la sintaxis de .or() de PostgREST
+    const q = sp.q.replace(/[,()]/g, " ").trim();
+    if (q) {
+      query = query.or(
+        `titulo.ilike.%${q}%,barrio.ilike.%${q}%,ciudad.ilike.%${q}%,direccion.ilike.%${q}%`
+      );
+    }
+  }
 
   const { data: properties, count } = await query;
   const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
@@ -87,19 +103,9 @@ export default async function PropiedadesPage({
           justifyContent: "space-between", margin: "26px 0 18px",
         }}>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--ink-600)", margin: 0 }}>
-            <b style={{ color: "var(--navy-800)" }}>{count ?? 0} propiedad{count !== 1 ? "es" : ""}</b> encontradas
+            <b style={{ color: "var(--navy-800)" }}>{count ?? 0} propiedad{count !== 1 ? "es" : ""}</b> encontrada{count !== 1 ? "s" : ""}
           </p>
-          <div style={{ position: "relative" }}>
-            <select style={{
-              fontFamily: "var(--font-sans)", fontSize: 13.5,
-              background: "#fff", border: "1.5px solid var(--line-200)",
-              borderRadius: "var(--radius-sm)", padding: "9px 30px 9px 12px",
-              appearance: "none", cursor: "pointer",
-            }}>
-              <option>Ordenar: más recientes</option>
-            </select>
-            <span style={{ position: "absolute", right: 12, top: 12, pointerEvents: "none", color: "var(--ink-500)", fontSize: 11 }}>▾</span>
-          </div>
+          <SortSelect current={sp} />
         </div>
 
         {/* Grid */}

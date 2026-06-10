@@ -468,13 +468,14 @@ select:focus, input:focus, textarea:focus {
   gap: 12px;
   align-items: center;
 }
+.grid-filters .filters-apto { grid-column: 1 / -1; }
 @media (max-width: 1023px) {
   .grid-filters { grid-template-columns: repeat(3, 1fr); }
-  .grid-filters > *:last-child { grid-column: 1 / -1; }
+  .grid-filters > .esbtn { grid-column: 1 / -1; }
 }
 @media (max-width: 639px) {
   .grid-filters { grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px; }
-  .grid-filters > *:last-child { grid-column: 1 / -1; }
+  .grid-filters > .esbtn { grid-column: 1 / -1; }
 }
 
 /* Navbar: hide secondary links on mobile */

@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import PropertyMapWrapper from "@/components/map/PropertyMapWrapper";
 import { geocodeProperty } from "@/lib/utils/geocode";
+import { buildPropertyUrl } from "@/lib/utils/urls";
 import type { Metadata } from "next";
 import type { Property, Profile } from "@/lib/types";
 import Footer from "@/components/Footer";
@@ -41,11 +42,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const description = data.descripcion?.slice(0, 160) ||
     `${TIPO_LABEL[data.tipo]} en ${data.barrio || data.ciudad}, ${data.provincia}. Espacio Inmobiliario.`;
+  const canonicalUrl = `${siteUrl}${buildPropertyUrl({ operacion: data.operacion, barrio: data.barrio, ciudad: data.ciudad, tipo: data.tipo, id })}`;
 
   return {
     title: data.titulo,
     description,
-    alternates: { canonical: `${siteUrl}/propiedades/${data.operacion}/${id}` },
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: data.titulo, description,
       images: data.fotos?.[0] ? [{ url: data.fotos[0], width: 1200, height: 630 }] : [],
@@ -92,7 +94,7 @@ export default async function PropiedadPage({ params }: PageProps) {
   const jsonLd = {
     "@context": "https://schema.org", "@type": "RealEstateListing",
     name: p.titulo, description: p.descripcion || p.titulo,
-    url: `${siteUrl}/propiedades/${p.operacion}/${id}`,
+    url: `${siteUrl}${buildPropertyUrl({ operacion: p.operacion, barrio: p.barrio, ciudad: p.ciudad, tipo: p.tipo, id })}`,
     image: p.fotos,
     offers: { "@type": "Offer", price: p.precio, priceCurrency: p.moneda, availability: "https://schema.org/InStock" },
     address: { "@type": "PostalAddress", streetAddress: p.direccion || "", addressLocality: p.barrio || p.ciudad, addressRegion: p.provincia, addressCountry: "AR" },

@@ -10,22 +10,26 @@ interface Props {
   current: {
     tipo?: string; operacion?: string; provincia?: string;
     dormitorios?: string; precio_min?: string; precio_max?: string;
+    apto_credito?: string; orden?: string; q?: string;
   };
 }
 
 export default function ListadoFilters({ current }: Props) {
   const router = useRouter();
   const [f, setF] = useState({
+    q:          current.q          || "",
     tipo:       current.tipo       || "",
     operacion:  current.operacion  || "",
     provincia:  current.provincia  || "",
     dormitorios:current.dormitorios|| "",
     precio_max: current.precio_max || "",
+    apto_credito: current.apto_credito || "",
   });
 
   function apply() {
     const params = new URLSearchParams();
-    Object.entries(f).forEach(([k, v]) => { if (v) params.set(k, v); });
+    Object.entries(f).forEach(([k, v]) => { if (v.trim()) params.set(k, v.trim()); });
+    if (current.orden) params.set("orden", current.orden);
     router.push(`/propiedades?${params.toString()}`);
   }
 
@@ -51,13 +55,15 @@ export default function ListadoFilters({ current }: Props) {
         <Chevron />
       </div>
 
-      {/* Operación — solo venta, campo oculto */}
-      <div style={{ position: "relative" }}>
-        <div style={{ ...sel, color: "var(--ink-500)", background: "var(--fill-100)", display: "flex", alignItems: "center" }}>
-          Operación: Venta
-        </div>
-        <input type="hidden" value="venta" />
-      </div>
+      {/* Barrio o zona — búsqueda por texto */}
+      <input
+        type="text"
+        value={f.q}
+        onChange={e => setF(p => ({ ...p, q: e.target.value }))}
+        onKeyDown={e => e.key === "Enter" && apply()}
+        placeholder="Barrio, zona o dirección"
+        style={{ ...sel, cursor: "text" }}
+      />
 
       {/* Zona */}
       <div style={{ position: "relative" }}>
@@ -108,6 +114,21 @@ export default function ListadoFilters({ current }: Props) {
         <SlidersHorizontal size={15} strokeWidth={2} />
         Filtrar
       </button>
+
+      {/* Apto crédito — fila completa debajo */}
+      <label className="filters-apto" style={{
+        display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+        fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-600)",
+        userSelect: "none",
+      }}>
+        <input
+          type="checkbox"
+          checked={f.apto_credito === "1"}
+          onChange={e => setF(p => ({ ...p, apto_credito: e.target.checked ? "1" : "" }))}
+          style={{ width: 16, height: 16, accentColor: "var(--navy-800)", cursor: "pointer" }}
+        />
+        Solo apto crédito hipotecario
+      </label>
     </div>
   );
 }
