@@ -1,0 +1,46 @@
+# Backup semanal de la base de datos de Supabase.
+#
+# Requiere el secret SUPABASE_DB_URL en GitHub:
+#   Settings → Secrets and variables → Actions → New repository secret
+#   Valor: el "Connection string" de Supabase (Dashboard → Connect →
+#   Session pooler), con la contraseña de la base incluida.
+#
+# El dump queda como artifact del workflow (90 días de retención).
+# Restaurar: psql "$SUPABASE_DB_URL" < backup.sql
+
+name: Backup de base de datos
+
+on:
+  schedule:
+    - cron: "0 6 * * 0" # domingos 06:00 UTC (03:00 Argentina)
+  workflow_dispatch: {} # permite correrlo a mano desde la pestaña Actions
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instalar cliente de PostgreSQL 17
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+
+      - name: Generar dump
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          pg_dump "$SUPABASE_DB_URL" \
+            --no-owner --no-privileges \
+            --schema=public \
+            --file=backup-$(date +%Y%m%d).sql
+          gzip backup-*.sql
+          ls -lh backup-*
+
+      - name: Guardar como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backup-*.sql.gz
+          retention-days: 90
