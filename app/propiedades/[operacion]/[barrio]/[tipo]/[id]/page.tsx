@@ -292,6 +292,9 @@ export default async function PropiedadPage({ params }: PageProps) {
                 ))}
               </div>
 
+              {/* Costos estimados de compra */}
+              <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} />
+
               {/* Mapa */}
               {geoResult && (
                 <div style={{ marginBottom: 32 }}>
@@ -321,9 +324,6 @@ export default async function PropiedadPage({ params }: PageProps) {
                   </p>
                 </>
               )}
-
-              {/* Costos estimados de compra */}
-              <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} />
 
               {/* Publisher tag + compartir */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 26, marginBottom: 18 }}>
