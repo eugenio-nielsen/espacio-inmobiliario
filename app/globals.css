@@ -144,20 +144,12 @@ select:focus, input:focus, textarea:focus {
   .hscroll-cards > * { flex: 0 0 80%; scroll-snap-align: start; }
 }
 
-/* Home: 'Últimas propiedades' como carrusel SOLO en mobile (catálogo queda vertical) */
+/* Home: 'Últimas propiedades' en mobile = lista vertical (máx 5) + botón Ver todas.
+   El carrusel daba la impresión de que había una sola propiedad cargada. */
+.home-ver-todas { display: none; }
 @media (max-width: 639px) {
-  .home-destacados {
-    display: flex !important;
-    grid-template-columns: none !important;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 14px;
-    padding-bottom: 6px;
-  }
-  .home-destacados::-webkit-scrollbar { display: none; }
-  .home-destacados > * { flex: 0 0 82%; scroll-snap-align: start; }
+  .home-destacados > *:nth-child(n + 6) { display: none; }
+  .home-ver-todas { display: flex; }
 }
 
 /* Detail page: content + sidebar → stacked */

@@ -140,15 +140,26 @@ export default async function HomePage() {
             </a>
           </div>
         ) : (
-          <div className="grid-properties home-destacados">
-            {(properties as Property[]).map((p, i) => (
-              <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
-                <div className="card-lift">
-                  <PropertyListCard property={p} />
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+          <>
+            <div className="grid-properties home-destacados">
+              {(properties as Property[]).map((p, i) => (
+                <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
+                  <div className="card-lift">
+                    <PropertyListCard property={p} />
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+            {/* Botón "Ver todas" — solo visible en mobile (lista vertical de 5) */}
+            <a href="/propiedades" className="home-ver-todas esbtn esbtn-primary" style={{
+              fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
+              border: "1.5px solid transparent", alignItems: "center", justifyContent: "center",
+              gap: 8, fontSize: 14.5, padding: "13px 24px", marginTop: 20,
+              background: "var(--navy-800)", color: "#fff", textDecoration: "none",
+            }}>
+              Ver todas las propiedades <ArrowRight size={16} strokeWidth={2} />
+            </a>
+          </>
         )}
       </section>
 
