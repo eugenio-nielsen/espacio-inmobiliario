@@ -70,9 +70,16 @@ export default function AuthForm({ mode }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Contraseña *
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            Contraseña *
+          </label>
+          {mode === "login" && (
+            <a href="/auth/recuperar" className="text-xs text-blue-600 hover:underline">
+              ¿La olvidaste?
+            </a>
+          )}
+        </div>
         <input
           name="password"
           type="password"

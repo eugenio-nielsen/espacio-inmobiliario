@@ -37,7 +37,8 @@ export async function proxy(request: NextRequest) {
   }
 
   // Si ya está logueado y va a auth pages, redirigir al panel
-  if (pathname.startsWith("/auth") && user) {
+  // (excepto /auth/callback, que debe intercambiar el código del email)
+  if (pathname.startsWith("/auth") && !pathname.startsWith("/auth/callback") && user) {
     return NextResponse.redirect(new URL("/panel", request.url));
   }
 

@@ -49,3 +49,41 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+export async function requestPasswordReset(formData: FormData) {
+  const email = (formData.get("email") as string)?.trim();
+  if (!email) return { error: "Ingresá tu email." };
+
+  const supabase = await createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/callback?next=/panel/clave`,
+  });
+
+  // No revelamos si el email existe o no (evita enumeración de cuentas)
+  if (error) console.error("Error en resetPasswordForEmail:", error.message);
+  return { ok: true };
+}
+
+export async function updatePassword(formData: FormData) {
+  const password = formData.get("password") as string;
+  const confirm = formData.get("confirm") as string;
+
+  if (!password || password.length < 6) {
+    return { error: "La contraseña debe tener al menos 6 caracteres." };
+  }
+  if (password !== confirm) {
+    return { error: "Las contraseñas no coinciden." };
+  }
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "La sesión expiró. Pedí un nuevo enlace de recuperación." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+
+  redirect("/panel?clave=1");
+}

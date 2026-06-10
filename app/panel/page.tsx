@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 export default async function PanelPage({
   searchParams,
 }: {
-  searchParams: Promise<{ nuevo?: string }>;
+  searchParams: Promise<{ nuevo?: string; clave?: string }>;
 }) {
-  const { nuevo } = await searchParams;
+  const { nuevo, clave } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -51,9 +51,16 @@ export default async function PanelPage({
   });
 
   return (
-    <CRMPanel
-      properties={propertiesWithInquiries}
-      showWelcome={!!nuevo}
-    />
+    <>
+      {clave && (
+        <div className="bg-green-50 border border-green-200 text-green-800 text-sm rounded-lg px-4 py-3 mb-4">
+          ✓ Tu contraseña fue actualizada correctamente.
+        </div>
+      )}
+      <CRMPanel
+        properties={propertiesWithInquiries}
+        showWelcome={!!nuevo}
+      />
+    </>
   );
 }
