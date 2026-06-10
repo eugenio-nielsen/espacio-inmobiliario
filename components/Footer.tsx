@@ -1,4 +1,5 @@
 import Logo from "@/components/Logo";
+import { BARRIO_PAGES } from "@/lib/barrios";
 
 const footH: React.CSSProperties = {
   fontFamily: "var(--font-sans)", fontSize: 11, textTransform: "uppercase",
@@ -23,6 +24,11 @@ export default function Footer() {
           <h5 style={footH}>Propiedades</h5>
           {["Departamentos en venta", "Casas en venta", "Oficinas", "Terrenos"].map(t => (
             <a key={t} href="/propiedades" style={footLink}>{t}</a>
+          ))}
+          {BARRIO_PAGES.map(b => (
+            <a key={b.slug} href={`/propiedades/venta/${b.slug}`} style={footLink}>
+              Propiedades en {b.nombre}
+            </a>
           ))}
         </div>
         <div>

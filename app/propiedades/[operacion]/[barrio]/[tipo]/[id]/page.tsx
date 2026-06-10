@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import PropertyMapWrapper from "@/components/map/PropertyMapWrapper";
 import { geocodeProperty } from "@/lib/utils/geocode";
 import { buildPropertyUrl } from "@/lib/utils/urls";
+import { getBarrioPage } from "@/lib/barrios";
+import { slugifyUbicacion } from "@/lib/ubicaciones";
 import type { Metadata } from "next";
 import type { Property, Profile } from "@/lib/types";
 import Footer from "@/components/Footer";
@@ -140,7 +142,11 @@ export default async function PropiedadPage({ params }: PageProps) {
               <>
                 <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
                 <a
-                  href={`/propiedades?provincia=${encodeURIComponent(p.provincia)}`}
+                  href={
+                    getBarrioPage(slugifyUbicacion(p.barrio))
+                      ? `/propiedades/venta/${slugifyUbicacion(p.barrio)}`
+                      : `/propiedades?provincia=${encodeURIComponent(p.provincia)}`
+                  }
                   style={{ color: "var(--ink-500)", textDecoration: "none" }}
                 >
                   {p.barrio}

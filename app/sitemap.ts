@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildPropertyUrl } from "@/lib/utils/urls";
+import { BARRIO_PAGES } from "@/lib/barrios";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
@@ -18,6 +19,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/auth/registro`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE}/terminos`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
     { url: `${SITE}/privacidad`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    // Páginas SEO por barrio
+    ...BARRIO_PAGES.map((b) => ({
+      url: `${SITE}/propiedades/venta/${b.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.85,
+    })),
   ];
 
   // Propiedades activas
