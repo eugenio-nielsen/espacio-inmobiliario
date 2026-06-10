@@ -178,6 +178,37 @@ select:focus, input:focus, textarea:focus {
   .grid-specs { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px 0; }
 }
 
+/* Specs agrupadas en bloques (Lo principal / Características / Costos) */
+.specs-blocks {
+  border-top: 1px solid var(--line-200);
+  border-bottom: 1px solid var(--line-200);
+  margin-bottom: 28px;
+  padding: 18px 0 6px;
+}
+.specs-block + .specs-block {
+  border-top: 1px solid var(--line-100);
+  padding-top: 16px;
+  margin-top: 4px;
+}
+.specs-group-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+  margin: 0 0 12px;
+}
+.grid-specs-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding-bottom: 18px;
+}
+@media (max-width: 639px) {
+  .grid-specs-group { grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 14px; }
+}
+
 /* Panel stats: 4col → 2col tablet → 1col mobile */
 .grid-stats {
   display: grid;

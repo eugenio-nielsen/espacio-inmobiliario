@@ -150,22 +150,39 @@ export default async function PropiedadPage({ params }: PageProps) {
     ? `https://wa.me/${p.profiles.telefono.replace(/\D/g, "")}?text=${whatsappMsg}`
     : null;
 
-  const feats: [React.ReactNode, string][] = [
-    ...(p.ambientes != null ? [[<LayoutGrid key="amb" size={18} strokeWidth={1.75} />, `${p.ambientes} ${p.ambientes === 1 ? "ambiente" : "ambientes"}`] as [React.ReactNode, string]] : []),
+  type Feat = [React.ReactNode, string];
+
+  // A · Lo principal: tipo, ambientes, dormitorios, baños, superficies
+  const featsPrincipal: Feat[] = [
+    [TIPO_ICON[p.tipo], TIPO_LABEL[p.tipo]],
+    ...(p.ambientes != null ? [[<LayoutGrid key="amb" size={18} strokeWidth={1.75} />, `${p.ambientes} ${p.ambientes === 1 ? "ambiente" : "ambientes"}`] as Feat] : []),
     [<BedDouble key="bed" size={18} strokeWidth={1.75} />, `${p.dormitorios ?? "—"} ${p.dormitorios === 1 ? "dormitorio" : "dormitorios"}`],
     [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`],
     [<Ruler key="ruler" size={18} strokeWidth={1.75} />, p.superficie_total ? `${p.superficie_total} m² totales` : "— m²"],
-    ...(p.superficie_cubierta ? [[<Ruler key="cub" size={18} strokeWidth={1.75} />, `${p.superficie_cubierta} m² cubiertos`] as [React.ReactNode, string]] : []),
-    [<Car key="car" size={18} strokeWidth={1.75} />, p.cochera ? "Cochera incluida" : "Sin cochera"],
-    ...(p.piso ? [[<Layers key="piso" size={18} strokeWidth={1.75} />, `Piso ${p.piso}`] as [React.ReactNode, string]] : []),
-    ...(p.antiguedad != null ? [[<CalendarDays key="ant" size={18} strokeWidth={1.75} />, p.antiguedad === 0 ? "A estrenar" : `${p.antiguedad} años de antigüedad`] as [React.ReactNode, string]] : []),
-    ...(p.estado ? [[<Sparkles key="est" size={18} strokeWidth={1.75} />, `Estado: ${p.estado}`] as [React.ReactNode, string]] : []),
-    ...(p.orientacion ? [[<Compass key="ori" size={18} strokeWidth={1.75} />, p.orientacion] as [React.ReactNode, string]] : []),
-    ...(p.disposicion ? [[<AlignCenter key="dis" size={18} strokeWidth={1.75} />, `Disposición ${p.disposicion}`] as [React.ReactNode, string]] : []),
-    ...(p.apto_credito ? [[<BadgeCheck key="cred" size={18} strokeWidth={1.75} />, "Apto crédito hipotecario"] as [React.ReactNode, string]] : []),
-    ...(p.expensas ? [[<Banknote key="exp" size={18} strokeWidth={1.75} />, `Expensas: $ ${fmtNum(p.expensas)}/mes`] as [React.ReactNode, string]] : []),
-    [TIPO_ICON[p.tipo], TIPO_LABEL[p.tipo]],
+    ...(p.superficie_cubierta ? [[<Ruler key="cub" size={18} strokeWidth={1.75} />, `${p.superficie_cubierta} m² cubiertos`] as Feat] : []),
   ];
+
+  // B · Características del edificio/unidad
+  const featsCaracteristicas: Feat[] = [
+    [<Car key="car" size={18} strokeWidth={1.75} />, p.cochera ? "Cochera incluida" : "Sin cochera"],
+    ...(p.piso ? [[<Layers key="piso" size={18} strokeWidth={1.75} />, `Piso ${p.piso}`] as Feat] : []),
+    ...(p.antiguedad != null ? [[<CalendarDays key="ant" size={18} strokeWidth={1.75} />, p.antiguedad === 0 ? "A estrenar" : `${p.antiguedad} años de antigüedad`] as Feat] : []),
+    ...(p.estado ? [[<Sparkles key="est" size={18} strokeWidth={1.75} />, `Estado: ${p.estado}`] as Feat] : []),
+    ...(p.orientacion ? [[<Compass key="ori" size={18} strokeWidth={1.75} />, p.orientacion] as Feat] : []),
+    ...(p.disposicion ? [[<AlignCenter key="dis" size={18} strokeWidth={1.75} />, `Disposición ${p.disposicion}`] as Feat] : []),
+  ];
+
+  // C · Costos y financiación
+  const featsCostos: Feat[] = [
+    ...(p.expensas ? [[<Banknote key="exp" size={18} strokeWidth={1.75} />, `Expensas: $ ${fmtNum(p.expensas)}/mes`] as Feat] : []),
+    ...(p.apto_credito ? [[<BadgeCheck key="cred" size={18} strokeWidth={1.75} />, "Apto crédito hipotecario"] as Feat] : []),
+  ];
+
+  const gruposSpecs: { titulo: string; items: Feat[] }[] = [
+    { titulo: "Lo principal", items: featsPrincipal },
+    { titulo: "Características", items: featsCaracteristicas },
+    { titulo: "Costos y financiación", items: featsCostos },
+  ].filter(g => g.items.length > 0);
 
   return (
     <>
@@ -249,21 +266,28 @@ export default async function PropiedadPage({ params }: PageProps) {
                 </span>
               </div>
 
-              {/* Specs grid */}
-              <div className="grid-specs">
-                {feats.map(([icon, text], i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{
-                      width: 38, height: 38, borderRadius: "var(--radius-sm)",
-                      background: "var(--navy-50)", display: "flex",
-                      alignItems: "center", justifyContent: "center", flexShrink: 0,
-                      color: "var(--navy-700)",
-                    }}>
-                      {icon}
-                    </span>
-                    <span style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "#3b362e", fontWeight: 500 }}>
-                      {text}
-                    </span>
+              {/* Specs agrupadas */}
+              <div className="specs-blocks">
+                {gruposSpecs.map((grupo) => (
+                  <div key={grupo.titulo} className="specs-block">
+                    <p className="specs-group-label">{grupo.titulo}</p>
+                    <div className="grid-specs-group">
+                      {grupo.items.map(([icon, text], i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{
+                            width: 38, height: 38, borderRadius: "var(--radius-sm)",
+                            background: "var(--navy-50)", display: "flex",
+                            alignItems: "center", justifyContent: "center", flexShrink: 0,
+                            color: "var(--navy-700)",
+                          }}>
+                            {icon}
+                          </span>
+                          <span style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "#3b362e", fontWeight: 500 }}>
+                            {text}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
