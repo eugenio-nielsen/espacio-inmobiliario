@@ -18,7 +18,6 @@ import ShareButtons from "@/components/blog/ShareButtons";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import Navbar from "@/components/Navbar";
 import { getPreciosBarrios } from "@/lib/estimador/data";
-import Image from "next/image";
 import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, LayoutGrid, Compass, AlignCenter, BadgeCheck, Eye, CalendarDays, Layers, Sparkles, Banknote } from "lucide-react";
 
 export const revalidate = 60;
@@ -201,8 +200,8 @@ export default async function PropiedadPage({ params }: PageProps) {
             </span>
           </div>
 
-          {/* Gallery */}
-          <PropertyGallery fotos={p.fotos} titulo={p.titulo} />
+          {/* Gallery (incluye el plano como último ítem, con chips Fotos/Plano) */}
+          <PropertyGallery fotos={p.fotos} titulo={p.titulo} plano={p.plano} />
 
           {/* 2-column layout */}
           <div className="grid-detail">
@@ -297,24 +296,6 @@ export default async function PropiedadPage({ params }: PageProps) {
                     {p.descripcion}
                   </p>
                 </>
-              )}
-
-              {/* Plano */}
-              {p.plano && (
-                <div style={{ margin: "14px 0 32px" }}>
-                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: "var(--navy-800)", margin: "0 0 14px" }}>
-                    Plano
-                  </h3>
-                  <a href={p.plano} target="_blank" rel="noopener noreferrer" title="Ver plano en tamaño completo">
-                    <Image
-                      src={p.plano}
-                      alt={`Plano de ${p.titulo}`}
-                      width={560}
-                      height={420}
-                      style={{ width: "100%", maxWidth: 560, height: "auto", borderRadius: "var(--radius-md)", border: "1px solid var(--line-200)", background: "#fff" }}
-                    />
-                  </a>
-                </div>
               )}
 
               {/* Costos estimados de compra */}

@@ -2,19 +2,27 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X, ZoomIn, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Maximize2, Images, Ruler } from "lucide-react";
 
 interface Props {
   fotos: string[];
   titulo: string;
+  plano?: string | null;
 }
 
-export default function PropertyGallery({ fotos, titulo }: Props) {
+export default function PropertyGallery({ fotos, titulo, plano }: Props) {
+  // El plano se integra como último ítem de la galería
+  const items = plano ? [...fotos, plano] : fotos;
+  const planoIndex = plano ? items.length - 1 : -1;
+
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
 
-  const prev = useCallback(() => setCurrent(c => (c - 1 + fotos.length) % fotos.length), [fotos.length]);
-  const next = useCallback(() => setCurrent(c => (c + 1) % fotos.length), [fotos.length]);
+  const enPlano = !!plano && current === planoIndex;
+  const mostrarChips = !!plano && fotos.length > 0;
+
+  const prev = useCallback(() => setCurrent(c => (c - 1 + items.length) % items.length), [items.length]);
+  const next = useCallback(() => setCurrent(c => (c + 1) % items.length), [items.length]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -34,7 +42,7 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
     return () => { document.body.style.overflow = ""; };
   }, [lightbox]);
 
-  if (!fotos?.length) {
+  if (!items.length) {
     return (
       <div style={{
         height: 400, borderRadius: "var(--radius-lg)",
@@ -47,6 +55,8 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
     );
   }
 
+  const altActual = enPlano ? `Plano de ${titulo}` : `${titulo} · foto ${current + 1}`;
+
   return (
     <>
       {/* ── Main gallery ─────────────────────────────── */}
@@ -56,16 +66,48 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
           className="property-gallery-main"
           onClick={() => setLightbox(true)}
           title="Clic para ampliar"
+          style={enPlano ? { background: "#fff" } : undefined}
         >
           <Image
-            src={fotos[current]}
-            alt={`${titulo} · foto ${current + 1}`}
+            src={items[current]}
+            alt={altActual}
             fill
-            className="object-cover"
+            className={enPlano ? "object-contain" : "object-cover"}
             sizes="(max-width: 1024px) 100vw, 66vw"
             priority={current === 0}
             style={{ transition: "transform 0.35s ease" }}
           />
+
+          {/* Chips Fotos / Plano — top left */}
+          {mostrarChips && (
+            <div style={{ position: "absolute", top: 14, left: 14, display: "flex", gap: 8, zIndex: 2 }}>
+              {([
+                [<Images key="i" size={14} strokeWidth={2} />, "Fotos", false, 0],
+                [<Ruler key="r" size={14} strokeWidth={2} />, "Plano", true, planoIndex],
+              ] as [React.ReactNode, string, boolean, number][]).map(([icon, label, esPlano, idx]) => {
+                const activo = esPlano === enPlano;
+                return (
+                  <button
+                    key={label}
+                    onClick={e => { e.stopPropagation(); setCurrent(idx); }}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 600,
+                      padding: "7px 13px", borderRadius: 999, cursor: "pointer",
+                      border: "1px solid transparent",
+                      background: activo ? "#fff" : "rgba(7,24,44,.55)",
+                      color: activo ? "var(--navy-800)" : "#fff",
+                      backdropFilter: "blur(4px)",
+                      transition: "all var(--dur) var(--ease-out)",
+                    }}
+                  >
+                    {icon}
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Expand hint — top right */}
           <div style={{
@@ -87,11 +129,11 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
             color: "#fff", fontFamily: "var(--font-sans)", fontSize: 12.5,
             padding: "5px 12px", borderRadius: 999, pointerEvents: "none",
           }}>
-            {current + 1} / {fotos.length}
+            {enPlano ? "Plano" : `${current + 1} / ${fotos.length}`}
           </div>
 
-          {/* Arrow buttons (only when multiple photos) */}
-          {fotos.length > 1 && (
+          {/* Arrow buttons (only when multiple items) */}
+          {items.length > 1 && (
             <>
               <button
                 onClick={e => { e.stopPropagation(); prev(); }}
@@ -110,34 +152,50 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
         </div>
 
         {/* Thumbnails */}
-        {fotos.length > 1 && (
+        {items.length > 1 && (
           <div style={{ display: "flex", gap: 10, marginTop: 10, overflowX: "auto", paddingBottom: 2 }}>
-            {fotos.map((url, i) => (
-              <button
-                key={url}
-                onClick={() => setCurrent(i)}
-                style={{
-                  flexShrink: 0, width: 78, height: 58,
-                  borderRadius: "var(--radius-sm)", overflow: "hidden",
-                  outline: i === current
-                    ? "2.5px solid var(--gold-500)"
-                    : "2.5px solid transparent",
-                  outlineOffset: -1,
-                  background: "none", border: "none", cursor: "pointer",
-                  padding: 0, position: "relative",
-                  opacity: i === current ? 1 : 0.7,
-                  transition: "opacity var(--dur) var(--ease-out), outline var(--dur) var(--ease-out)",
-                }}
-              >
-                <Image
-                  src={url}
-                  alt={`Miniatura ${i + 1}`}
-                  fill
-                  className="object-cover"
-                  sizes="78px"
-                />
-              </button>
-            ))}
+            {items.map((url, i) => {
+              const esPlano = i === planoIndex;
+              return (
+                <button
+                  key={url}
+                  onClick={() => setCurrent(i)}
+                  style={{
+                    flexShrink: 0, width: 78, height: 58,
+                    borderRadius: "var(--radius-sm)", overflow: "hidden",
+                    outline: i === current
+                      ? "2.5px solid var(--gold-500)"
+                      : "2.5px solid transparent",
+                    outlineOffset: -1,
+                    background: esPlano ? "#fff" : "none",
+                    border: esPlano ? "1px solid var(--line-200)" : "none",
+                    cursor: "pointer",
+                    padding: 0, position: "relative",
+                    opacity: i === current ? 1 : 0.7,
+                    transition: "opacity var(--dur) var(--ease-out), outline var(--dur) var(--ease-out)",
+                  }}
+                >
+                  <Image
+                    src={url}
+                    alt={esPlano ? "Miniatura del plano" : `Miniatura ${i + 1}`}
+                    fill
+                    className={esPlano ? "object-contain" : "object-cover"}
+                    sizes="78px"
+                  />
+                  {esPlano && (
+                    <span style={{
+                      position: "absolute", bottom: 3, left: "50%", transform: "translateX(-50%)",
+                      fontFamily: "var(--font-sans)", fontSize: 9, fontWeight: 700,
+                      letterSpacing: ".06em", textTransform: "uppercase",
+                      background: "var(--navy-800)", color: "#fff",
+                      padding: "2px 7px", borderRadius: 999, pointerEvents: "none",
+                    }}>
+                      Plano
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -160,11 +218,13 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
               position: "relative",
               width: "min(92vw, 1200px)",
               height: "min(88vh, 800px)",
+              background: enPlano ? "#fff" : "transparent",
+              borderRadius: enPlano ? "var(--radius-md)" : 0,
             }}
           >
             <Image
-              src={fotos[current]}
-              alt={`${titulo} · foto ${current + 1}`}
+              src={items[current]}
+              alt={altActual}
               fill
               className="object-contain"
               sizes="92vw"
@@ -182,7 +242,7 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
           </button>
 
           {/* Arrows */}
-          {fotos.length > 1 && (
+          {items.length > 1 && (
             <>
               <button
                 onClick={e => { e.stopPropagation(); prev(); }}
@@ -206,16 +266,16 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
             color: "#fff", fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 500,
             padding: "7px 18px", borderRadius: 999,
           }}>
-            {current + 1} / {fotos.length}
+            {enPlano ? "Plano" : `${current + 1} / ${fotos.length}`}
           </div>
 
           {/* Thumbnail strip */}
-          {fotos.length > 1 && (
+          {items.length > 1 && (
             <div style={{
               position: "fixed", bottom: 70, left: "50%", transform: "translateX(-50%)",
               display: "flex", gap: 8,
             }}>
-              {fotos.map((url, i) => (
+              {items.map((url, i) => (
                 <button
                   key={url}
                   onClick={e => { e.stopPropagation(); setCurrent(i); }}
@@ -224,13 +284,14 @@ export default function PropertyGallery({ fotos, titulo }: Props) {
                     borderRadius: "var(--radius-xs)", overflow: "hidden",
                     outline: i === current ? "2px solid var(--gold-500)" : "2px solid transparent",
                     outlineOffset: -1,
-                    background: "none", border: "none", cursor: "pointer",
+                    background: i === planoIndex ? "#fff" : "none",
+                    border: "none", cursor: "pointer",
                     padding: 0, position: "relative",
                     opacity: i === current ? 1 : 0.5,
                     transition: "opacity var(--dur) var(--ease-out)",
                   }}
                 >
-                  <Image src={url} alt="" fill className="object-cover" sizes="52px" />
+                  <Image src={url} alt="" fill className={i === planoIndex ? "object-contain" : "object-cover"} sizes="52px" />
                 </button>
               ))}
             </div>
