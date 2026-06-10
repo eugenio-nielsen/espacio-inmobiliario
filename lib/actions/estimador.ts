@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEstimacionLead } from "@/lib/email";
+import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import type { EstimadorConfig } from "@/lib/estimador/types";
 
 const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
@@ -27,6 +28,11 @@ export async function guardarLead(data: {
 }): Promise<{ ok: boolean; error?: string }> {
   if (!data.nombre || !data.email) {
     return { ok: false, error: "Nombre y email son obligatorios." };
+  }
+
+  // Máx. 5 leads por hora por IP (protege DB y cuota de emails)
+  if (!(await checkRateLimit("estimador-lead", 5, 3600))) {
+    return { ok: false, error: RATE_LIMIT_MSG };
   }
 
   try {

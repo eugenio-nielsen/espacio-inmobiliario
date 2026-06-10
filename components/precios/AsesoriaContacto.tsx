@@ -12,7 +12,7 @@ const inp: React.CSSProperties = {
 };
 
 export default function AsesoriaContacto() {
-  const [form, setForm] = useState({ nombre: "", email: "", telefono: "", mensaje: "" });
+  const [form, setForm] = useState({ nombre: "", email: "", telefono: "", mensaje: "", website: "" });
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -42,6 +42,11 @@ export default function AsesoriaContacto() {
 
   return (
     <div style={{ maxWidth: 560, margin: "0 auto" }}>
+      {/* Honeypot anti-bots: invisible para humanos, los bots lo completan */}
+      <div aria-hidden="true" style={{ position: "absolute", left: -9999, top: -9999, height: 0, overflow: "hidden" }}>
+        <input type="text" tabIndex={-1} autoComplete="off" placeholder="Dejá este campo vacío"
+          value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} />
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }} className="asesoria-grid">
         <input style={inp} placeholder="Nombre *" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
         <input style={inp} placeholder="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />

@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
@@ -53,6 +54,11 @@ export async function signOut() {
 export async function requestPasswordReset(formData: FormData) {
   const email = (formData.get("email") as string)?.trim();
   if (!email) return { error: "Ingresá tu email." };
+
+  // Máx. 3 pedidos por 15 minutos por IP
+  if (!(await checkRateLimit("pwd-reset", 3, 900))) {
+    return { error: RATE_LIMIT_MSG };
+  }
 
   const supabase = await createClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

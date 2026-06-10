@@ -4,8 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { InquiryStatus } from "@/lib/types";
 import { sendInquiryToOwner, sendInquiryConfirmation } from "@/lib/email";
+import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 
 export async function sendInquiry(propertyId: string, formData: FormData) {
+  // Honeypot: campo invisible que solo completan los bots → simular éxito
+  if ((formData.get("website") as string)?.trim()) return { ok: true };
+
+  // Máx. 5 consultas por hora por IP (protege DB y cuota de emails)
+  if (!(await checkRateLimit("inquiry", 5, 3600))) {
+    return { error: RATE_LIMIT_MSG };
+  }
+
   const supabase = await createClient();
 
   const nombre   = (formData.get("nombre")   as string)?.trim();

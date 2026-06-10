@@ -49,6 +49,10 @@ export default function InquiryForm({ propertyId }: { propertyId: string }) {
       <p style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15, color: "var(--ink-900)", margin: "0 0 12px" }}>
         Consultá al dueño
       </p>
+      {/* Honeypot anti-bots: invisible para humanos, los bots lo completan */}
+      <div aria-hidden="true" style={{ position: "absolute", left: -9999, top: -9999, height: 0, overflow: "hidden" }}>
+        <input name="website" type="text" tabIndex={-1} autoComplete="off" placeholder="Dejá este campo vacío" />
+      </div>
       <input name="nombre" type="text" required placeholder="Tu nombre" style={inp} />
       <input name="email" type="email" required placeholder="Tu email" style={inp} />
       <input name="telefono" type="tel" placeholder="Tu teléfono (opcional)" style={inp} />
