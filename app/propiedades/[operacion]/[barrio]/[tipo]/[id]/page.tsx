@@ -14,6 +14,7 @@ import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import InquiryForm from "@/components/properties/InquiryForm";
 import CostosCompra from "@/components/properties/CostosCompra";
+import DescripcionExpandible from "@/components/properties/DescripcionExpandible";
 import ShareButtons from "@/components/blog/ShareButtons";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import Navbar from "@/components/Navbar";
@@ -160,6 +161,8 @@ export default async function PropiedadPage({ params }: PageProps) {
     [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`],
     [<Ruler key="ruler" size={18} strokeWidth={1.75} />, p.superficie_total ? `${p.superficie_total} m² totales` : "— m²"],
     ...(p.superficie_cubierta ? [[<Ruler key="cub" size={18} strokeWidth={1.75} />, `${p.superficie_cubierta} m² cubiertos`] as Feat] : []),
+    ...(p.superficie_balcon ? [[<Ruler key="bal" size={18} strokeWidth={1.75} />, `${p.superficie_balcon} m² de balcón`] as Feat] : []),
+    ...(p.superficie_descubierta ? [[<Ruler key="desc" size={18} strokeWidth={1.75} />, `${p.superficie_descubierta} m² descubiertos`] as Feat] : []),
   ];
 
   // B · Características del edificio/unidad
@@ -319,9 +322,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                   <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: "var(--navy-800)", margin: "0 0 12px" }}>
                     Descripción
                   </h3>
-                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 15.5, lineHeight: 1.75, color: "var(--ink-600)", margin: "0 0 18px", maxWidth: 560, whiteSpace: "pre-line" }}>
-                    {p.descripcion}
-                  </p>
+                  <DescripcionExpandible texto={p.descripcion} />
                 </>
               )}
 

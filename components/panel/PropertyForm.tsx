@@ -53,6 +53,26 @@ export default function PropertyForm({ mode, property }: Props) {
     setPlanoExistente(null);
   }
 
+  // Superficies — el total es la suma automática de las tres
+  const [supCubierta, setSupCubierta] = useState<string>(
+    property?.superficie_cubierta != null ? String(property.superficie_cubierta) : ""
+  );
+  const [supBalcon, setSupBalcon] = useState<string>(
+    property?.superficie_balcon != null ? String(property.superficie_balcon) : ""
+  );
+  const [supDescubierta, setSupDescubierta] = useState<string>(() => {
+    if (property?.superficie_descubierta != null) return String(property.superficie_descubierta);
+    // Propiedad cargada antes del desglose: preservar el total existente
+    if (property?.superficie_total != null && property?.superficie_balcon == null) {
+      const resto = property.superficie_total - (property.superficie_cubierta ?? 0);
+      if (resto > 0) return String(Math.round(resto * 100) / 100);
+    }
+    return "";
+  });
+  const supTotal = Math.round(
+    ((parseFloat(supCubierta) || 0) + (parseFloat(supBalcon) || 0) + (parseFloat(supDescubierta) || 0)) * 100
+  ) / 100;
+
   // Ubicación
   const [zona, setZona] = useState<Zona | "">(() => {
     if (!property?.provincia) return "";
@@ -272,8 +292,8 @@ export default function PropertyForm({ mode, property }: Props) {
 
       {/* Características */}
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Características</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Lo principal</h2>
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Ambientes</label>
             <input name="ambientes" type="number" min={1} max={30} defaultValue={v?.ambientes ?? ""} className={inp} placeholder="Ej: 4" />
@@ -283,23 +303,50 @@ export default function PropertyForm({ mode, property }: Props) {
             <input name="dormitorios" type="number" min={0} max={20} defaultValue={v?.dormitorios ?? ""} className={inp} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sup. total (m²)</label>
-            <input name="superficie_total" type="number" min={0} step="0.01" defaultValue={v?.superficie_total ?? ""} className={inp} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sup. cubierta (m²)</label>
-            <input name="superficie_cubierta" type="number" min={0} step="0.01" defaultValue={v?.superficie_cubierta ?? ""} className={inp} />
-          </div>
-          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Baños</label>
             <input name="banos" type="number" min={0} max={10} defaultValue={v?.banos ?? ""} className={inp} />
           </div>
         </div>
-        {/* Expensas, antigüedad, estado, piso */}
+        {/* Superficies: el total se calcula solo */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Expensas (ARS/mes)</label>
-            <input name="expensas" type="number" min={0} defaultValue={v?.expensas ?? ""} className={inp} placeholder="Ej: 180000" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sup. cubierta (m²)</label>
+            <input name="superficie_cubierta" type="number" min={0} step="0.01" value={supCubierta}
+              onChange={e => setSupCubierta(e.target.value)} className={inp} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sup. balcón (m²)</label>
+            <input name="superficie_balcon" type="number" min={0} step="0.01" value={supBalcon}
+              onChange={e => setSupBalcon(e.target.value)} className={inp} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sup. descub. / terraza (m²)</label>
+            <input name="superficie_descubierta" type="number" min={0} step="0.01" value={supDescubierta}
+              onChange={e => setSupDescubierta(e.target.value)} className={inp} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Sup. total (m²) <span className="text-gray-400 font-normal">· automática</span>
+            </label>
+            <input name="superficie_total" type="number" readOnly value={supTotal || ""}
+              className={`${inp} bg-gray-50 text-gray-600 cursor-default`} tabIndex={-1} />
+          </div>
+        </div>
+      </section>
+
+      {/* Características */}
+      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Características</h2>
+        <div className="flex items-center gap-3">
+          <input type="hidden" name="cochera" value="false" />
+          <input id="cochera" name="cochera" type="checkbox" value="true" defaultChecked={v?.cochera}
+            className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
+          <label htmlFor="cochera" className="text-sm text-gray-700">Tiene cochera / garage</label>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Piso</label>
+            <input name="piso" type="text" maxLength={10} defaultValue={v?.piso ?? ""} className={inp} placeholder="PB, 3, 12…" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Antigüedad (años)</label>
@@ -316,12 +363,7 @@ export default function PropertyForm({ mode, property }: Props) {
               <option value="A refaccionar">A refaccionar</option>
             </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Piso</label>
-            <input name="piso" type="text" maxLength={10} defaultValue={v?.piso ?? ""} className={inp} placeholder="PB, 3, 12…" />
-          </div>
         </div>
-        {/* Orientación y Disposición */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Orientación</label>
@@ -348,16 +390,17 @@ export default function PropertyForm({ mode, property }: Props) {
             </select>
           </div>
         </div>
+      </section>
 
-        {/* Checkboxes */}
-        <div className="flex flex-wrap gap-6">
-          <div className="flex items-center gap-3">
-            <input type="hidden" name="cochera" value="false" />
-            <input id="cochera" name="cochera" type="checkbox" value="true" defaultChecked={v?.cochera}
-              className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
-            <label htmlFor="cochera" className="text-sm text-gray-700">Tiene cochera / garage</label>
+      {/* Costos y financiación */}
+      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Costos y financiación</h2>
+        <div className="grid grid-cols-2 gap-4 items-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Expensas (ARS/mes)</label>
+            <input name="expensas" type="number" min={0} defaultValue={v?.expensas ?? ""} className={inp} placeholder="Ej: 180000" />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pb-2.5">
             <input type="hidden" name="apto_credito" value="false" />
             <input id="apto_credito" name="apto_credito" type="checkbox" value="true" defaultChecked={v?.apto_credito}
               className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
