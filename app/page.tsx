@@ -85,7 +85,10 @@ export default async function HomePage() {
             ] as const).map(([Icon, text]) => (
               <span key={text} style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
-                fontFamily: "var(--font-sans)", fontSize: 13.5, color: "rgba(255,255,255,.85)",
+                fontFamily: "var(--font-sans)", fontSize: 13.5, color: "rgba(255,255,255,.92)",
+                background: "rgba(7,24,44,.55)", backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,.14)",
+                borderRadius: 999, padding: "8px 16px",
               }}>
                 <Icon size={17} strokeWidth={1.75} color="var(--gold-400)" />
                 {text}
