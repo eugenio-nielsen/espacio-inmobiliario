@@ -9,6 +9,7 @@ import { BadgeCheck, Handshake, MapPin, Plus, ArrowRight, Building2, Eye, Map as
 import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
 import Counter from "@/components/ui/Counter";
 import FadeIn from "@/components/ui/FadeIn";
+import SkylineVivo from "@/components/ui/SkylineVivo";
 import { BARRIOS_CABA, PARTIDOS_PBA } from "@/lib/ubicaciones";
 
 export const revalidate = 60;
@@ -55,6 +56,8 @@ export default async function HomePage() {
         {/* Imagen de fondo con Ken Burns (zoom lento infinito) */}
         <div className="hero-kenburns" style={{ position: "absolute", inset: 0, backgroundImage: "url('/hero-bg.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.22, pointerEvents: "none" }} />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% -10%, rgba(185,159,102,.16), transparent 55%)", pointerEvents: "none" }} />
+        {/* Skyline vivo: ventanas, nubes y pins en movimiento continuo */}
+        <SkylineVivo />
         <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <div className="es-eyebrow es-eyebrow-light hero-animate" style={{ marginBottom: 14 }}>
             Propiedades directas de dueños
