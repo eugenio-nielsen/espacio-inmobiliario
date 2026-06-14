@@ -606,6 +606,15 @@ select:focus, input:focus, textarea:focus {
   .crm-week-stats { display: none; }
 }
 
+/* CRM card (rediseño): en mobile las acciones bajan a una nueva línea */
+@media (max-width: 559px) {
+  .crm-card-head { flex-wrap: wrap; }
+  .crm-card-actions { width: 100%; justify-content: flex-start; margin-top: 4px; }
+}
+@media (max-width: 419px) {
+  .inq-date { display: none; }
+}
+
 /* Section padding responsive */
 .section-pad { padding: 64px 24px; }
 @media (max-width: 639px) {

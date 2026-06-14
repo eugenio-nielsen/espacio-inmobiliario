@@ -17,6 +17,9 @@ export default async function PanelPage({
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  const { data: profile } = await supabase
+    .from("profiles").select("nombre").eq("id", user!.id).single();
+
   // Propiedades del dueño
   const { data: properties } = await supabase
     .from("properties")
@@ -60,6 +63,7 @@ export default async function PanelPage({
       <CRMPanel
         properties={propertiesWithInquiries}
         showWelcome={!!nuevo}
+        ownerName={profile?.nombre}
       />
     </>
   );

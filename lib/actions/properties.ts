@@ -220,3 +220,22 @@ export async function deleteProperty(id: string) {
   revalidatePath("/panel");
   redirect("/panel");
 }
+
+// Cambio rápido de estado (activa / pausada / vendida) desde el panel
+export async function setPropertyStatus(id: string, status: "activa" | "pausada" | "vendida") {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "No autenticado" };
+  if (!["activa", "pausada", "vendida"].includes(status)) return { ok: false, error: "Estado inválido" };
+
+  const { error } = await supabase
+    .from("properties")
+    .update({ status })
+    .eq("id", id)
+    .eq("owner_id", user.id);
+
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/panel");
+  return { ok: true };
+}
