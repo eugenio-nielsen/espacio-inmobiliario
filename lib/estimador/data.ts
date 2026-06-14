@@ -19,8 +19,10 @@ export async function getPreciosBarrios(): Promise<Record<string, number>> {
  */
 function mergeConfig(saved: EstimadorConfig): EstimadorConfig {
   const merged: EstimadorConfig = {
+    version: DEFAULT_CONFIG.version,
     superficieSemicubiertaFactor: saved.superficieSemicubiertaFactor ?? DEFAULT_CONFIG.superficieSemicubiertaFactor,
     superficieDescubiertaFactor: saved.superficieDescubiertaFactor ?? DEFAULT_CONFIG.superficieDescubiertaFactor,
+    estadoObra: saved.estadoObra ?? DEFAULT_CONFIG.estadoObra,
     topeMin: saved.topeMin ?? DEFAULT_CONFIG.topeMin,
     topeMax: saved.topeMax ?? DEFAULT_CONFIG.topeMax,
     rango: saved.rango ?? DEFAULT_CONFIG.rango,
@@ -33,11 +35,17 @@ function mergeConfig(saved: EstimadorConfig): EstimadorConfig {
   return merged;
 }
 
-/** Config del modelo desde Supabase, con fallback/merge al default. */
+/**
+ * Config del modelo desde Supabase.
+ * Si la versión guardada difiere de la del código, se migra al nuevo default
+ * (el modelo v2 reemplaza el tuning viejo por una base profesional). Los precios
+ * por barrio viven en otra tabla y no se tocan.
+ */
 export async function getEstimadorConfig(): Promise<EstimadorConfig> {
   const supabase = await createClient();
   const { data } = await supabase.from("estimador_config").select("config").eq("id", 1).maybeSingle();
-  if (data?.config) return mergeConfig(data.config as EstimadorConfig);
+  const saved = data?.config as EstimadorConfig | undefined;
+  if (saved && saved.version === DEFAULT_CONFIG.version) return mergeConfig(saved);
   return DEFAULT_CONFIG;
 }
 

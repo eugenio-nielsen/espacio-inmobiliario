@@ -1,8 +1,15 @@
 // ── Tipos del Estimador de Precios ─────────────────────────────
 
-export type EstadoConservacion = "a_reciclar" | "bueno" | "muy_bueno" | "a_estrenar";
+export type EstadoConservacion = "a_reciclar" | "bueno" | "muy_bueno" | "excelente";
+export type CondicionObra = "usado" | "a_estrenar" | "pozo";
 export type Disposicion = "frente" | "contrafrente" | "interno";
 export type CategoriaEdificio = "regular" | "estandar" | "premium";
+export type Vista = "" | "abierta" | "despejada" | "a_la_calle" | "interna";
+export type Expensas = "" | "bajas" | "medias" | "altas";
+export type Ocupacion = "" | "libre" | "alquilada" | "ocupada";
+export type SituacionDominial = "" | "escritura" | "sucesion" | "observaciones";
+export type Calefaccion = "" | "losa" | "central" | "individual" | "sin";
+export type Cochera = "no" | "descubierta" | "movil" | "fija";
 export type NivelConfianza = "baja" | "media" | "alta";
 
 export interface EstimadorInput {
@@ -15,13 +22,22 @@ export interface EstimadorInput {
   dormitorios?: number;
   banos: number;
   antiguedad: number;          // años
-  estado: EstadoConservacion;
+  condicionObra: CondicionObra;
+  estado: EstadoConservacion;  // conservación (para usados)
   piso: number;                // 0 = planta baja
   ultimoPiso: boolean;
+  ascensor: boolean;
   disposicion: Disposicion;
   orientacion?: string;        // "norte", "sur", etc. o ""
-  cochera: boolean;
+  vista: Vista;
+  cochera: Cochera;
   baulera: boolean;
+  dependenciaServicio: boolean;
+  calefaccion: Calefaccion;
+  expensas: Expensas;
+  aptoCredito: boolean;
+  ocupacion: Ocupacion;
+  situacionDominial: SituacionDominial;
   vecinosEspeciales: boolean;  // a < 3 cuadras de bomberos, cementerio, hospital o terminal
   categoria: CategoriaEdificio;
   amenities: {
@@ -60,10 +76,13 @@ export interface Factor {
 }
 
 export interface EstimadorConfig {
+  version: number;                      // si cambia, se migra a la nueva config
   superficieSemicubiertaFactor: number; // peso de m² de balcón (ej 0.50 = 50% del cubierto)
   superficieDescubiertaFactor: number;  // peso de m² patio/terraza (ej 0.30 = 30% del cubierto)
-  topeMin: number;                      // tope inferior del índice (ej 0.55)
-  topeMax: number;                      // tope superior del índice (ej 1.60)
+  // multiplica el $/m² del barrio según la condición de obra
+  estadoObra: { usado: number; a_estrenar: number; pozo: number };
+  topeMin: number;                      // tope inferior del índice
+  topeMax: number;                      // tope superior del índice
   rango: { alta: number; media: number; baja: number }; // spread del rango por confianza
   factores: Factor[];
 }
@@ -81,8 +100,10 @@ export interface EstimadorResultado {
   rangoMin: number;
   rangoMax: number;
   precioM2Resultante: number;
+  precioM2Referencia: number;  // $/m² del barrio ajustado por condición de obra
   valorBase: number;
   indiceAjuste: number;
+  ajustePct: number;           // (indice - 1) * 100
   confianza: NivelConfianza;
   factoresPositivos: FactorAplicado[];
   factoresNegativos: FactorAplicado[];

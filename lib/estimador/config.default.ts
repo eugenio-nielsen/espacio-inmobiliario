@@ -1,15 +1,17 @@
 import type { EstimadorConfig } from "./types";
 
 /**
- * Config por defecto del modelo de estimación.
- * Se usa como fallback si la tabla `estimador_config` está vacía.
+ * Config por defecto del modelo de estimación (v2).
+ * Si la versión guardada en la DB difiere de esta, se migra a este default.
  * Desde el panel de admin se puede sobrescribir (modificar / sumar / quitar coeficientes).
  */
 export const DEFAULT_CONFIG: EstimadorConfig = {
+  version: 2,
   superficieSemicubiertaFactor: 0.5,
   superficieDescubiertaFactor: 0.3,
-  topeMin: 0.55,
-  topeMax: 1.6,
+  estadoObra: { usado: 1.0, a_estrenar: 1.28, pozo: 1.18 },
+  topeMin: 0.5,
+  topeMax: 1.55,
   rango: { alta: 0.05, media: 0.08, baja: 0.12 },
   factores: [
     {
@@ -27,6 +29,20 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       ],
     },
     {
+      id: "tipologia",
+      label: "Tipología (liquidez)",
+      tipo: "rango",
+      input: "ambientes",
+      activo: true,
+      rangos: [
+        { max: 1, coef: 0.99, label: "Monoambiente" },
+        { min: 2, max: 2, coef: 1.02, label: "2 ambientes" },
+        { min: 3, max: 3, coef: 1.01, label: "3 ambientes" },
+        { min: 4, max: 4, coef: 0.99, label: "4 ambientes" },
+        { min: 5, coef: 0.97, label: "5 o más ambientes" },
+      ],
+    },
+    {
       id: "piso",
       label: "Piso",
       tipo: "rango",
@@ -41,12 +57,21 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       ],
     },
     {
+      id: "ascensor",
+      label: "Ascensor",
+      tipo: "booleano",
+      input: "ascensor",
+      activo: true,
+      coefTrue: 1.00,
+      coefFalse: 0.94,
+    },
+    {
       id: "ultimo_piso",
       label: "Último piso",
       tipo: "booleano",
       input: "ultimoPiso",
       activo: true,
-      coefTrue: 0.90,
+      coefTrue: 0.95,
       coefFalse: 1.00,
     },
     {
@@ -68,10 +93,10 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       input: "estado",
       activo: true,
       opciones: {
-        a_reciclar: { coef: 0.88, label: "A reciclar" },
+        a_reciclar: { coef: 0.85, label: "A reciclar" },
         bueno: { coef: 1.00, label: "Bueno" },
-        muy_bueno: { coef: 1.08, label: "Muy bueno" },
-        a_estrenar: { coef: 1.15, label: "A estrenar" },
+        muy_bueno: { coef: 1.06, label: "Muy bueno" },
+        excelente: { coef: 1.12, label: "Excelente" },
       },
     },
     {
@@ -81,11 +106,11 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       input: "antiguedad",
       activo: true,
       rangos: [
-        { max: 5, coef: 1.05, label: "Hasta 5 años" },
-        { min: 6, max: 15, coef: 1.02, label: "6 a 15 años" },
+        { max: 5, coef: 1.03, label: "Hasta 5 años" },
+        { min: 6, max: 15, coef: 1.01, label: "6 a 15 años" },
         { min: 16, max: 30, coef: 1.00, label: "16 a 30 años" },
-        { min: 31, max: 50, coef: 0.95, label: "31 a 50 años" },
-        { min: 51, coef: 0.90, label: "Más de 50 años" },
+        { min: 31, max: 50, coef: 0.96, label: "31 a 50 años" },
+        { min: 51, coef: 0.91, label: "Más de 50 años" },
       ],
     },
     {
@@ -98,6 +123,19 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
         frente: { coef: 1.03, label: "Frente" },
         contrafrente: { coef: 0.97, label: "Contrafrente" },
         interno: { coef: 0.94, label: "Interno" },
+      },
+    },
+    {
+      id: "vista",
+      label: "Vista",
+      tipo: "opcion",
+      input: "vista",
+      activo: true,
+      opciones: {
+        abierta: { coef: 1.06, label: "Abierta / panorámica" },
+        despejada: { coef: 1.03, label: "Despejada" },
+        a_la_calle: { coef: 1.00, label: "A la calle" },
+        interna: { coef: 0.97, label: "Interna / pulmón" },
       },
     },
     {
@@ -120,11 +158,15 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
     {
       id: "cochera",
       label: "Cochera",
-      tipo: "booleano",
+      tipo: "opcion",
       input: "cochera",
       activo: true,
-      coefTrue: 1.07,
-      coefFalse: 1.00,
+      opciones: {
+        no: { coef: 1.00, label: "Sin cochera" },
+        descubierta: { coef: 1.04, label: "Descubierta" },
+        movil: { coef: 1.05, label: "Cubierta móvil" },
+        fija: { coef: 1.08, label: "Cubierta fija" },
+      },
     },
     {
       id: "baulera",
@@ -134,6 +176,73 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       activo: true,
       coefTrue: 1.02,
       coefFalse: 1.00,
+    },
+    {
+      id: "dependencia_servicio",
+      label: "Dependencia de servicio",
+      tipo: "booleano",
+      input: "dependenciaServicio",
+      activo: true,
+      coefTrue: 1.03,
+      coefFalse: 1.00,
+    },
+    {
+      id: "calefaccion",
+      label: "Calefacción",
+      tipo: "opcion",
+      input: "calefaccion",
+      activo: true,
+      opciones: {
+        losa: { coef: 1.03, label: "Losa radiante" },
+        central: { coef: 1.02, label: "Central" },
+        individual: { coef: 1.00, label: "Individual" },
+        sin: { coef: 0.97, label: "Sin calefacción" },
+      },
+    },
+    {
+      id: "expensas",
+      label: "Expensas",
+      tipo: "opcion",
+      input: "expensas",
+      activo: true,
+      opciones: {
+        bajas: { coef: 1.02, label: "Bajas" },
+        medias: { coef: 1.00, label: "Medias" },
+        altas: { coef: 0.96, label: "Altas" },
+      },
+    },
+    {
+      id: "apto_credito",
+      label: "Apto crédito hipotecario",
+      tipo: "booleano",
+      input: "aptoCredito",
+      activo: true,
+      coefTrue: 1.04,
+      coefFalse: 1.00,
+    },
+    {
+      id: "ocupacion",
+      label: "Ocupación",
+      tipo: "opcion",
+      input: "ocupacion",
+      activo: true,
+      opciones: {
+        libre: { coef: 1.00, label: "Libre" },
+        alquilada: { coef: 0.95, label: "Alquilada" },
+        ocupada: { coef: 0.88, label: "Ocupada" },
+      },
+    },
+    {
+      id: "situacion_dominial",
+      label: "Situación dominial",
+      tipo: "opcion",
+      input: "situacionDominial",
+      activo: true,
+      opciones: {
+        escritura: { coef: 1.00, label: "Escritura al día" },
+        sucesion: { coef: 0.95, label: "En sucesión" },
+        observaciones: { coef: 0.92, label: "Con observaciones" },
+      },
     },
     {
       id: "vecinos_especiales",

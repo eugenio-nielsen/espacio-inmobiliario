@@ -8,11 +8,17 @@ import {
 import { guardarLead } from "@/lib/actions/estimador";
 import type { EstimadorInput, EstimadorResultado } from "@/lib/estimador/types";
 
+const CONDICION_OBRA = [
+  { v: "usado", l: "Usado" },
+  { v: "a_estrenar", l: "A estrenar" },
+  { v: "pozo", l: "En pozo / construcción" },
+] as const;
+
 const ESTADOS = [
   { v: "a_reciclar", l: "A reciclar" },
   { v: "bueno", l: "Bueno" },
   { v: "muy_bueno", l: "Muy bueno" },
-  { v: "a_estrenar", l: "A estrenar" },
+  { v: "excelente", l: "Excelente" },
 ] as const;
 
 const DISPOSICIONES = [
@@ -25,6 +31,48 @@ const CATEGORIAS = [
   { v: "regular", l: "Regular" },
   { v: "estandar", l: "Estándar" },
   { v: "premium", l: "Premium" },
+] as const;
+
+const VISTAS = [
+  { v: "", l: "Sin especificar" },
+  { v: "abierta", l: "Abierta / panorámica" },
+  { v: "despejada", l: "Despejada" },
+  { v: "a_la_calle", l: "A la calle" },
+  { v: "interna", l: "Interna / pulmón" },
+] as const;
+
+const EXPENSAS = [
+  { v: "", l: "Sin especificar" },
+  { v: "bajas", l: "Bajas" },
+  { v: "medias", l: "Medias" },
+  { v: "altas", l: "Altas" },
+] as const;
+
+const CALEFACCION = [
+  { v: "", l: "Sin especificar" },
+  { v: "losa", l: "Losa radiante" },
+  { v: "central", l: "Central" },
+  { v: "individual", l: "Individual" },
+  { v: "sin", l: "Sin calefacción" },
+] as const;
+
+const COCHERAS = [
+  { v: "no", l: "Sin cochera" },
+  { v: "descubierta", l: "Descubierta" },
+  { v: "movil", l: "Cubierta móvil" },
+  { v: "fija", l: "Cubierta fija" },
+] as const;
+
+const OCUPACION = [
+  { v: "libre", l: "Libre" },
+  { v: "alquilada", l: "Alquilada" },
+  { v: "ocupada", l: "Ocupada" },
+] as const;
+
+const SITUACION = [
+  { v: "escritura", l: "Escritura al día" },
+  { v: "sucesion", l: "En sucesión" },
+  { v: "observaciones", l: "Con observaciones" },
 ] as const;
 
 const ORIENTACIONES = ["", "Norte", "Noreste", "Este", "Sureste", "Sur", "Suroeste", "Oeste", "Noroeste"];
@@ -59,8 +107,12 @@ const defaultInput: EstimadorInput = {
   barrio: "", direccion: "",
   m2Cubiertos: 0, m2Semicubierto: 0, m2Descubiertos: 0,
   ambientes: undefined, dormitorios: undefined, banos: 1,
-  antiguedad: 0, estado: "bueno", piso: 0, ultimoPiso: false,
-  disposicion: "frente", orientacion: "", cochera: false, baulera: false,
+  antiguedad: 0, condicionObra: "usado", estado: "bueno",
+  piso: 0, ultimoPiso: false, ascensor: true,
+  disposicion: "frente", orientacion: "", vista: "",
+  cochera: "no", baulera: false, dependenciaServicio: false,
+  calefaccion: "", expensas: "", aptoCredito: false,
+  ocupacion: "libre", situacionDominial: "escritura",
   vecinosEspeciales: false,
   categoria: "estandar",
   amenities: { pileta: false, sum: false, gimnasio: false, seguridad: false, parrilla: false },
@@ -193,11 +245,26 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
                 {DISPOSICIONES.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
               </select>
             </Field>
+            <Field label="Vista">
+              <select style={inputStyle} value={input.vista} onChange={e => set("vista", e.target.value as EstimadorInput["vista"])}>
+                {VISTAS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </Field>
+            <Field label="Cochera">
+              <select style={inputStyle} value={input.cochera} onChange={e => set("cochera", e.target.value as EstimadorInput["cochera"])}>
+                {COCHERAS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </Field>
           </div>
 
           {/* ── b) Características del edificio ──────────────────── */}
           <SubHeader icon={<Building2 size={15} />} title="Características del edificio" />
           <div className="est-grid2" style={{ marginBottom: 18 }}>
+            <Field label="Condición de obra">
+              <select style={inputStyle} value={input.condicionObra} onChange={e => set("condicionObra", e.target.value as EstimadorInput["condicionObra"])}>
+                {CONDICION_OBRA.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </Field>
             <Field label="Antigüedad (años)">
               <input style={inputStyle} type="number" min={0} value={input.antiguedad || ""} onChange={e => set("antiguedad", Number(e.target.value))} placeholder="0 = a estrenar" />
             </Field>
@@ -211,13 +278,25 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
                 {CATEGORIAS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
               </select>
             </Field>
+            <Field label="Calefacción">
+              <select style={inputStyle} value={input.calefaccion} onChange={e => set("calefaccion", e.target.value as EstimadorInput["calefaccion"])}>
+                {CALEFACCION.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </Field>
+            <Field label="Expensas">
+              <select style={inputStyle} value={input.expensas} onChange={e => set("expensas", e.target.value as EstimadorInput["expensas"])}>
+                {EXPENSAS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </Field>
           </div>
 
           {/* Toggles */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 18 }}>
-            <Toggle label="Cochera" on={input.cochera} onClick={() => set("cochera", !input.cochera)} />
+            <Toggle label="Ascensor" on={input.ascensor} onClick={() => set("ascensor", !input.ascensor)} />
             <Toggle label="Baulera" on={input.baulera} onClick={() => set("baulera", !input.baulera)} />
             <Toggle label="Último piso" on={input.ultimoPiso} onClick={() => set("ultimoPiso", !input.ultimoPiso)} />
+            <Toggle label="Dependencia de servicio" on={input.dependenciaServicio} onClick={() => set("dependenciaServicio", !input.dependenciaServicio)} />
+            <Toggle label="Apto crédito hipotecario" on={input.aptoCredito} onClick={() => set("aptoCredito", !input.aptoCredito)} />
           </div>
 
           {/* Amenities */}
@@ -228,9 +307,21 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
             ))}
           </div>
 
-          {/* ── c) Características especiales ────────────────────── */}
+          {/* ── c) Situación y especiales ───────────────────────── */}
           <div style={{ marginTop: 26 }}>
-            <SubHeader icon={<Sparkles size={15} />} title="Características especiales" />
+            <SubHeader icon={<Sparkles size={15} />} title="Situación y especiales" />
+            <div className="est-grid2" style={{ marginBottom: 14 }}>
+              <Field label="Ocupación">
+                <select style={inputStyle} value={input.ocupacion} onChange={e => set("ocupacion", e.target.value as EstimadorInput["ocupacion"])}>
+                  {OCUPACION.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+                </select>
+              </Field>
+              <Field label="Situación dominial">
+                <select style={inputStyle} value={input.situacionDominial} onChange={e => set("situacionDominial", e.target.value as EstimadorInput["situacionDominial"])}>
+                  {SITUACION.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+                </select>
+              </Field>
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {ESPECIALES.map(esp => (
                 <div key={esp.k} style={{
@@ -411,6 +502,26 @@ function ResultadoView({ input, result, onReset }: { input: EstimadorInput; resu
         </div>
       </div>
 
+      {/* Desglose compacto */}
+      <div style={{ ...card, padding: "18px 22px", marginBottom: 16 }}>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--ink-400)", margin: "0 0 12px" }}>
+          Cómo se calcula
+        </p>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px 14px" }}>
+          <BreakStep label={`Referencia (${input.barrio})`} value={`${fmtUSD(result.precioM2Referencia)}/m²`} />
+          <BreakArrow />
+          <BreakStep label="Valor base (superficies)" value={fmtUSD(result.valorBase)} />
+          <BreakArrow />
+          <BreakStep
+            label="Ajustes de la unidad"
+            value={`${result.ajustePct > 0 ? "+" : ""}${result.ajustePct}%`}
+            color={result.ajustePct > 0 ? "#15803D" : result.ajustePct < 0 ? "#B91C1C" : "var(--ink-700)"}
+          />
+          <BreakArrow />
+          <BreakStep label="Valor estimado" value={fmtUSD(result.estimado)} strong />
+        </div>
+      </div>
+
       {/* Factores */}
       <div style={{ marginBottom: 16 }} className="estimador-factores">
         <FactoresCard title="Factores positivos" icon={<TrendingUp size={16} />} color="#15803D" factores={result.factoresPositivos} empty="Sin factores que sumen valor" />
@@ -449,6 +560,19 @@ function Chip({ label, value }: { label: string; value: string }) {
       <span style={{ fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 700, color: "#fff" }}>{value}</span>
     </span>
   );
+}
+
+function BreakStep({ label, value, color, strong }: { label: string; value: string; color?: string; strong?: boolean }) {
+  return (
+    <div>
+      <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: "0 0 1px" }}>{label}</p>
+      <p style={{ fontFamily: strong ? "var(--font-display)" : "var(--font-sans)", fontWeight: 700, fontSize: strong ? 18 : 14.5, color: color || (strong ? "var(--gold-700)" : "var(--ink-900)"), margin: 0, lineHeight: 1.1 }}>{value}</p>
+    </div>
+  );
+}
+
+function BreakArrow() {
+  return <span style={{ color: "var(--ink-300)", fontSize: 16 }} className="break-arrow">→</span>;
 }
 
 function FactoresCard({ title, icon, color, factores, empty }: {

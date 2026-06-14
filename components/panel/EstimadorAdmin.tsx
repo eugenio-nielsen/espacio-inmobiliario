@@ -137,6 +137,16 @@ function ConfigEditor({ config: initial }: { config: EstimadorConfig }) {
           <NumField label="Rango confianza baja (±)" value={config.rango.baja} step={0.01}
             onChange={v => update(c => { c.rango.baja = v; })} />
         </div>
+
+        <h2 style={{ ...h2, marginTop: 22 }}>Condición de obra (multiplica el $/m²)</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))", gap: 14, marginTop: 14 }}>
+          <NumField label="Usado" value={config.estadoObra?.usado ?? 1} step={0.01}
+            onChange={v => update(c => { c.estadoObra = { ...(c.estadoObra ?? { usado: 1, a_estrenar: 1.28, pozo: 1.18 }), usado: v }; })} />
+          <NumField label="A estrenar" value={config.estadoObra?.a_estrenar ?? 1.28} step={0.01}
+            onChange={v => update(c => { c.estadoObra = { ...(c.estadoObra ?? { usado: 1, a_estrenar: 1.28, pozo: 1.18 }), a_estrenar: v }; })} />
+          <NumField label="En pozo" value={config.estadoObra?.pozo ?? 1.18} step={0.01}
+            onChange={v => update(c => { c.estadoObra = { ...(c.estadoObra ?? { usado: 1, a_estrenar: 1.28, pozo: 1.18 }), pozo: v }; })} />
+        </div>
       </div>
 
       {/* Factores */}

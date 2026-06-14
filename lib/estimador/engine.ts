@@ -55,7 +55,7 @@ function roundMiles(n: number) {
 
 function calcularConfianza(input: EstimadorInput, tienePrecioBarrio: boolean): NivelConfianza {
   if (!tienePrecioBarrio) return "baja";
-  // Completitud de datos clave
+  // Completitud de datos clave (cuantos más completos, mayor confianza)
   let faltantes = 0;
   if (!input.m2Cubiertos || input.m2Cubiertos <= 0) faltantes++;
   if (input.antiguedad == null) faltantes++;
@@ -64,8 +64,11 @@ function calcularConfianza(input: EstimadorInput, tienePrecioBarrio: boolean): N
   if (!input.disposicion) faltantes++;
   if (input.piso == null) faltantes++;
   if (!input.orientacion) faltantes++;
+  if (!input.vista) faltantes++;
+  if (!input.expensas) faltantes++;
+  if (!input.ambientes) faltantes++;
   if (faltantes === 0) return "alta";
-  if (faltantes <= 2) return "media";
+  if (faltantes <= 3) return "media";
   return "baja";
 }
 
@@ -82,13 +85,17 @@ export function estimarPrecio(
     return { error: "Los metros cubiertos deben ser mayores a 0." };
   }
 
-  // 1. Valor base (cubierto + balcón ponderado + patio/terraza ponderado)
+  // 1. Precio de referencia ajustado por condición de obra (usado / a estrenar / pozo)
+  const obraMult = config.estadoObra?.[input.condicionObra] ?? 1;
+  const precioM2Ref = precioM2 * obraMult;
+
+  // Valor base (cubierto + balcón ponderado + patio/terraza ponderado)
   const semiFactor = config.superficieSemicubiertaFactor ?? 0.5;
   const descFactor = config.superficieDescubiertaFactor ?? 0.3;
   const valorBase =
-    input.m2Cubiertos * precioM2 +
-    (input.m2Semicubierto || 0) * precioM2 * semiFactor +
-    (input.m2Descubiertos || 0) * precioM2 * descFactor;
+    input.m2Cubiertos * precioM2Ref +
+    (input.m2Semicubierto || 0) * precioM2Ref * semiFactor +
+    (input.m2Descubiertos || 0) * precioM2Ref * descFactor;
 
   // 2. Índice de ajuste = producto de coeficientes
   let indice = 1;
@@ -124,8 +131,10 @@ export function estimarPrecio(
     rangoMin: roundMiles(estimadoRaw * (1 - spread)),
     rangoMax: roundMiles(estimadoRaw * (1 + spread)),
     precioM2Resultante: Math.round(estimadoRaw / input.m2Cubiertos),
+    precioM2Referencia: Math.round(precioM2Ref),
     valorBase: roundMiles(valorBase),
     indiceAjuste: Number(indice.toFixed(3)),
+    ajustePct: Math.round((indice - 1) * 100),
     confianza,
     // ordenar por impacto
     factoresPositivos: factoresPositivos.sort((a, b) => b.coef - a.coef),
