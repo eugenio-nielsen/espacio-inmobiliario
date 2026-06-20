@@ -2,8 +2,10 @@
 
 import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, Sparkles } from "lucide-react";
 import { createProperty, updateProperty } from "@/lib/actions/properties";
+import { generarDescripcionIA } from "@/lib/actions/descripcion";
+import type { CamposDescripcion } from "@/lib/ai/descripcion";
 import { compressImage } from "@/lib/utils/compressImage";
 import type { Property } from "@/lib/types";
 import { ZONAS, UBICACIONES, type Zona } from "@/lib/ubicaciones";
@@ -23,6 +25,74 @@ export default function PropertyForm({ mode, property }: Props) {
   const [nuevasPreviews, setNuevasPreviews] = useState<string[]>([]);
   const [optimizando, setOptimizando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Descripción con IA
+  const formRef = useRef<HTMLFormElement>(null);
+  const descripcionRef = useRef<HTMLTextAreaElement>(null);
+  const [iaCargando, setIaCargando] = useState(false);
+  const [iaError, setIaError] = useState<string | null>(null);
+  const [usosIA, setUsosIA] = useState<number | null>(
+    mode === "editar" ? Math.max(0, 2 - (property?.ai_usos ?? 0)) : null
+  );
+
+  function camposDesdeForm(): CamposDescripcion {
+    const fd = new FormData(formRef.current!);
+    const num = (k: string) => {
+      const v = fd.get(k);
+      return v !== null && v !== "" ? Number(v) : undefined;
+    };
+    const str = (k: string) => ((fd.get(k) as string)?.trim() || undefined);
+    return {
+      tipo: str("tipo"),
+      barrio: str("barrio"),
+      ciudad: str("ciudad"),
+      direccion: str("direccion"),
+      superficie_total: num("superficie_total"),
+      superficie_cubierta: num("superficie_cubierta"),
+      superficie_balcon: num("superficie_balcon"),
+      superficie_descubierta: num("superficie_descubierta"),
+      ambientes: num("ambientes"),
+      dormitorios: num("dormitorios"),
+      banos: num("banos"),
+      cochera: fd.getAll("cochera").includes("true"),
+      apto_credito: fd.getAll("apto_credito").includes("true"),
+      orientacion: str("orientacion"),
+      disposicion: str("disposicion"),
+      antiguedad: num("antiguedad"),
+      estado: str("estado"),
+      piso: str("piso"),
+    };
+  }
+
+  async function handleGenerarIA() {
+    setIaError(null);
+    const campos = camposDesdeForm();
+    if (!campos.tipo || !campos.barrio) {
+      setIaError("Completá al menos el tipo de unidad y el barrio antes de generar.");
+      return;
+    }
+    setIaCargando(true);
+    try {
+      const res = await generarDescripcionIA({
+        propertyId: mode === "editar" ? property?.id : null,
+        campos,
+      });
+      if (!res.ok) {
+        setIaError(res.error);
+        return;
+      }
+      const ta = descripcionRef.current;
+      if (ta) {
+        const sep = ta.value.trim() ? "\n\n" : "";
+        ta.value = ta.value + sep + res.descripcion;
+        ta.focus();
+        ta.setSelectionRange(ta.value.length, ta.value.length);
+      }
+      if (res.usosRestantes !== null) setUsosIA(res.usosRestantes);
+    } finally {
+      setIaCargando(false);
+    }
+  }
 
   // Plano (imagen única, opcional)
   const [planoFile, setPlanoFile] = useState<File | null>(null);
@@ -178,7 +248,7 @@ export default function PropertyForm({ mode, property }: Props) {
   const inp = "w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0E2C50]";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       {/* Datos básicos */}
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Datos básicos</h2>
@@ -190,10 +260,33 @@ export default function PropertyForm({ mode, property }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-          <textarea name="descripcion" rows={5} defaultValue={v?.descripcion}
+          <div className="flex items-center justify-between gap-3 mb-1">
+            <label className="block text-sm font-medium text-gray-700">Descripción</label>
+            <div className="flex items-center gap-2">
+              {usosIA !== null && (
+                <span className="text-xs text-gray-400">
+                  {usosIA > 0 ? `${usosIA} ${usosIA === 1 ? "uso" : "usos"} de IA` : "Sin usos de IA"}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleGenerarIA}
+                disabled={iaCargando || usosIA === 0}
+                title={usosIA === 0 ? "Alcanzaste el límite de generaciones para esta propiedad" : "Generar la descripción con IA a partir de los datos cargados"}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#B99F66]/40 text-[#0E2C50] hover:bg-[#B99F66]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Sparkles size={13} className="text-[#B99F66]" />
+                {iaCargando ? "Generando…" : "Generar con IA"}
+              </button>
+            </div>
+          </div>
+          <textarea ref={descripcionRef} name="descripcion" rows={5} defaultValue={v?.descripcion}
             className={`${inp} resize-y`}
             placeholder="Describí tu propiedad: estado, comodidades, entorno, accesos, etc." />
+          {iaError && <p className="text-xs text-red-600 mt-1.5">{iaError}</p>}
+          <p className="text-[11px] text-gray-400 mt-1">
+            La IA redacta a partir de los datos cargados y se agrega al final. Revisalo antes de publicar.
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

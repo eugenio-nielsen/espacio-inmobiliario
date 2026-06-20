@@ -45,6 +45,7 @@ export interface Property {
   plano?: string | null;
   status: PropertyStatus;
   fotos: string[];
+  ai_usos?: number;
   views?: number;
   lat?: number | null;
   lng?: number | null;
