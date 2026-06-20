@@ -138,6 +138,7 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
   const [step, setStep] = useState(1);
   const [input, setInput] = useState<EstimadorInput>(defaultInput);
   const [result, setResult] = useState<EstimadorResultado | null>(null);
+  const [estimacionId, setEstimacionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -164,6 +165,7 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
         return;
       }
       setResult(data as EstimadorResultado);
+      setEstimacionId(data.estimacionId ?? null);
       setStep(3);
     } catch {
       setError("Error de conexión. Intentá de nuevo.");
@@ -353,7 +355,7 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
 
       {/* ── Paso 3: Resultado ─────────────────────────────────── */}
       {step === 3 && result && (
-        <ResultadoView input={input} result={result} onReset={reset} />
+        <ResultadoView input={input} result={result} estimacionId={estimacionId} onReset={reset} />
       )}
     </div>
   );
@@ -474,7 +476,7 @@ function NavRow({ onBack, onNext, nextLabel, loading, error }: {
 }
 
 // ── Resultado ──────────────────────────────────────────────────
-function ResultadoView({ input, result, onReset }: { input: EstimadorInput; result: EstimadorResultado; onReset: () => void }) {
+function ResultadoView({ input, result, estimacionId, onReset }: { input: EstimadorInput; result: EstimadorResultado; estimacionId: string | null; onReset: () => void }) {
   const conf = CONFIANZA_STYLE[result.confianza];
   return (
     <div>
@@ -529,7 +531,7 @@ function ResultadoView({ input, result, onReset }: { input: EstimadorInput; resu
       </div>
 
       {/* Lead form */}
-      <LeadForm input={input} result={result} />
+      <LeadForm input={input} result={result} estimacionId={estimacionId} />
 
       {/* Disclaimer */}
       <div style={{ background: "var(--cream)", border: "1px solid var(--gold-200)", borderRadius: "var(--radius-md)", padding: "16px 18px", marginTop: 16 }}>
@@ -608,7 +610,7 @@ function FactoresCard({ title, icon, color, factores, empty }: {
   );
 }
 
-function LeadForm({ input, result }: { input: EstimadorInput; result: EstimadorResultado }) {
+function LeadForm({ input, result, estimacionId }: { input: EstimadorInput; result: EstimadorResultado; estimacionId: string | null }) {
   const [open, setOpen] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -620,7 +622,7 @@ function LeadForm({ input, result }: { input: EstimadorInput; result: EstimadorR
     setError(null);
     startTransition(async () => {
       const r = await guardarLead({
-        input, resultado: result, barrio: input.barrio,
+        estimacionId, input, resultado: result, barrio: input.barrio,
         nombre: form.nombre, email: form.email, telefono: form.telefono,
       });
       if (r.ok) setSent(true);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { estimarPrecio } from "@/lib/estimador/engine";
 import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import type { EstimadorInput } from "@/lib/estimador/types";
 
@@ -34,5 +35,20 @@ export async function POST(req: Request) {
   if ("error" in resultado) {
     return NextResponse.json(resultado, { status: 422 });
   }
-  return NextResponse.json(resultado);
+
+  // Registrar la estimación (anónima). Se enlaza luego si dejan contacto.
+  let estimacionId: string | null = null;
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("estimaciones")
+      .insert({ barrio: input.barrio, input, resultado })
+      .select("id")
+      .single();
+    estimacionId = data?.id ?? null;
+  } catch (e) {
+    console.error("Error registrando estimación:", e);
+  }
+
+  return NextResponse.json({ ...resultado, estimacionId });
 }

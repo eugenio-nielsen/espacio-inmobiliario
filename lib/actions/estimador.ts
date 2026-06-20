@@ -19,6 +19,7 @@ async function assertAdmin() {
 
 // ── Lead: guardar estimación + contacto y avisar al martillero ──
 export async function guardarLead(data: {
+  estimacionId?: string | null;
   input: unknown;
   resultado: unknown;
   barrio: string;
@@ -37,14 +38,22 @@ export async function guardarLead(data: {
 
   try {
     const admin = createAdminClient();
-    await admin.from("estimaciones").insert({
-      barrio: data.barrio,
-      input: data.input,
-      resultado: data.resultado,
+    const lead = {
       lead_nombre: data.nombre,
       lead_email: data.email,
       lead_telefono: data.telefono || null,
-    });
+    };
+    if (data.estimacionId) {
+      // Enlazar el contacto a la estimación ya registrada (sin duplicar)
+      await admin.from("estimaciones").update(lead).eq("id", data.estimacionId);
+    } else {
+      await admin.from("estimaciones").insert({
+        barrio: data.barrio,
+        input: data.input,
+        resultado: data.resultado,
+        ...lead,
+      });
+    }
 
     await sendEstimacionLead({
       nombre: data.nombre,
