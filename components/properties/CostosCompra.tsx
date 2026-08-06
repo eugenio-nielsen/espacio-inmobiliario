@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, Receipt } from "lucide-react";
 
@@ -102,7 +103,7 @@ export default function CostosCompra({ precio, moneda, provincia, aptoCredito }:
           <p style={{ fontSize: 12, color: "var(--ink-400)", margin: "12px 0 0", lineHeight: 1.5 }}>
             Valores orientativos a junio de 2026 — varían según escribanía y situación
             impositiva de las partes. No constituye asesoramiento profesional.{" "}
-            <a href="/blog" style={{ color: "var(--gold-700)" }}>Leé más en nuestras guías</a>.
+            <Link href="/blog" style={{ color: "var(--gold-700)" }}>Leé más en nuestras guías</Link>.
           </p>
         </div>
       )}

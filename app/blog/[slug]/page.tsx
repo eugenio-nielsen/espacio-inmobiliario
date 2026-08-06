@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -96,9 +97,9 @@ export default async function PostPage({ params }: Props) {
       <main style={{ flex: 1, maxWidth: 760, margin: "0 auto", width: "100%", padding: "clamp(20px,4vw,36px) 20px clamp(48px,7vw,72px)" }}>
         {/* Breadcrumb */}
         <nav style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)", marginBottom: 18, display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
+          <Link href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</Link>
           <span style={{ color: "var(--gold-500)" }}>/</span>
-          <a href="/blog" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Blog</a>
+          <Link href="/blog" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Blog</Link>
         </nav>
 
         <article>
@@ -144,9 +145,9 @@ export default async function PostPage({ params }: Props) {
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "rgba(255,255,255,.7)", margin: "0 0 18px" }}>
             Publicá gratis, sin comisiones, con el respaldo de un martillero público.
           </p>
-          <a href="/auth/registro" style={{ display: "inline-flex", fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14, background: "var(--gold-500)", color: "var(--navy-900)", padding: "12px 24px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
+          <Link href="/auth/registro" style={{ display: "inline-flex", fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14, background: "var(--gold-500)", color: "var(--navy-900)", padding: "12px 24px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
             Publicar mi propiedad gratis
-          </a>
+          </Link>
         </div>
 
         {/* Relacionadas */}
@@ -155,10 +156,10 @@ export default async function PostPage({ params }: Props) {
             <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: "var(--navy-800)", margin: "0 0 18px" }}>Seguí leyendo</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {relacionadas.map(p => (
-                <a key={p.id} href={`/blog/${p.slug}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: "#fff", border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)", padding: "14px 18px", textDecoration: "none" }}>
+                <Link key={p.id} href={`/blog/${p.slug}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, background: "#fff", border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)", padding: "14px 18px", textDecoration: "none" }}>
                   <span style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14.5, color: "var(--navy-800)" }}>{p.titulo}</span>
                   <span style={{ color: "var(--gold-600)", fontSize: 18 }}>→</span>
-                </a>
+                </Link>
               ))}
             </div>
           </div>

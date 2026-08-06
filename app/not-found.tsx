@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Logo from "@/components/Logo";
 import Footer from "@/components/Footer";
@@ -12,7 +13,7 @@ export default function NotFound() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <a href="/"><Logo className="h-10 w-auto" /></a>
+          <Link href="/"><Logo className="h-10 w-auto" /></Link>
         </div>
       </header>
 
@@ -26,19 +27,17 @@ export default function NotFound() {
             La propiedad que buscás puede haber sido eliminada, pausada o la URL no es correcta.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="/propiedades"
+            <Link               href="/propiedades"
               className="inline-block text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
               style={{ background: "#0E2C50" }}
             >
               Ver todas las propiedades
-            </a>
-            <a
-              href="/"
+            </Link>
+            <Link               href="/"
               className="inline-block border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
             >
               Volver al inicio
-            </a>
+            </Link>
           </div>
         </div>
       </main>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { MapPin, Maximize2, BedDouble, Car, LayoutGrid } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
@@ -12,13 +13,14 @@ function fmtPrecio(precio: number, moneda: string): string {
   return `${moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(precio))}`;
 }
 
-export default function PropertyListCard({ property: p }: { property: Property }) {
+/** `priority`: usar solo en las primeras tarjetas visibles (mejora el LCP). */
+export default function PropertyListCard({ property: p, priority = false }: { property: Property; priority?: boolean }) {
   const precioPorM2 = p.superficie_total && p.superficie_total > 0
     ? Math.round(p.precio / p.superficie_total)
     : null;
 
   return (
-    <a
+    <Link
       href={buildPropertyUrl(p)}
       className="card-lift"
       style={{
@@ -39,6 +41,7 @@ export default function PropertyListCard({ property: p }: { property: Property }
             src={p.fotos[0]}
             alt={p.titulo}
             fill
+            priority={priority}
             className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             style={{ transition: "transform 0.4s ease" }}
@@ -163,7 +166,7 @@ export default function PropertyListCard({ property: p }: { property: Property }
           )}
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 

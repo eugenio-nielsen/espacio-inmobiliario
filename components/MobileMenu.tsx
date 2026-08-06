@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X, Building2, Calculator, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
@@ -41,7 +42,7 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
             </div>
 
             {LINKS.map(({ href, label, icon: Icon, highlight }) => (
-              <a key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}
+              <Link key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}
                 style={highlight ? {
                   background: "rgba(185,159,102,.14)", borderRadius: "var(--radius-sm)",
                   fontWeight: 700, color: "var(--navy-800)", borderBottom: "none",
@@ -49,15 +50,15 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
                 } : undefined}>
                 <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
                 {label}
-              </a>
+              </Link>
             ))}
 
             <div style={{ marginTop: "auto", paddingTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
               {loggedIn ? (
                 <>
-                  <a href="/panel" onClick={() => setOpen(false)} style={btnPrimary}>
+                  <Link href="/panel" onClick={() => setOpen(false)} style={btnPrimary}>
                     <LayoutDashboard size={17} strokeWidth={1.75} /> Mi panel
-                  </a>
+                  </Link>
                   <form action={signOut} style={{ margin: 0 }}>
                     <button type="submit" style={{ ...btnGhost, width: "100%", cursor: "pointer" }}>
                       <LogOut size={16} strokeWidth={1.75} /> Salir
@@ -66,12 +67,12 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
                 </>
               ) : (
                 <>
-                  <a href="/auth/registro" onClick={() => setOpen(false)} style={btnPrimary}>
+                  <Link href="/auth/registro" onClick={() => setOpen(false)} style={btnPrimary}>
                     <Plus size={17} strokeWidth={2} /> Publicar propiedad
-                  </a>
-                  <a href="/auth/login" onClick={() => setOpen(false)} style={btnGhost}>
+                  </Link>
+                  <Link href="/auth/login" onClick={() => setOpen(false)} style={btnGhost}>
                     <UserRound size={16} strokeWidth={1.75} /> Ingresar
-                  </a>
+                  </Link>
                 </>
               )}
             </div>

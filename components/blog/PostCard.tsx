@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { readingTime } from "@/lib/blog/markdown";
 import type { Post } from "@/lib/blog/types";
 
@@ -7,7 +8,7 @@ const fmtDate = (iso: string | null) =>
 
 export default function PostCard({ post }: { post: Post }) {
   return (
-    <a href={`/blog/${post.slug}`} className="card-lift" style={{
+    <Link href={`/blog/${post.slug}`} className="card-lift" style={{
       display: "flex", flexDirection: "column",
       background: "#fff", border: "1px solid var(--line-200)",
       borderRadius: "var(--radius-lg)", overflow: "hidden",
@@ -41,6 +42,6 @@ export default function PostCard({ post }: { post: Post }) {
           <span>{readingTime(post.contenido)} min de lectura</span>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }

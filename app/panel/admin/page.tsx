@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -78,7 +79,7 @@ export default async function SuperadminPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <a href="/panel" style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", textDecoration: "none" }}>← Volver al panel</a>
+        <Link href="/panel" style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", textDecoration: "none" }}>← Volver al panel</Link>
         <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 26, color: "var(--navy-800)", margin: "8px 0 2px" }}>
           Superadmin
         </h1>

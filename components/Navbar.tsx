@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Logo from "@/components/Logo";
 import { UserRound, Plus, LayoutDashboard, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -29,32 +30,32 @@ export default async function Navbar() {
         padding: "14px 24px", display: "flex",
         alignItems: "center", justifyContent: "space-between",
       }}>
-        <a href="/" style={{ flexShrink: 0 }}>
+        <Link href="/" style={{ flexShrink: 0 }}>
           <Logo className="h-12 w-auto" />
-        </a>
+        </Link>
 
         <MobileMenu loggedIn={!!user} nombre={profile?.nombre} />
 
         <nav className="nav-links-desktop">
-          <a href="/propiedades" className="nav-hide-mobile" style={{
+          <Link href="/propiedades" className="nav-hide-mobile" style={{
             ...navLink, color: "var(--navy-800)", fontWeight: 700,
             background: "rgba(185,159,102,.16)", padding: "8px 16px", borderRadius: 999,
-          }}>Propiedades</a>
-          <a href="/estimador" style={navLink} className="nav-hide-mobile">Tasador CABA</a>
-          <a href="/blog" style={navLink} className="nav-hide-mobile">Blog</a>
-          <a href="/precios" style={navLink} className="nav-hide-mobile">Precios</a>
-          <a href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</a>
+          }}>Propiedades</Link>
+          <Link href="/estimador" style={navLink} className="nav-hide-mobile">Tasador CABA</Link>
+          <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
+          <Link href="/precios" style={navLink} className="nav-hide-mobile">Precios</Link>
+          <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
 
           {user ? (
             // — Usuario logueado —
             <>
-              <a
+              <Link
                 href="/panel"
                 style={{ ...navLink, display: "inline-flex", alignItems: "center", gap: 6 }}
               >
                 <LayoutDashboard size={16} strokeWidth={1.75} />
                 {profile?.nombre ? profile.nombre.split(" ")[0] : "Mi panel"}
-              </a>
+              </Link>
               <form action={signOut} style={{ margin: 0 }}>
                 <button
                   type="submit"
@@ -74,14 +75,14 @@ export default async function Navbar() {
           ) : (
             // — Usuario no logueado —
             <>
-              <a
+              <Link
                 href="/auth/login"
                 style={{ ...navLink, display: "inline-flex", alignItems: "center", gap: 6 }}
               >
                 <UserRound size={16} strokeWidth={1.75} />
                 Ingresar
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/auth/registro"
                 className="esbtn esbtn-primary"
                 style={{
@@ -96,7 +97,7 @@ export default async function Navbar() {
               >
                 <Plus size={15} strokeWidth={2} />
                 Publicar propiedad
-              </a>
+              </Link>
             </>
           )}
         </nav>

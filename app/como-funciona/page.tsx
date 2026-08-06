@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -139,7 +140,7 @@ export default function ComoFuncionaPage() {
             gratuita y con el respaldo de un martillero público matriculado.
           </p>
           <div className="hero-animate hero-animate-delay-3" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/auth/registro" style={{
+            <Link href="/auth/registro" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14.5,
               background: "var(--gold-500)", color: "var(--navy-900)",
@@ -148,8 +149,8 @@ export default function ComoFuncionaPage() {
             }}>
               <Plus size={16} strokeWidth={2.5} />
               Publicar mi propiedad gratis
-            </a>
-            <a href="/propiedades" style={{
+            </Link>
+            <Link href="/propiedades" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14.5,
               background: "transparent", color: "#fff",
@@ -159,7 +160,7 @@ export default function ComoFuncionaPage() {
             }}>
               Explorar propiedades
               <ArrowRight size={15} strokeWidth={2} />
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -357,7 +358,7 @@ export default function ComoFuncionaPage() {
             Contás con un martillero público disponible ante cualquier consulta.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/auth/registro" style={{
+            <Link href="/auth/registro" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 15,
               background: "var(--navy-800)", color: "#fff",
@@ -366,8 +367,8 @@ export default function ComoFuncionaPage() {
             }}>
               <Plus size={16} strokeWidth={2.5} />
               Publicar mi propiedad gratis
-            </a>
-            <a href="/propiedades" style={{
+            </Link>
+            <Link href="/propiedades" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15,
               color: "var(--gold-700)",
@@ -378,7 +379,7 @@ export default function ComoFuncionaPage() {
             }}>
               Ver propiedades
               <ArrowRight size={15} strokeWidth={2} />
-            </a>
+            </Link>
           </div>
         </FadeIn>
       </section>

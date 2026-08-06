@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // AVIF/WebP: ~30% menos peso que JPG/PNG en las fotos de propiedades
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import AuthForm from "@/components/auth/AuthForm";
 
@@ -16,9 +17,9 @@ export default function RegistroPage() {
       <AuthForm mode="registro" />
       <p className="text-center text-sm text-gray-500 mt-6">
         ¿Ya tenés cuenta?{" "}
-        <a href="/auth/login" className="text-blue-600 hover:underline font-medium">
+        <Link href="/auth/login" className="text-blue-600 hover:underline font-medium">
           Iniciá sesión
-        </a>
+        </Link>
       </p>
     </div>
   );

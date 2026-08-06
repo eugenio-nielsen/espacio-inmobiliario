@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import type { Property } from "@/lib/types";
@@ -16,6 +18,14 @@ export const metadata: Metadata = {
 };
 
 const PAGE_SIZE = 12;
+
+const pagBtn: React.CSSProperties = {
+  height: 36, padding: "0 14px", borderRadius: "var(--radius-sm)",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  fontFamily: "var(--font-sans)", fontSize: 13.5, fontWeight: 500,
+  textDecoration: "none", background: "#fff", color: "var(--ink-600)",
+  border: "1.5px solid var(--line-200)", whiteSpace: "nowrap",
+};
 
 type SearchParams = {
   tipo?: string; operacion?: string; provincia?: string;
@@ -75,7 +85,7 @@ export default async function PropiedadesPage({
           fontFamily: "var(--font-sans)", fontSize: 13,
           color: "var(--ink-500)", marginBottom: 18,
         }}>
-          <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
+          <Link href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</Link>
           <span style={{ color: "var(--gold-500)", margin: "0 6px" }}>/</span>
           Propiedades en venta
         </div>
@@ -117,46 +127,70 @@ export default async function PropiedadesPage({
             <p style={{ fontFamily: "var(--font-sans)", color: "var(--ink-500)", marginBottom: 12 }}>
               No encontramos propiedades con esos filtros.
             </p>
-            <a href="/propiedades" style={{
+            <Link href="/propiedades" style={{
               fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--gold-700)",
               textDecoration: "underline",
             }}>
               Ver todas las propiedades
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid-properties">
-            {(properties as Property[]).map(p => (
-              <PropertyListCard key={p.id} property={p} />
+            {(properties as Property[]).map((p, i) => (
+              // Las 3 primeras entran arriba del pliegue: se cargan con prioridad
+              <PropertyListCard key={p.id} property={p} priority={i < 3} />
             ))}
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Paginación · 1 … 4 5 6 … 20, con Anterior/Siguiente */}
         {totalPages > 1 && (
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 40 }}>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => {
-              const params = new URLSearchParams(sp as Record<string, string>);
-              params.set("pagina", String(n));
+          <nav aria-label="Paginación" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 8, marginTop: 40, flexWrap: "wrap" }}>
+            {(() => {
+              const hrefFor = (n: number) => {
+                const params = new URLSearchParams(sp as Record<string, string>);
+                params.set("pagina", String(n));
+                return `/propiedades?${params.toString()}`;
+              };
+              // Siempre: primera, última, la actual y sus vecinas
+              const visibles = [...new Set([1, totalPages, pagina - 1, pagina, pagina + 1])]
+                .filter(n => n >= 1 && n <= totalPages)
+                .sort((a, b) => a - b);
+
               return (
-                <a
-                  key={n}
-                  href={`/propiedades?${params.toString()}`}
-                  style={{
-                    width: 36, height: 36, borderRadius: "var(--radius-sm)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: "var(--font-sans)", fontSize: 14, fontWeight: 500,
-                    textDecoration: "none",
-                    background: n === pagina ? "var(--navy-800)" : "#fff",
-                    color: n === pagina ? "#fff" : "var(--ink-600)",
-                    border: `1.5px solid ${n === pagina ? "var(--navy-800)" : "var(--line-200)"}`,
-                  }}
-                >
-                  {n}
-                </a>
+                <>
+                  {pagina > 1 && (
+                    <Link href={hrefFor(pagina - 1)} style={pagBtn} rel="prev">← Anterior</Link>
+                  )}
+                  {visibles.map((n, i) => (
+                    <Fragment key={n}>
+                      {i > 0 && n - visibles[i - 1] > 1 && (
+                        <span style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--ink-400)", padding: "0 2px" }}>…</span>
+                      )}
+                      <Link
+                        href={hrefFor(n)}
+                        aria-current={n === pagina ? "page" : undefined}
+                        style={{
+                          width: 36, height: 36, borderRadius: "var(--radius-sm)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontFamily: "var(--font-sans)", fontSize: 14, fontWeight: 500,
+                          textDecoration: "none",
+                          background: n === pagina ? "var(--navy-800)" : "#fff",
+                          color: n === pagina ? "#fff" : "var(--ink-600)",
+                          border: `1.5px solid ${n === pagina ? "var(--navy-800)" : "var(--line-200)"}`,
+                        }}
+                      >
+                        {n}
+                      </Link>
+                    </Fragment>
+                  ))}
+                  {pagina < totalPages && (
+                    <Link href={hrefFor(pagina + 1)} style={pagBtn} rel="next">Siguiente →</Link>
+                  )}
+                </>
               );
-            })}
-          </div>
+            })()}
+          </nav>
         )}
       </main>
 

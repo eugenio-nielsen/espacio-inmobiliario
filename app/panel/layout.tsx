@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { signOut } from "@/lib/actions/auth";
@@ -30,10 +31,10 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-20" style={{ background: "#fff", borderBottom: "1px solid var(--line-200)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between" style={{ height: 60 }}>
           <div className="flex items-center" style={{ gap: 22 }}>
-            <a href="/" className="flex items-center"><Logo className="h-9 w-auto" /></a>
+            <Link href="/" className="flex items-center"><Logo className="h-9 w-auto" /></Link>
             <nav className="hidden sm:flex items-center" style={{ gap: 18 }}>
-              <a href="/panel" style={panelNavLink}>Mis propiedades</a>
-              {isAdmin && <a href="/panel/admin" style={panelNavLink}>Superadmin</a>}
+              <Link href="/panel" style={panelNavLink}>Mis propiedades</Link>
+              {isAdmin && <Link href="/panel/admin" style={panelNavLink}>Superadmin</Link>}
             </nav>
           </div>
 
@@ -51,8 +52,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         </div>
         {/* Nav mobile (debajo del logo) */}
         <nav className="sm:hidden flex items-center" style={{ gap: 18, padding: "0 16px 10px" }}>
-          <a href="/panel" style={panelNavLink}>Mis propiedades</a>
-          {isAdmin && <a href="/panel/admin" style={panelNavLink}>Superadmin</a>}
+          <Link href="/panel" style={panelNavLink}>Mis propiedades</Link>
+          {isAdmin && <Link href="/panel/admin" style={panelNavLink}>Superadmin</Link>}
         </nav>
       </header>
 

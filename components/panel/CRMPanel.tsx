@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition, useMemo, useEffect } from "react";
 import Image from "next/image";
 import {
@@ -204,10 +205,10 @@ function PropertyCard({ p, searchQuery, onStatus }: { p: PropertyWithInquiries; 
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }} className="crm-card-actions">
-          <a href={`/panel/propiedades/${p.slug}/editar`} style={{ ...iconBtn, gap: 6, padding: "8px 13px", color: "var(--ink-700)", width: "auto" }}>
+          <Link href={`/panel/propiedades/${p.slug}/editar`} style={{ ...iconBtn, gap: 6, padding: "8px 13px", color: "var(--ink-700)", width: "auto" }}>
             <Edit2 size={14} strokeWidth={1.75} />
             <span style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 600 }}>Editar</span>
-          </a>
+          </Link>
           <a href={buildPropertyUrl(p)} target="_blank" rel="noopener noreferrer" title="Ver publicación" style={{ ...iconBtn, color: "var(--ink-500)" }}><ExternalLink size={15} strokeWidth={1.75} /></a>
         </div>
       </div>
@@ -337,9 +338,9 @@ export default function CRMPanel({ properties, showWelcome, ownerName }: {
             {totalNew > 0 && <span style={{ color: "#2563EB", fontWeight: 600 }}>{" "}· {totalNew} consulta{totalNew > 1 ? "s" : ""} nueva{totalNew > 1 ? "s" : ""}</span>}
           </p>
         </div>
-        <a href="/panel/propiedades/nueva" style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14, background: "var(--navy-800)", color: "#fff", padding: "11px 20px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
+        <Link href="/panel/propiedades/nueva" style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14, background: "var(--navy-800)", color: "#fff", padding: "11px 20px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
           <Plus size={16} strokeWidth={2.5} /> Nueva propiedad
-        </a>
+        </Link>
       </div>
 
       {/* KPIs */}
@@ -415,9 +416,9 @@ export default function CRMPanel({ properties, showWelcome, ownerName }: {
           <div style={{ fontSize: 48, marginBottom: 12 }}>🏠</div>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "var(--navy-800)", margin: "0 0 8px" }}>Todavía no publicaste ninguna propiedad</h2>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--ink-500)", marginBottom: 20 }}>Publicá tu primera propiedad gratis y empezá a recibir consultas.</p>
-          <a href="/panel/propiedades/nueva" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, background: "var(--navy-800)", color: "#fff", padding: "12px 24px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
+          <Link href="/panel/propiedades/nueva" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, background: "var(--navy-800)", color: "#fff", padding: "12px 24px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
             <Plus size={15} strokeWidth={2.5} /> Publicar propiedad
-          </a>
+          </Link>
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--ink-500)", fontFamily: "var(--font-sans)", fontSize: 14, background: "#fff", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-200)" }}>
@@ -440,7 +441,7 @@ export default function CRMPanel({ properties, showWelcome, ownerName }: {
             <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "rgba(255,255,255,.60)", margin: 0 }}>Fotografía, escribanía, mudanzas y más, para cada etapa de tu venta.</p>
           </div>
         </div>
-        <a href="/#servicios" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13, color: "var(--gold-300)", background: "rgba(185,159,102,.12)", border: "1px solid rgba(185,159,102,.35)", borderRadius: "var(--radius-sm)", padding: "9px 18px", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>Ver servicios →</a>
+        <Link href="/#servicios" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13, color: "var(--gold-300)", background: "rgba(185,159,102,.12)", border: "1px solid rgba(185,159,102,.35)", borderRadius: "var(--radius-sm)", padding: "9px 18px", textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0 }}>Ver servicios →</Link>
       </div>
     </div>
   );

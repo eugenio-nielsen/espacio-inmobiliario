@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { signIn, signUp } from "@/lib/actions/auth";
 
@@ -75,9 +76,9 @@ export default function AuthForm({ mode }: Props) {
             Contraseña *
           </label>
           {mode === "login" && (
-            <a href="/auth/recuperar" className="text-xs text-blue-600 hover:underline">
+            <Link href="/auth/recuperar" className="text-xs text-blue-600 hover:underline">
               ¿La olvidaste?
-            </a>
+            </Link>
           )}
         </div>
         <input

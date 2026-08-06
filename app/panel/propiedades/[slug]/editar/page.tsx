@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
@@ -35,16 +36,16 @@ export default async function EditarPage({
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
-        <a href="/panel" className="text-sm text-gray-500 hover:text-blue-700">
+        <Link href="/panel" className="text-sm text-gray-500 hover:text-blue-700">
           ← Volver al panel
-        </a>
+        </Link>
         <h1 className="text-2xl font-bold text-gray-800 mt-2">Editar propiedad</h1>
         {creada && (
           <div className="mt-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
             ✅ Propiedad publicada exitosamente. Podés seguir editando los datos o{" "}
-            <a href={buildPropertyUrl(property as Property)} className="font-semibold underline">
+            <Link href={buildPropertyUrl(property as Property)} className="font-semibold underline">
               ver la publicación
-            </a>
+            </Link>
             .
           </div>
         )}

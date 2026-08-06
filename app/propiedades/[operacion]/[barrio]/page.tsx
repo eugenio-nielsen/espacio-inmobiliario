@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -74,9 +75,9 @@ export default async function BarrioPage({ params }: PageProps) {
       <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(20px,4vw,32px) 20px clamp(40px,6vw,64px)" }}>
         {/* Breadcrumb */}
         <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", marginBottom: 18 }}>
-          <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
+          <Link href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</Link>
           <span style={{ color: "var(--gold-500)", margin: "0 6px" }}>/</span>
-          <a href="/propiedades" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Propiedades</a>
+          <Link href="/propiedades" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Propiedades</Link>
           <span style={{ color: "var(--gold-500)", margin: "0 6px" }}>/</span>
           {data.nombre}
         </div>
@@ -111,10 +112,10 @@ export default async function BarrioPage({ params }: PageProps) {
             <Building2 size={16} strokeWidth={1.75} color="var(--gold-600)" />
             <b style={{ color: "var(--navy-800)" }}>{count}</b> {count === 1 ? "propiedad publicada" : "propiedades publicadas"}
           </span>
-          <a href="/estimador" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--gold-700)", textDecoration: "underline", textUnderlineOffset: 2 }}>
+          <Link href="/estimador" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--gold-700)", textDecoration: "underline", textUnderlineOffset: 2 }}>
             <Calculator size={16} strokeWidth={1.75} />
             Tasá tu propiedad en {data.nombre} gratis
-          </a>
+          </Link>
         </div>
 
         {/* Texto editorial */}
@@ -139,14 +140,14 @@ export default async function BarrioPage({ params }: PageProps) {
             <p style={{ fontFamily: "var(--font-sans)", color: "var(--ink-500)", marginBottom: 6 }}>
               En este momento no hay propiedades publicadas en {data.nombre}.
             </p>
-            <a href="/propiedades" style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--gold-700)", textDecoration: "underline" }}>
+            <Link href="/propiedades" style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--gold-700)", textDecoration: "underline" }}>
               Ver propiedades en otros barrios
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid-properties" style={{ marginBottom: 36 }}>
-            {(properties as Property[]).map((p) => (
-              <PropertyListCard key={p.id} property={p} />
+            {(properties as Property[]).map((p, i) => (
+              <PropertyListCard key={p.id} property={p} priority={i < 3} />
             ))}
           </div>
         )}
@@ -167,22 +168,22 @@ export default async function BarrioPage({ params }: PageProps) {
             Recibís las consultas directo, sin pagar comisión.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/estimador" className="esbtn esbtn-gold" style={{
+            <Link href="/estimador" className="esbtn esbtn-gold" style={{
               fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
               border: "1.5px solid transparent", display: "inline-flex", alignItems: "center", gap: 8,
               fontSize: 14.5, padding: "13px 24px", background: "var(--gold-500)", color: "#26200f",
               textDecoration: "none",
             }}>
               <Calculator size={16} strokeWidth={2} /> Tasar mi propiedad
-            </a>
-            <a href="/auth/registro" style={{
+            </Link>
+            <Link href="/auth/registro" style={{
               fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
               border: "1.5px solid rgba(255,255,255,.35)", display: "inline-flex", alignItems: "center", gap: 8,
               fontSize: 14.5, padding: "13px 24px", background: "transparent", color: "#fff",
               textDecoration: "none",
             }}>
               <Plus size={16} strokeWidth={2} /> Publicar gratis
-            </a>
+            </Link>
           </div>
         </div>
       </main>

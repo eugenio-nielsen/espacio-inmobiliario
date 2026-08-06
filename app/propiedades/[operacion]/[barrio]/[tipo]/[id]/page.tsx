@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
@@ -196,13 +197,13 @@ export default async function PropiedadPage({ params }: PageProps) {
         <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(16px,4vw,28px) 20px clamp(40px,6vw,64px)" }}>
           {/* Breadcrumb */}
           <div style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", marginBottom: 18, display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 0", overflow: "hidden" }}>
-            <a href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</a>
+            <Link href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</Link>
             <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
-            <a href="/propiedades" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Propiedades</a>
+            <Link href="/propiedades" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Propiedades</Link>
             {p.barrio && (
               <>
                 <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
-                <a
+                <Link
                   href={
                     getBarrioPage(slugifyUbicacion(p.barrio))
                       ? `/propiedades/venta/${slugifyUbicacion(p.barrio)}`
@@ -211,7 +212,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                   style={{ color: "var(--ink-500)", textDecoration: "none" }}
                 >
                   {p.barrio}
-                </a>
+                </Link>
               </>
             )}
             <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>

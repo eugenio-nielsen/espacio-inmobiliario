@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
 import { Star, Sparkles } from "lucide-react";
@@ -671,9 +672,9 @@ export default function PropertyForm({ mode, property }: Props) {
       )}
 
       <div className="flex justify-end gap-3 pb-8">
-        <a href="/panel" className="border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+        <Link href="/panel" className="border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
           Cancelar
-        </a>
+        </Link>
         <button type="submit" disabled={isPending || optimizando}
           className="text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-60"
           style={{ background: isPending || optimizando ? "#6b8fa8" : "#0E2C50" }}>

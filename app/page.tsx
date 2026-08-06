@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import type { Property } from "@/lib/types";
@@ -53,8 +55,19 @@ export default async function HomePage() {
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section style={{ background: "var(--navy-800)", color: "#fff", position: "relative", overflow: "hidden", padding: "clamp(48px,8vw,84px) 20px clamp(56px,9vw,96px)" }}>
-        {/* Imagen de fondo con Ken Burns (zoom lento infinito) */}
-        <div className="hero-kenburns" style={{ position: "absolute", inset: 0, backgroundImage: "url('/hero-bg.png')", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.22, pointerEvents: "none" }} />
+        {/* Imagen de fondo con Ken Burns (zoom lento infinito).
+            Va por next/image (no background-image) para que se sirva
+            optimizada en AVIF/WebP y en el tamaño que corresponde. */}
+        <div className="hero-kenburns" style={{ position: "absolute", inset: 0, opacity: 0.22, pointerEvents: "none" }}>
+          <Image
+            src="/hero-bg.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: "cover", objectPosition: "center" }}
+          />
+        </div>
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% -10%, rgba(185,159,102,.16), transparent 55%)", pointerEvents: "none" }} />
         {/* Skyline vivo: ventanas, nubes y pins en movimiento continuo */}
         <SkylineVivo />
@@ -127,13 +140,13 @@ export default async function HomePage() {
             <div className="es-eyebrow" style={{ marginBottom: 8 }}>Recién publicadas</div>
             <h2 className="section-heading">Últimas propiedades</h2>
           </div>
-          <a href="/propiedades" style={{
+          <Link href="/propiedades" style={{
             fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14,
             color: "var(--gold-700)", display: "inline-flex", alignItems: "center",
             gap: 4, textDecoration: "none", whiteSpace: "nowrap", flexShrink: 0,
           }}>
             Ver todas <ArrowRight size={15} strokeWidth={2} />
-          </a>
+          </Link>
         </div>
 
         {!properties?.length ? (
@@ -141,9 +154,9 @@ export default async function HomePage() {
             <p style={{ fontFamily: "var(--font-sans)", color: "var(--ink-500)", marginBottom: 16 }}>
               Todavía no hay propiedades publicadas.
             </p>
-            <a href="/auth/registro" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, background: "var(--navy-800)", color: "#fff", borderRadius: "var(--radius-sm)", padding: "11px 22px", display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+            <Link href="/auth/registro" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, background: "var(--navy-800)", color: "#fff", borderRadius: "var(--radius-sm)", padding: "11px 22px", display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
               <Plus size={15} strokeWidth={2} /> Publicar la primera
-            </a>
+            </Link>
           </div>
         ) : (
           <>
@@ -157,14 +170,14 @@ export default async function HomePage() {
               ))}
             </div>
             {/* Botón "Ver todas" — solo visible en mobile (lista vertical de 5) */}
-            <a href="/propiedades" className="home-ver-todas esbtn esbtn-primary" style={{
+            <Link href="/propiedades" className="home-ver-todas esbtn esbtn-primary" style={{
               fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
               border: "1.5px solid transparent", alignItems: "center", justifyContent: "center",
               gap: 8, fontSize: 14.5, padding: "13px 24px", marginTop: 20,
               background: "var(--navy-800)", color: "#fff", textDecoration: "none",
             }}>
               Ver todas las propiedades <ArrowRight size={16} strokeWidth={2} />
-            </a>
+            </Link>
           </>
         )}
       </section>
@@ -187,7 +200,7 @@ export default async function HomePage() {
             Publicá tu propiedad gratis, recibí consultas directamente
             y cerrá el trato sin pagar comisión.
           </p>
-          <a href="/auth/registro" className="esbtn esbtn-primary" style={{
+          <Link href="/auth/registro" className="esbtn esbtn-primary" style={{
             fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
             border: "1.5px solid transparent", display: "inline-flex", alignItems: "center",
             gap: 8, fontSize: 14.5, padding: "13px 28px",
@@ -196,7 +209,7 @@ export default async function HomePage() {
           }}>
             <Plus size={16} strokeWidth={2} />
             Publicar mi propiedad gratis
-          </a>
+          </Link>
         </div>
       </section>
 

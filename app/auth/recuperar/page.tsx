@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import RecuperarForm from "@/components/auth/RecuperarForm";
 
@@ -31,9 +32,9 @@ export default async function RecuperarPage({
 
       <p className="text-center text-sm text-gray-500 mt-6">
         ¿La recordaste?{" "}
-        <a href="/auth/login" className="text-blue-600 hover:underline font-medium">
+        <Link href="/auth/login" className="text-blue-600 hover:underline font-medium">
           Iniciar sesión
-        </a>
+        </Link>
       </p>
     </div>
   );

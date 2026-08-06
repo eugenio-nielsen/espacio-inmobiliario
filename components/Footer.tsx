@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Logo from "@/components/Logo";
 import { BARRIO_PAGES } from "@/lib/barrios";
 
@@ -23,18 +24,18 @@ export default function Footer() {
         <div>
           <h5 style={footH}>Propiedades</h5>
           {["Departamentos en venta", "Casas en venta", "Oficinas", "Terrenos"].map(t => (
-            <a key={t} href="/propiedades" style={footLink}>{t}</a>
+            <Link key={t} href="/propiedades" style={footLink}>{t}</Link>
           ))}
           {BARRIO_PAGES.map(b => (
-            <a key={b.slug} href={`/propiedades/venta/${b.slug}`} style={footLink}>
+            <Link key={b.slug} href={`/propiedades/venta/${b.slug}`} style={footLink}>
               Propiedades en {b.nombre}
-            </a>
+            </Link>
           ))}
         </div>
         <div>
           <h5 style={footH}>Espacio</h5>
           {[["Cómo funciona", "/como-funciona"], ["Tasador CABA", "/estimador"], ["Blog", "/blog"], ["Precios", "/precios"], ["Publicar gratis", "/auth/registro"]].map(([t, href]) => (
-            <a key={t} href={href} style={footLink}>{t}</a>
+            <Link key={t} href={href} style={footLink}>{t}</Link>
           ))}
           <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
             <a href="https://wa.me/5491164519421" target="_blank" rel="noopener noreferrer"
@@ -57,9 +58,9 @@ export default function Footer() {
       <div style={{ borderTop: "1px solid var(--navy-700)", padding: "18px 24px", textAlign: "center", fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--navy-300)" }}>
         © {new Date().getFullYear()} Espacio Inmobiliario · espacioinmobiliario.com.ar
         <span style={{ margin: "0 8px", color: "var(--navy-600)" }}>·</span>
-        <a href="/terminos" style={{ color: "var(--navy-300)", textDecoration: "none" }}>Términos y condiciones</a>
+        <Link href="/terminos" style={{ color: "var(--navy-300)", textDecoration: "none" }}>Términos y condiciones</Link>
         <span style={{ margin: "0 8px", color: "var(--navy-600)" }}>·</span>
-        <a href="/privacidad" style={{ color: "var(--navy-300)", textDecoration: "none" }}>Privacidad</a>
+        <Link href="/privacidad" style={{ color: "var(--navy-300)", textDecoration: "none" }}>Privacidad</Link>
       </div>
     </footer>
   );

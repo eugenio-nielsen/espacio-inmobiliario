@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -57,8 +58,8 @@ export default function PreciosPage() {
             Y si necesitás una mano profesional para vender, estamos para acompañarte.
           </p>
           <div className="hero-animate hero-animate-delay-3" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="/auth/registro" style={ctaGold}><Plus size={16} strokeWidth={2.5} /> Publicar gratis</a>
-            <a href="#contacto" style={ctaGhost}>Hablar con Eugenio <ArrowRight size={15} strokeWidth={2} /></a>
+            <Link href="/auth/registro" style={ctaGold}><Plus size={16} strokeWidth={2.5} /> Publicar gratis</Link>
+            <Link href="#contacto" style={ctaGhost}>Hablar con Eugenio <ArrowRight size={15} strokeWidth={2} /></Link>
           </div>
         </div>
       </section>
