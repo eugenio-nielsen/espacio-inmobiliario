@@ -26,9 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (operacion !== "venta" || !data) return { title: "Página no encontrada" };
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const esCaba = data.provincia === "Ciudad Autónoma de Buenos Aires";
+  const zona = esCaba ? "CABA" : "Provincia de Buenos Aires";
   return {
     title: `Propiedades en venta en ${data.nombre} · Dueño directo`,
-    description: `Casas y departamentos en venta en ${data.nombre}, CABA, publicados directamente por sus dueños. Sin comisión inmobiliaria. Mirá el precio del m² y tasá tu propiedad gratis.`,
+    description: `Casas, terrenos y departamentos en venta en ${data.nombre}, ${zona}, publicados directamente por sus dueños. Sin comisión inmobiliaria.${esCaba ? " Mirá el precio del m² y tasá tu propiedad gratis." : ""}`,
     alternates: { canonical: `${siteUrl}/propiedades/venta/${data.slug}` },
   };
 }
@@ -51,6 +53,8 @@ export default async function BarrioPage({ params }: PageProps) {
 
   const precioM2 = precios[data.nombre];
   const count = properties?.length || 0;
+  // El tasador solo cubre CABA: no lo ofrecemos en partidos de provincia
+  const esCaba = data.provincia === "Ciudad Autónoma de Buenos Aires";
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const fmt = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
 
@@ -88,7 +92,7 @@ export default async function BarrioPage({ params }: PageProps) {
         {/* Header */}
         <div className="es-eyebrow" style={{ marginBottom: 10 }}>
           <MapPin size={13} strokeWidth={2} style={{ display: "inline", verticalAlign: "-2px", marginRight: 6 }} />
-          Ciudad Autónoma de Buenos Aires
+          {data.provincia}
         </div>
         <h1 style={{
           fontFamily: "var(--font-display)", fontWeight: 600,
@@ -115,10 +119,12 @@ export default async function BarrioPage({ params }: PageProps) {
             <Building2 size={16} strokeWidth={1.75} color="var(--gold-600)" />
             <b style={{ color: "var(--navy-800)" }}>{count}</b> {count === 1 ? "propiedad publicada" : "propiedades publicadas"}
           </span>
-          <Link href="/estimador" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--gold-700)", textDecoration: "underline", textUnderlineOffset: 2 }}>
-            <Calculator size={16} strokeWidth={1.75} />
-            Tasá tu propiedad en {data.nombre} gratis
-          </Link>
+          {esCaba && (
+            <Link href="/estimador" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--gold-700)", textDecoration: "underline", textUnderlineOffset: 2 }}>
+              <Calculator size={16} strokeWidth={1.75} />
+              Tasá tu propiedad en {data.nombre} gratis
+            </Link>
+          )}
         </div>
 
         {/* Texto editorial */}
@@ -167,22 +173,28 @@ export default async function BarrioPage({ params }: PageProps) {
             ¿Tenés una propiedad en {data.nombre}?
           </h2>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 15, color: "rgba(255,255,255,.78)", maxWidth: 480, margin: "0 auto 22px", lineHeight: 1.6 }}>
-            Averiguá cuánto vale con nuestro tasador online y publicala gratis.
-            Recibís las consultas directo, sin pagar comisión.
+            {esCaba
+              ? "Averiguá cuánto vale con nuestro tasador online y publicala gratis. Recibís las consultas directo, sin pagar comisión."
+              : "Publicala gratis y recibí las consultas directo, sin intermediarios ni comisión inmobiliaria."}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/estimador" className="esbtn esbtn-gold" style={{
+            {esCaba && (
+              <Link href="/estimador" className="esbtn esbtn-gold" style={{
+                fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
+                border: "1.5px solid transparent", display: "inline-flex", alignItems: "center", gap: 8,
+                fontSize: 14.5, padding: "13px 24px", background: "var(--gold-500)", color: "#26200f",
+                textDecoration: "none",
+              }}>
+                <Calculator size={16} strokeWidth={2} /> Tasar mi propiedad
+              </Link>
+            )}
+            <Link href="/auth/registro" className={esCaba ? undefined : "esbtn esbtn-gold"} style={{
               fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
-              border: "1.5px solid transparent", display: "inline-flex", alignItems: "center", gap: 8,
-              fontSize: 14.5, padding: "13px 24px", background: "var(--gold-500)", color: "#26200f",
-              textDecoration: "none",
-            }}>
-              <Calculator size={16} strokeWidth={2} /> Tasar mi propiedad
-            </Link>
-            <Link href="/auth/registro" style={{
-              fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
-              border: "1.5px solid rgba(255,255,255,.35)", display: "inline-flex", alignItems: "center", gap: 8,
-              fontSize: 14.5, padding: "13px 24px", background: "transparent", color: "#fff",
+              border: esCaba ? "1.5px solid rgba(255,255,255,.35)" : "1.5px solid transparent",
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontSize: 14.5, padding: "13px 24px",
+              background: esCaba ? "transparent" : "var(--gold-500)",
+              color: esCaba ? "#fff" : "#26200f",
               textDecoration: "none",
             }}>
               <Plus size={16} strokeWidth={2} /> Publicar gratis
