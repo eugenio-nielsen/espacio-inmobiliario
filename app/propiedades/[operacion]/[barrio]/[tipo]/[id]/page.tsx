@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { after } from "next/server";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -9,7 +10,7 @@ import { buildPropertyUrl } from "@/lib/utils/urls";
 import { getBarrioPage } from "@/lib/barrios";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
 import type { Metadata } from "next";
-import type { Property, Profile } from "@/lib/types";
+import { PROPERTY_CARD_COLS, type Property, type Profile, type PropertyCardData } from "@/lib/types";
 import Footer from "@/components/Footer";
 import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
@@ -18,6 +19,7 @@ import CostosCompra from "@/components/properties/CostosCompra";
 import DescripcionExpandible from "@/components/properties/DescripcionExpandible";
 import ShareButtons from "@/components/blog/ShareButtons";
 import PropertyListCard from "@/components/properties/PropertyListCard";
+import VolverAResultados from "@/components/properties/VolverAResultados";
 import Navbar from "@/components/Navbar";
 import { getPreciosBarrios } from "@/lib/estimador/data";
 import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, LayoutGrid, Compass, AlignCenter, BadgeCheck, Eye, CalendarDays, Layers, Sparkles, Banknote } from "lucide-react";
@@ -38,13 +40,23 @@ const TIPO_ICON: Record<string, React.ReactNode> = {
 
 type PageProps = { params: Promise<{ operacion: string; barrio: string; tipo: string; id: string }> };
 
+/**
+ * Consulta cacheada por request: generateMetadata y el componente de página
+ * la comparten, así la propiedad se pide una sola vez en lugar de dos.
+ */
+const getPropiedad = cache(async (shortId: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*, profiles(nombre, email, telefono)")
+    .eq("short_id", shortId).eq("status", "activa").maybeSingle();
+  if (error) console.error("Property fetch error:", error);
+  return data as (Property & { profiles: Profile }) | null;
+});
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("properties")
-    .select("titulo, descripcion, ciudad, barrio, provincia, fotos, operacion, tipo")
-    .eq("short_id", id).eq("status", "activa").maybeSingle();
+  const data = await getPropiedad(id);
 
   if (!data) return { title: "Propiedad no encontrada" };
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -68,12 +80,8 @@ export default async function PropiedadPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: property, error: propError } = await supabase
-    .from("properties")
-    .select("*, profiles(nombre, email, telefono)")
-    .eq("short_id", id).eq("status", "activa").maybeSingle();
-
-  if (propError) console.error("Property fetch error:", propError);
+  // Reusa la consulta ya hecha por generateMetadata (React cache)
+  const property = await getPropiedad(id);
   if (!property) notFound();
 
   // Incrementar vistas después de enviar la respuesta (no bloquea el render)
@@ -87,49 +95,53 @@ export default async function PropiedadPage({ params }: PageProps) {
     }
   });
 
-  const p = property as Property & { profiles: Profile };
+  const p = property;
 
-  // Coordenadas guardadas al crear/editar; fallback a Nominatim
-  // solo para propiedades viejas que aún no fueron re-guardadas
-  const geoResult =
+  const fmtNum = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n));
+  const precio = `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(p.precio)}`;
+  const precioPorM2 = p.superficie_total && p.superficie_total > 0 ? p.precio / p.superficie_total : null;
+  const usaRefBarrio = !!(precioPorM2 && p.moneda === "USD" && p.tipo === "departamento" && p.barrio);
+
+  // Todo esto depende solo de `p`, así que va en paralelo en vez de en cascada
+  const [geoResult, simBarrio, simTipo, precios] = await Promise.all([
+    // Coordenadas guardadas al crear/editar; fallback a Nominatim solo para
+    // propiedades viejas que aún no fueron re-guardadas
     p.lat != null && p.lng != null
-      ? { lat: p.lat, lng: p.lng, aproximada: p.geo_aproximada ?? true }
-      : await geocodeProperty({
+      ? Promise.resolve({ lat: p.lat, lng: p.lng, aproximada: p.geo_aproximada ?? true })
+      : geocodeProperty({
           direccion: p.direccion,
           barrio: p.barrio,
           ciudad: p.ciudad,
           provincia: p.provincia,
-        });
-
-  // Propiedades similares: primero mismo barrio, después mismo tipo
-  let similares: Property[] = [];
-  if (p.barrio) {
-    const { data } = await supabase
-      .from("properties").select("*")
-      .eq("status", "activa").neq("id", p.id).eq("barrio", p.barrio)
-      .order("created_at", { ascending: false }).limit(3);
-    similares = (data as Property[]) || [];
-  }
-  if (similares.length < 3) {
-    const { data } = await supabase
-      .from("properties").select("*")
+        }),
+    p.barrio
+      ? supabase
+          .from("properties").select(PROPERTY_CARD_COLS)
+          .eq("status", "activa").neq("id", p.id).eq("barrio", p.barrio)
+          .order("created_at", { ascending: false }).limit(3)
+      : Promise.resolve({ data: [] }),
+    supabase
+      .from("properties").select(PROPERTY_CARD_COLS)
       .eq("status", "activa").neq("id", p.id).eq("tipo", p.tipo)
-      .order("created_at", { ascending: false }).limit(3);
-    for (const s of (data as Property[]) || []) {
-      if (similares.length >= 3) break;
-      if (!similares.some(x => x.id === s.id)) similares.push(s);
-    }
+      .order("created_at", { ascending: false }).limit(3),
+    usaRefBarrio ? getPreciosBarrios() : Promise.resolve({} as Record<string, number>),
+  ]);
+
+  // Similares: primero las del mismo barrio, después las del mismo tipo. Máx. 3, sin repetir.
+  const similares: PropertyCardData[] = [];
+  for (const s of [
+    ...((simBarrio.data as PropertyCardData[]) || []),
+    ...((simTipo.data as PropertyCardData[]) || []),
+  ]) {
+    if (similares.length >= 3) break;
+    if (!similares.some(x => x.id === s.id)) similares.push(s);
   }
 
-  // Precio por m² + comparación contra la referencia del barrio (estimador)
-  const fmtNum = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n));
-  const precio = `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(p.precio)}`;
-  const precioPorM2 = p.superficie_total && p.superficie_total > 0 ? p.precio / p.superficie_total : null;
+  // Comparación contra la referencia del barrio (estimador)
   let comparacionBarrio: { pct: number; ref: number } | null = null;
-  if (precioPorM2 && p.moneda === "USD" && p.tipo === "departamento" && p.barrio) {
-    const precios = await getPreciosBarrios();
-    const ref = precios[p.barrio];
-    if (ref > 0) comparacionBarrio = { pct: Math.round(((precioPorM2 - ref) / ref) * 100), ref };
+  if (usaRefBarrio) {
+    const ref = precios[p.barrio!];
+    if (ref > 0) comparacionBarrio = { pct: Math.round(((precioPorM2! - ref) / ref) * 100), ref };
   }
 
   const diasPublicada = Math.max(0, Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000));
@@ -219,6 +231,11 @@ export default async function PropiedadPage({ params }: PageProps) {
             <span style={{ color: "var(--ink-800)", fontWeight: 500 }}>
               {p.titulo.slice(0, 45)}{p.titulo.length > 45 ? "…" : ""}
             </span>
+          </div>
+
+          {/* Vuelta al listado conservando filtros */}
+          <div style={{ marginBottom: 16 }}>
+            <VolverAResultados />
           </div>
 
           {/* Gallery (incluye el plano como último ítem, con chips Fotos/Plano) */}

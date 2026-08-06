@@ -1,23 +1,14 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { UserRound, Plus, LayoutDashboard, LogOut } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser, getCurrentProfile } from "@/lib/auth/user";
 import { signOut } from "@/lib/actions/auth";
 import MobileMenu from "@/components/MobileMenu";
 
 export default async function Navbar() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let profile: { nombre: string | null } | null = null;
-  if (user) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("nombre")
-      .eq("id", user.id)
-      .single();
-    profile = data;
-  }
+  // Cacheados por request: si la página también los pide, no se repite la consulta
+  const user = await getCurrentUser();
+  const profile = await getCurrentProfile();
 
   return (
     <header style={{

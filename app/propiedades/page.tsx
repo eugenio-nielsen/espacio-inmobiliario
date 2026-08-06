@@ -1,8 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import Link from "next/link";
+import RecordarBusqueda from "@/components/properties/RecordarBusqueda";
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
-import type { Property } from "@/lib/types";
+import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import ListadoFilters from "@/components/properties/ListadoFilters";
 import SortSelect from "@/components/properties/SortSelect";
@@ -46,7 +47,7 @@ export default async function PropiedadesPage({
   const supabase = await createClient();
   let query = supabase
     .from("properties")
-    .select("*", { count: "exact" })
+    .select(PROPERTY_CARD_COLS, { count: "exact" })
     .eq("status", "activa")
     .range(from, from + PAGE_SIZE - 1);
 
@@ -77,6 +78,7 @@ export default async function PropiedadesPage({
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--cream)" }}>
+      <Suspense fallback={null}><RecordarBusqueda /></Suspense>
       <Navbar />
 
       <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(20px,4vw,32px) 20px clamp(40px,6vw,64px)" }}>
@@ -136,7 +138,7 @@ export default async function PropiedadesPage({
           </div>
         ) : (
           <div className="grid-properties">
-            {(properties as Property[]).map((p, i) => (
+            {(properties as PropertyCardData[]).map((p, i) => (
               // Las 3 primeras entran arriba del pliegue: se cargan con prioridad
               <PropertyListCard key={p.id} property={p} priority={i < 3} />
             ))}

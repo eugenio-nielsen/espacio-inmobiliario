@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Maximize2, BedDouble, Car, LayoutGrid } from "lucide-react";
-import type { Property } from "@/lib/types";
+import type { PropertyCardData } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 
 const TIPO_LABEL: Record<string, string> = {
@@ -14,7 +14,7 @@ function fmtPrecio(precio: number, moneda: string): string {
 }
 
 /** `priority`: usar solo en las primeras tarjetas visibles (mejora el LCP). */
-export default function PropertyListCard({ property: p, priority = false }: { property: Property; priority?: boolean }) {
+export default function PropertyListCard({ property: p, priority = false }: { property: PropertyCardData; priority?: boolean }) {
   const precioPorM2 = p.superficie_total && p.superficie_total > 0
     ? Math.round(p.precio / p.superficie_total)
     : null;

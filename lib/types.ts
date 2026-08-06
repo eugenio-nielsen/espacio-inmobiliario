@@ -55,6 +55,21 @@ export interface Property {
   profiles?: Pick<Profile, "nombre" | "email" | "telefono">;
 }
 
+/**
+ * Campos que realmente usa PropertyListCard.
+ * Evita traer columnas pesadas (descripcion, plano, geo…) en los listados.
+ */
+export type PropertyCardData = Pick<
+  Property,
+  | "id" | "titulo" | "precio" | "moneda" | "tipo" | "operacion"
+  | "barrio" | "ciudad" | "fotos" | "ambientes" | "dormitorios"
+  | "superficie_total" | "cochera" | "apto_credito"
+>;
+
+/** Lista de columnas para los SELECT de listados (coincide con PropertyCardData). */
+export const PROPERTY_CARD_COLS =
+  "id, titulo, precio, moneda, tipo, operacion, barrio, ciudad, fotos, ambientes, dormitorios, superficie_total, cochera, apto_credito";
+
 export interface Inquiry {
   id: string;
   property_id: string;

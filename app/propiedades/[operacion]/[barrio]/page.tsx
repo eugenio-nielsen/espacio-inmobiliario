@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import Link from "next/link";
+import RecordarBusqueda from "@/components/properties/RecordarBusqueda";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import type { Property } from "@/lib/types";
+import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import { getBarrioPage, BARRIO_PAGES } from "@/lib/barrios";
 import { getPreciosBarrios } from "@/lib/estimador/data";
 import PropertyListCard from "@/components/properties/PropertyListCard";
@@ -40,7 +42,7 @@ export default async function BarrioPage({ params }: PageProps) {
   const [{ data: properties }, precios] = await Promise.all([
     supabase
       .from("properties")
-      .select("*")
+      .select(PROPERTY_CARD_COLS)
       .eq("status", "activa")
       .eq("barrio", data.nombre)
       .order("created_at", { ascending: false }),
@@ -70,6 +72,7 @@ export default async function BarrioPage({ params }: PageProps) {
   return (
     <div style={{ minHeight: "100vh", background: "var(--cream)" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Suspense fallback={null}><RecordarBusqueda /></Suspense>
       <Navbar />
 
       <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(20px,4vw,32px) 20px clamp(40px,6vw,64px)" }}>
@@ -146,7 +149,7 @@ export default async function BarrioPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="grid-properties" style={{ marginBottom: 36 }}>
-            {(properties as Property[]).map((p, i) => (
+            {(properties as PropertyCardData[]).map((p, i) => (
               <PropertyListCard key={p.id} property={p} priority={i < 3} />
             ))}
           </div>

@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/user";
 import type { Metadata } from "next";
-import type { Property } from "@/lib/types";
+import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
@@ -29,21 +30,30 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: properties } = await supabase
-    .from("properties").select("*").eq("status", "activa")
-    .order("created_at", { ascending: false }).limit(6);
 
-  // Datos para la banda de estadísticas
-  const { count: activeCount } = await supabase
-    .from("properties").select("*", { count: "exact", head: true }).eq("status", "activa");
-  const { data: viewsRows } = await supabase
-    .from("properties").select("views").eq("status", "activa");
-  const totalViews = (viewsRows || []).reduce((acc, r) => acc + (r.views ?? 0), 0);
+  // Las tres consultas van en paralelo: el tiempo total es el de la más
+  // lenta, no la suma. Las estadísticas las agrega Postgres (home_stats).
+  // getUser va aparte a propósito: dentro de un Promise.all junto a otras
+  // consultas, el adaptador de cookies de Supabase falla. Está cacheado por
+  // request, así que el Navbar reusa esta misma llamada.
+  const user = await getCurrentUser();
+
+  // Estas dos sí van en paralelo: el tiempo total es el de la más lenta.
+  // Las estadísticas las agrega Postgres (home_stats) en vez de traer
+  // todas las filas para sumarlas en JavaScript.
+  const [{ data: properties }, { data: statsRow }] = await Promise.all([
+    supabase
+      .from("properties").select(PROPERTY_CARD_COLS).eq("status", "activa")
+      .order("created_at", { ascending: false }).limit(6),
+    supabase.rpc("home_stats").maybeSingle<{ total_activas: number; total_views: number }>(),
+  ]);
+
+  const activeCount = statsRow?.total_activas ?? 0;
+  const totalViews = statsRow?.total_views ?? 0;
   const totalZonas = BARRIOS_CABA.length + PARTIDOS_PBA.length;
 
   const stats: { icon: typeof Building2; to: number; suffix: string; label: string; static?: string }[] = [
-    { icon: Building2, to: activeCount ?? 0, suffix: "", label: "Propiedades publicadas" },
+    { icon: Building2, to: activeCount, suffix: "", label: "Propiedades publicadas" },
     { icon: Eye,       to: totalViews,        suffix: "", label: "Visitas totales" },
     { icon: MapIcon,   to: totalZonas,        suffix: "", label: "Barrios y partidos" },
     { icon: Percent,   to: 0,                 suffix: "%", label: "Comisiones", static: "0%" },
@@ -161,7 +171,7 @@ export default async function HomePage() {
         ) : (
           <>
             <div className="grid-properties home-destacados">
-              {(properties as Property[]).map((p, i) => (
+              {(properties as PropertyCardData[]).map((p, i) => (
                 <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
                   <div className="card-lift">
                     <PropertyListCard property={p} />
