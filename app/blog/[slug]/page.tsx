@@ -143,7 +143,7 @@ export default async function PostPage({ params }: Props) {
         <div style={{ marginTop: 40, background: "var(--navy-800)", borderRadius: "var(--radius-lg)", padding: "28px 26px", textAlign: "center", color: "#fff" }}>
           <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 20, margin: "0 0 8px" }}>¿Sos dueño y querés vender?</h3>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "rgba(255,255,255,.7)", margin: "0 0 18px" }}>
-            Publicá gratis, sin comisiones, con el respaldo de un martillero público.
+            Publicá gratis, sin comisiones y con acompañamiento en cada paso.
           </p>
           <Link href="/auth/registro" style={{ display: "inline-flex", fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14, background: "var(--gold-500)", color: "var(--navy-900)", padding: "12px 24px", borderRadius: "var(--radius-sm)", textDecoration: "none" }}>
             Publicar mi propiedad gratis

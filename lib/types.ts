@@ -66,6 +66,9 @@ export type PropertyCardData = Pick<
   | "superficie_total" | "cochera" | "apto_credito"
 >;
 
+/** Tope de propiedades que la home llega a mostrar antes de derivar al listado. */
+export const TOPE_HOME = 24;
+
 /** Lista de columnas para los SELECT de listados (coincide con PropertyCardData). */
 export const PROPERTY_CARD_COLS =
   "id, titulo, precio, moneda, tipo, operacion, barrio, ciudad, fotos, ambientes, dormitorios, superficie_total, cochera, apto_credito";

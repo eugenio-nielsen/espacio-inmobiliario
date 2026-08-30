@@ -13,7 +13,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.co
 
 export const metadata: Metadata = {
   title: "Precios · Publicar es gratis, vender con acompañamiento",
-  description: "Publicar tu propiedad en Espacio Inmobiliario es y será siempre gratis. Si querés, sumás el acompañamiento de un martillero público matriculado con un precio fijo por la venta, no un porcentaje.",
+  description: "Publicar tu propiedad en Espacio Inmobiliario es y será siempre gratis. Si querés, sumás nuestro acompañamiento integral con un precio fijo por la venta, no un porcentaje.",
   alternates: { canonical: `${SITE}/precios` },
   openGraph: {
     title: "Precios · Espacio Inmobiliario",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 const INCLUYE = [
-  { icon: BadgeCheck, t: "Martillero público matriculado", d: "Un profesional responsable detrás de toda la operación, dándole respaldo y validez a cada paso." },
+  { icon: BadgeCheck, t: "Un responsable con nombre y apellido", d: "Alguien a cargo de tu operación de principio a fin. No un call center ni un formulario que nadie lee." },
   { icon: MessageSquare, t: "Gestión diaria de consultas", d: "Respondemos y filtramos las consultas por vos, para que solo te llegue lo que vale la pena." },
   { icon: CalendarClock, t: "Coordinación de visitas", d: "Organizamos y acompañamos las visitas a tu propiedad, sin que tengas que estar pendiente." },
   { icon: Users, t: "Red de profesionales de confianza", d: "Escribanos, fotógrafos y reparadores que conocemos y recomendamos, cuando los necesites." },
@@ -100,8 +100,8 @@ export default function PreciosPage() {
               ¿Querés ayuda para vender? Estamos para eso
             </h2>
             <p style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(14px,2vw,16px)", color: "rgba(255,255,255,.65)", maxWidth: 560, margin: "0 auto", lineHeight: 1.65 }}>
-              Si preferís delegar y vender con respaldo, sumás el acompañamiento integral de un martillero
-              público matriculado. Vos elegís: lo hacés solo (gratis) o con nosotros al lado.
+              Si preferís delegar y vender con respaldo, sumás nuestro acompañamiento
+              integral. Vos elegís: lo hacés solo (gratis) o con nosotros al lado.
             </p>
           </FadeIn>
 

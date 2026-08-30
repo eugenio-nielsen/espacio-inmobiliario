@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/user";
 import type { Metadata } from "next";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
-import PropertyListCard from "@/components/properties/PropertyListCard";
+import PropiedadesHome from "@/components/home/PropiedadesHome";
 import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -170,24 +170,10 @@ export default async function HomePage() {
           </div>
         ) : (
           <>
-            <div className="grid-properties home-destacados">
-              {(properties as PropertyCardData[]).map((p, i) => (
-                <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
-                  <div className="card-lift">
-                    <PropertyListCard property={p} />
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-            {/* Botón "Ver todas" — solo visible en mobile (lista vertical de 5) */}
-            <Link href="/propiedades" className="home-ver-todas esbtn esbtn-primary" style={{
-              fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
-              border: "1.5px solid transparent", alignItems: "center", justifyContent: "center",
-              gap: 8, fontSize: 14.5, padding: "13px 24px", marginTop: 20,
-              background: "var(--navy-800)", color: "#fff", textDecoration: "none",
-            }}>
-              Ver todas las propiedades <ArrowRight size={16} strokeWidth={2} />
-            </Link>
+            <PropiedadesHome
+              iniciales={(properties ?? []) as PropertyCardData[]}
+              totalActivas={activeCount}
+            />
           </>
         )}
       </section>

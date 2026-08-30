@@ -17,7 +17,7 @@ async function assertAdmin() {
   return user;
 }
 
-// ── Lead: guardar estimación + contacto y avisar al martillero ──
+// ── Lead: guardar estimación + contacto y avisar al admin ──────
 export async function guardarLead(data: {
   estimacionId?: string | null;
   input: unknown;

@@ -636,7 +636,7 @@ function LeadForm({ input, result, estimacionId }: { input: EstimadorInput; resu
         <Check size={28} strokeWidth={2.5} color="#15803D" style={{ marginBottom: 8 }} />
         <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 15, color: "#15803D", margin: "0 0 4px" }}>¡Solicitud enviada!</p>
         <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-600)", margin: 0 }}>
-          Eugenio, martillero público matriculado, va a revisar tu estimación y se va a contactar con vos.
+          Eugenio va a revisar tu estimación y se va a contactar con vos.
         </p>
       </div>
     );
@@ -652,7 +652,7 @@ function LeadForm({ input, result, estimacionId }: { input: EstimadorInput; resu
           </p>
         </div>
         <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", margin: "0 0 14px", lineHeight: 1.55 }}>
-          Un martillero público matriculado revisa tu estimación sin cargo.
+          Revisamos tu estimación sin cargo.
         </p>
         {!open && (
           <button type="button" onClick={() => setOpen(true)} style={{

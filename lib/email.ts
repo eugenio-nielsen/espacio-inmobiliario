@@ -126,7 +126,7 @@ export async function sendInquiryConfirmation(data: {
   });
 }
 
-// ── Lead del Estimador de Precios → al admin (martillero) ─────
+// ── Lead del Estimador de Precios → al admin ──────────────────
 export async function sendEstimacionLead(data: {
   nombre: string;
   email: string;

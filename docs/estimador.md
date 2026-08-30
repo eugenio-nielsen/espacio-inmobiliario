@@ -16,7 +16,7 @@ Herramienta que estima un rango de valor de venta orientativo para departamentos
 | Lectura de datos | `lib/estimador/data.ts` |
 | Lead + admin (server actions) | `lib/actions/estimador.ts` |
 | Panel de admin | `app/panel/estimador/page.tsx` + `components/panel/EstimadorAdmin.tsx` |
-| Email al martillero | `sendEstimacionLead` en `lib/email.ts` |
+| Email al admin       | `sendEstimacionLead` en `lib/email.ts` |
 | Esquema SQL | `supabase/migrations/estimador.sql` |
 
 ## Modelo de cálculo
