@@ -1,4 +1,5 @@
 import CalculadoraAranceles from "@/components/blog/CalculadoraAranceles";
+import SeccionesNota from "@/components/blog/SeccionesNota";
 
 /**
  * Renderiza el cuerpo de la nota permitiendo intercalar componentes
@@ -20,7 +21,7 @@ const MARCADOR = /<p>\s*\[\[([A-Z_]+)\]\]\s*<\/p>/g;
 export default function ContenidoNota({ html }: { html: string }) {
   if (!MARCADOR.test(html)) {
     MARCADOR.lastIndex = 0;
-    return <div className="blog-prose" dangerouslySetInnerHTML={{ __html: html }} />;
+    return <SeccionesNota html={html} />;
   }
   MARCADOR.lastIndex = 0;
 
@@ -33,7 +34,7 @@ export default function ContenidoNota({ html }: { html: string }) {
     const previo = html.slice(ultimo, m.index);
     if (previo.trim()) {
       partes.push(
-        <div key={`html-${i}`} className="blog-prose" dangerouslySetInnerHTML={{ __html: previo }} />
+        <SeccionesNota key={`html-${i}`} html={previo} />
       );
     }
     const widget = WIDGETS[m[1]];
@@ -45,7 +46,7 @@ export default function ContenidoNota({ html }: { html: string }) {
   const resto = html.slice(ultimo);
   if (resto.trim()) {
     partes.push(
-      <div key={`html-${i}`} className="blog-prose" dangerouslySetInnerHTML={{ __html: resto }} />
+      <SeccionesNota key={`html-${i}`} html={resto} />
     );
   }
 

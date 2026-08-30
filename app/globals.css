@@ -902,3 +902,41 @@ select:focus, input:focus, textarea:focus {
   .calc-grid,
   .calc-resumen { grid-template-columns: 1fr; }
 }
+
+/* Secciones plegables dentro de las notas del blog */
+.nota-seccion { margin-top: 1.9em; }
+.nota-seccion:first-of-type { margin-top: 1.2em; }
+/* El h2 de cada sección es primer hijo, pero su margen ya lo pone .nota-seccion */
+.nota-seccion > h2 { margin-top: 0; }
+
+.nota-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+.nota-toggle > span { flex: 1; min-width: 0; }
+.nota-toggle:hover { color: var(--gold-700); }
+
+.nota-chevron {
+  flex-shrink: 0;
+  color: var(--gold-600);
+  transition: transform .24s var(--ease-out);
+}
+
+/* El acento dorado va bajo el título, no bajo el botón */
+.nota-seccion > h2::after { margin-top: 10px; }
+
+.nota-cuerpo > *:first-child { margin-top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nota-chevron { transition: none; }
+}
