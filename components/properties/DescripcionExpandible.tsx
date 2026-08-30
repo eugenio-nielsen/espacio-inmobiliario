@@ -17,7 +17,7 @@ export default function DescripcionExpandible({ texto }: { texto: string }) {
   }, [texto]);
 
   return (
-    <div style={{ margin: "0 0 18px", maxWidth: 560 }}>
+    <div style={{ margin: "0 0 18px" }}>
       <p
         ref={ref}
         style={{

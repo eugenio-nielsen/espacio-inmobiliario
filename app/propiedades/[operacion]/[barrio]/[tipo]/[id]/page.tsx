@@ -15,6 +15,7 @@ import Footer from "@/components/Footer";
 import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import ContactoPropiedad from "@/components/properties/ContactoPropiedad";
+import { SelloPropietario, SelloDominio } from "@/components/properties/SellosVerificacion";
 import CostosCompra from "@/components/properties/CostosCompra";
 import DescripcionExpandible from "@/components/properties/DescripcionExpandible";
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -108,7 +109,7 @@ export default async function PropiedadPage({ params }: PageProps) {
   const agendaConfig = leerConfig(p.visitas_config);
 
   // Todo esto depende solo de `p`, así que va en paralelo en vez de en cascada
-  const [geoResult, simBarrio, simTipo, precios, ocupadas] = await Promise.all([
+  const [geoResult, simBarrio, simTipo, precios, ocupadas, validacionDueno] = await Promise.all([
     // Coordenadas guardadas al crear/editar; fallback a Nominatim solo para
     // propiedades viejas que aún no fueron re-guardadas
     p.lat != null && p.lng != null
@@ -138,7 +139,16 @@ export default async function PropiedadPage({ params }: PageProps) {
           .eq("property_id", p.id).eq("status", "confirmada")
           .gte("inicio", new Date().toISOString())
       : Promise.resolve({ data: [] }),
+    // Aparte del join de arriba a propósito: si la columna todavía no
+    // existe (migración sin correr), PostgREST falla la consulta entera
+    // y la ficha daría 404. Acá el error solo apaga el sello.
+    supabase
+      .from("profiles").select("identidad_estado")
+      .eq("id", p.owner_id).maybeSingle(),
   ]);
+
+  const propietarioVerificado =
+    (validacionDueno.data as { identidad_estado?: string } | null)?.identidad_estado === "aprobada";
 
   const diasAgenda = proximosDias(
     agendaConfig,
@@ -408,6 +418,9 @@ export default async function PropiedadPage({ params }: PageProps) {
                   </div>
                 )}
 
+                {/* Dominio verificado — es de esta propiedad */}
+                {p.dominio_estado === "aprobada" && <SelloDominio />}
+
                 {/* Owner */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 0", borderTop: "1px solid var(--line-100)", marginBottom: 18 }}>
                   <span style={{
@@ -418,13 +431,17 @@ export default async function PropiedadPage({ params }: PageProps) {
                   }}>
                     {p.profiles?.nombre?.[0]?.toUpperCase() || "D"}
                   </span>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14.5, color: "var(--ink-900)" }}>
                       {p.profiles?.nombre || "Propietario"}
                     </div>
-                    <div style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)" }}>
-                      Propietario directo
-                    </div>
+                    {propietarioVerificado ? (
+                      <div style={{ marginTop: 3 }}><SelloPropietario compacto /></div>
+                    ) : (
+                      <div style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)" }}>
+                        Propietario directo
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -5,11 +5,37 @@ export type Moneda = "USD" | "ARS";
 export type InquiryStatus = "nuevo" | "visto" | "contactado" | "cerrado";
 export type PropertyEstado = "A estrenar" | "Excelente" | "Muy bueno" | "Bueno" | "A refaccionar";
 
+/** Estado de una validación manual. */
+export type EstadoValidacion = "sin_enviar" | "pendiente" | "aprobada" | "rechazada";
+
+export type TipoDocumento = "dni" | "pasaporte" | "registro";
+
+export const TIPOS_DOCUMENTO: { valor: TipoDocumento; label: string }[] = [
+  { valor: "dni",       label: "DNI" },
+  { valor: "pasaporte", label: "Pasaporte" },
+  { valor: "registro",  label: "Registro de conducir" },
+];
+
+/**
+ * A partir de esta cantidad de publicaciones hace falta tener la
+ * identidad validada para poder seguir cargando.
+ */
+export const TOPE_SIN_VALIDAR = 5;
+
 export interface Profile {
   id: string;
   nombre: string;
   email: string;
   telefono?: string;
+  /** Validación de identidad — es del titular, no de una propiedad. */
+  identidad_estado: EstadoValidacion;
+  identidad_tipo_doc?: TipoDocumento | null;
+  /** Rutas dentro del bucket privado `documentos`, no URLs públicas. */
+  identidad_frente?: string | null;
+  identidad_dorso?: string | null;
+  identidad_enviada_at?: string | null;
+  identidad_revisada_at?: string | null;
+  identidad_motivo?: string | null;
   created_at: string;
 }
 
@@ -52,6 +78,12 @@ export interface Property {
   geo_aproximada?: boolean | null;
   /** Disponibilidad para visitas. Sin configurar = null. */
   visitas_config?: VisitasConfig | null;
+  /** Validación de dominio — es de ESTA propiedad, no del usuario. */
+  dominio_estado: EstadoValidacion;
+  dominio_archivo?: string | null;
+  dominio_enviada_at?: string | null;
+  dominio_revisada_at?: string | null;
+  dominio_motivo?: string | null;
   created_at: string;
   updated_at: string;
   profiles?: Pick<Profile, "nombre" | "email" | "telefono">;

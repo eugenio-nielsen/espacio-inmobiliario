@@ -34,6 +34,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             <Link href="/" className="flex items-center"><Logo className="h-9 w-auto" /></Link>
             <nav className="hidden sm:flex items-center" style={{ gap: 18 }}>
               <Link href="/panel" style={panelNavLink}>Mis propiedades</Link>
+              <Link href="/panel/perfil" style={panelNavLink}>Mi perfil</Link>
               {isAdmin && <Link href="/panel/admin" style={panelNavLink}>Superadmin</Link>}
             </nav>
           </div>
@@ -53,6 +54,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         {/* Nav mobile (debajo del logo) */}
         <nav className="sm:hidden flex items-center" style={{ gap: 18, padding: "0 16px 10px" }}>
           <Link href="/panel" style={panelNavLink}>Mis propiedades</Link>
+          <Link href="/panel/perfil" style={panelNavLink}>Mi perfil</Link>
           {isAdmin && <Link href="/panel/admin" style={panelNavLink}>Superadmin</Link>}
         </nav>
       </header>

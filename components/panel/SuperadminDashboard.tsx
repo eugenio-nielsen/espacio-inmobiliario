@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import TablaUsuarios from "@/components/panel/TablaUsuarios";
-import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, Phone, Mail, Calculator, Sliders, FileText } from "lucide-react";
+import ValidacionesAdmin, { type Pendiente } from "@/components/panel/ValidacionesAdmin";
+import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, Phone, Mail, Calculator, Sliders, FileText, ShieldCheck } from "lucide-react";
 import type { Property, Inquiry } from "@/lib/types";
 import EstimadorAdmin from "@/components/panel/EstimadorAdmin";
 import BlogAdmin from "@/components/panel/BlogAdmin";
@@ -44,20 +45,23 @@ const INQ_STATUS: Record<string, { label: string; bg: string; color: string }> =
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 const fmtPrecio = (p: number, m: string) => `${m === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p))}`;
 
-type HubTab = "usuarios" | "estimaciones" | "config" | "blog";
+type HubTab = "usuarios" | "validaciones" | "estimaciones" | "config" | "blog";
 
-export default function SuperadminDashboard({ owners, totals, estimaciones, precios, config, posts }: {
+export default function SuperadminDashboard({ owners, totals, estimaciones, precios, config, posts, validaciones }: {
   owners: OwnerData[];
   totals: { usuarios: number; propiedades: number; consultas: number; vistas: number };
   estimaciones: EstimacionRow[];
   precios: { barrio: string; precio: number }[];
   config: EstimadorConfig;
   posts: Post[];
+  validaciones: Pendiente[];
 }) {
+  const validacionesEnEspera = validaciones.filter(v => v.estado === "pendiente").length;
   const [tab, setTab] = useState<HubTab>("usuarios");
 
   const tabs: [HubTab, string, typeof Users][] = [
     ["usuarios", `Usuarios (${owners.length})`, Users],
+    ["validaciones", `Validaciones${validacionesEnEspera ? ` (${validacionesEnEspera})` : ""}`, ShieldCheck],
     ["estimaciones", `Estimaciones (${estimaciones.length})`, Calculator],
     ["config", "Config Estimador", Sliders],
     ["blog", `Blog (${posts.length})`, FileText],
@@ -82,6 +86,7 @@ export default function SuperadminDashboard({ owners, totals, estimaciones, prec
       </div>
 
       {tab === "usuarios" && <UsuariosTab owners={owners} totals={totals} />}
+      {tab === "validaciones" && <ValidacionesAdmin pendientes={validaciones} />}
       {tab === "estimaciones" && <EstimadorTab estimaciones={estimaciones} />}
       {tab === "config" && <EstimadorAdmin initialPrecios={precios} initialConfig={config} />}
       {tab === "blog" && <BlogAdmin initialPosts={posts} />}

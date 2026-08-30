@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Property, Inquiry } from "@/lib/types";
 import SuperadminDashboard, { type OwnerData, type EstimacionRow } from "@/components/panel/SuperadminDashboard";
+import type { Pendiente } from "@/components/panel/ValidacionesAdmin";
 import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
 import type { Post } from "@/lib/blog/types";
 
@@ -69,6 +70,41 @@ export default async function SuperadminPage() {
   // dueños con más actividad primero
   .sort((a, b) => (b.totalProps - a.totalProps) || (b.totalInquiries - a.totalInquiries));
 
+  // Validaciones enviadas: identidad (perfiles) + dominio (propiedades).
+  // Se arma de lo que ya trajimos arriba, sin consultas extra.
+  const nombrePorId = new Map((profiles || []).map(pr => [pr.id, pr.nombre || pr.email]));
+
+  const validaciones: Pendiente[] = [
+    ...(profiles || [])
+      .filter(pr => pr.identidad_estado && pr.identidad_estado !== "sin_enviar")
+      .map(pr => ({
+        tipo: "identidad" as const,
+        id: pr.id,
+        titulo: pr.nombre || pr.email,
+        subtitulo: pr.email,
+        detalle: pr.identidad_tipo_doc || "documento",
+        estado: pr.identidad_estado,
+        enviada_at: pr.identidad_enviada_at ?? null,
+        archivos: [pr.identidad_frente, pr.identidad_dorso].filter(Boolean) as string[],
+      })),
+    ...props
+      .filter(pr => pr.dominio_estado && pr.dominio_estado !== "sin_enviar")
+      .map(pr => ({
+        tipo: "dominio" as const,
+        id: pr.id,
+        titulo: pr.titulo,
+        subtitulo: nombrePorId.get(pr.owner_id) || "—",
+        detalle: "escritura",
+        estado: pr.dominio_estado,
+        enviada_at: pr.dominio_enviada_at ?? null,
+        archivos: [pr.dominio_archivo].filter(Boolean) as string[],
+      })),
+  ].sort((a, b) => {
+    // Lo que espera revisión primero, y dentro de eso lo más viejo
+    if (a.estado !== b.estado) return a.estado === "pendiente" ? -1 : 1;
+    return (a.enviada_at || "").localeCompare(b.enviada_at || "");
+  });
+
   const totals = {
     usuarios: owners.length,
     propiedades: props.length,
@@ -95,6 +131,7 @@ export default async function SuperadminPage() {
         precios={preciosArray}
         config={config}
         posts={posts}
+        validaciones={validaciones}
       />
     </div>
   );

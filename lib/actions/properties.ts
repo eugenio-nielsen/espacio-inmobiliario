@@ -7,6 +7,7 @@ import { slugifyUbicacion } from "@/lib/ubicaciones";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import { geocodeProperty } from "@/lib/utils/geocode";
 import { sendNewPropertyToAdmin } from "@/lib/email";
+import { TOPE_SIN_VALIDAR } from "@/lib/types";
 
 function slugify(str: string): string {
   return str
@@ -40,6 +41,28 @@ export async function createProperty(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
+
+  // A partir de TOPE_SIN_VALIDAR publicaciones hace falta tener la
+  // identidad validada. Se cuenta antes de subir las fotos para no
+  // dejar archivos huérfanos si el corte aplica.
+  const { count } = await supabase
+    .from("properties")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", user.id);
+
+  if ((count ?? 0) >= TOPE_SIN_VALIDAR) {
+    const { data: perfil } = await supabase
+      .from("profiles").select("identidad_estado").eq("id", user.id).single();
+
+    if (perfil?.identidad_estado !== "aprobada") {
+      return {
+        error: perfil?.identidad_estado === "pendiente"
+          ? `Ya tenés ${count} publicaciones. Estamos revisando tu validación de identidad: apenas la aprobemos vas a poder seguir cargando.`
+          : `Ya tenés ${count} publicaciones. Para cargar más necesitás validar tu identidad desde tu perfil.`,
+        requiereValidacion: true,
+      };
+    }
+  }
 
   const fotoUrls = await uploadFotos(supabase, user.id, formData.getAll("fotos") as File[]);
 

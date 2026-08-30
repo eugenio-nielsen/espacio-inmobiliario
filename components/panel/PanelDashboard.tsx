@@ -1,8 +1,8 @@
 "use client";
 
-import { Building2, MessageSquare, UserRound, Eye, CalendarClock } from "lucide-react";
+import Link from "next/link";
+import { Building2, MessageSquare, UserRound, Eye, CalendarClock, ChevronRight } from "lucide-react";
 import Seccion from "@/components/panel/Seccion";
-import SeccionDatos from "@/components/panel/SeccionDatos";
 import SeccionPropiedades from "@/components/panel/SeccionPropiedades";
 import SeccionConsultas from "@/components/panel/SeccionConsultas";
 import SeccionVisitas from "@/components/panel/SeccionVisitas";
@@ -106,14 +106,40 @@ export default function PanelDashboard({
         <SeccionVisitas properties={properties} visitas={visitas} />
       </Seccion>
 
-      <Seccion
-        icono={<UserRound size={17} />}
-        titulo="Mis datos"
-        resumen={perfil.telefono ? `${perfil.email} · ${perfil.telefono}` : "Falta cargar tu teléfono"}
-        abiertaPorDefecto={!perfil.telefono}
+      {/* Los datos y las validaciones viven en /panel/perfil */}
+      <Link
+        href="/panel/perfil"
+        style={{
+          display: "flex", alignItems: "center", gap: 12,
+          background: "#fff", border: "1px solid var(--line-200)",
+          borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-sm)",
+          padding: "16px 18px", textDecoration: "none",
+        }}
       >
-        <SeccionDatos nombre={perfil.nombre} email={perfil.email} telefono={perfil.telefono} />
-      </Seccion>
+        <span style={{
+          width: 34, height: 34, borderRadius: "var(--radius-sm)", flexShrink: 0,
+          background: "var(--navy-50)", color: "var(--navy-700)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <UserRound size={17} />
+        </span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{
+            display: "block", fontFamily: "var(--font-sans)", fontWeight: 700,
+            fontSize: 15, color: "var(--navy-800)",
+          }}>
+            Mi perfil y validaciones
+          </span>
+          <span style={{
+            display: "block", fontFamily: "var(--font-sans)", fontSize: 12.5,
+            color: "var(--ink-500)", marginTop: 2,
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>
+            {perfil.telefono ? `${perfil.email} · ${perfil.telefono}` : "Falta cargar tu teléfono"}
+          </span>
+        </span>
+        <ChevronRight size={18} color="var(--ink-400)" style={{ flexShrink: 0 }} />
+      </Link>
     </div>
   );
 }

@@ -536,3 +536,97 @@ export async function sendVisitaRespuesta(data: {
     html: baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`),
   });
 }
+
+// ── Validaciones (identidad y dominio) ────────────────────────
+
+/** Alguien envió documentación → al admin */
+export async function sendValidacionPendiente(data: {
+  tipo: "identidad" | "dominio";
+  adminEmail: string;
+  quien: string;
+  detalle: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const titulo = data.tipo === "identidad"
+    ? "Nueva validación de identidad"
+    : "Nueva validación de dominio";
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">${titulo}</h1>
+      <p style="${styles.lead}">Hay documentación esperando revisión.</p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Usuario</p>
+        <p style="${styles.value}">${data.quien}</p>
+        <p style="${styles.label}">Detalle</p>
+        <p style="${styles.value}">${data.detalle}</p>
+      </div>
+
+      <a href="${SITE}/panel/admin" style="${styles.btn}">Revisar en el panel &rarr;</a>
+    </div>
+  `);
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: data.adminEmail,
+    subject: `${titulo} — ${data.quien}`,
+    html,
+  });
+}
+
+/** Se aprobó o rechazó → a la persona */
+export async function sendValidacionResuelta(data: {
+  para: string;
+  nombre: string;
+  tipo: "identidad" | "dominio";
+  aprobada: boolean;
+  motivo?: string | null;
+  propiedad?: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const queEs = data.tipo === "identidad" ? "identidad" : "dominio";
+  const saludo = data.nombre ? `Hola ${data.nombre.split(" ")[0]}, ` : "Hola, ";
+
+  const cuerpo = data.aprobada
+    ? `
+      <h1 style="${styles.h1}">Validación aprobada</h1>
+      <p style="${styles.lead}">
+        ${saludo}revisamos tu documentación y tu <strong style="color:#0E2C50;">validación de ${queEs}</strong>
+        quedó aprobada${data.propiedad ? ` para <strong style="color:#0E2C50;">"${data.propiedad}"</strong>` : ""}.
+      </p>
+      <p style="${styles.lead}">
+        ${data.tipo === "identidad"
+          ? "Desde ahora tus publicaciones muestran que sos un propietario verificado."
+          : "La publicación ya muestra que el dominio está verificado."}
+      </p>
+      <a href="${SITE}/panel/perfil" style="${styles.btn}">Ver mi perfil &rarr;</a>
+    `
+    : `
+      <h1 style="${styles.h1}">Necesitamos que reenvíes la documentación</h1>
+      <p style="${styles.lead}">
+        ${saludo}revisamos tu <strong style="color:#0E2C50;">validación de ${queEs}</strong>
+        ${data.propiedad ? `para <strong style="color:#0E2C50;">"${data.propiedad}"</strong> ` : ""}y no pudimos aprobarla.
+      </p>
+      ${data.motivo ? `
+      <p style="${styles.label}">Motivo</p>
+      <p style="${styles.message}">"${data.motivo}"</p>
+      ` : ""}
+      <p style="${styles.lead}">Podés volver a subirla desde tu perfil.</p>
+      <a href="${SITE}/panel/perfil" style="${styles.btn}">Reenviar documentación &rarr;</a>
+    `;
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: data.para,
+    bcc: ADMIN,
+    subject: data.aprobada
+      ? `Tu validación de ${queEs} fue aprobada`
+      : `Sobre tu validación de ${queEs}`,
+    html: baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`),
+  });
+}
