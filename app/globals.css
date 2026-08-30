@@ -873,3 +873,13 @@ select:focus, input:focus, textarea:focus {
 @media (max-width: 1023px) {
   .detail-sidebar { position: static; top: auto; }
 }
+
+/* Calculadora embebida en las notas del blog */
+.calc-aranceles {
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(18px, 3vw, 26px);
+  margin: 32px 0;
+}

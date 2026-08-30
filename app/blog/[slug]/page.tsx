@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/data";
 import { renderPost, readingTime, stripMarkdown } from "@/lib/blog/markdown";
 import TableOfContents from "@/components/blog/TableOfContents";
+import ContenidoNota from "@/components/blog/ContenidoNota";
 import ShareButtons from "@/components/blog/ShareButtons";
 
 export const revalidate = 300;
@@ -94,7 +95,7 @@ export default async function PostPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <Navbar />
 
-      <main style={{ flex: 1, maxWidth: 760, margin: "0 auto", width: "100%", padding: "clamp(20px,4vw,36px) 20px clamp(48px,7vw,72px)" }}>
+      <main style={{ flex: 1, maxWidth: 880, margin: "0 auto", width: "100%", padding: "clamp(20px,4vw,36px) 20px clamp(48px,7vw,72px)" }}>
         {/* Breadcrumb */}
         <nav style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)", marginBottom: 18, display: "flex", gap: 8, flexWrap: "wrap" }}>
           <Link href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</Link>
@@ -103,7 +104,14 @@ export default async function PostPage({ params }: Props) {
         </nav>
 
         <article>
-          <header style={{ marginBottom: 28 }}>
+          {/* Portada primero: da contexto antes del título */}
+          {post.cover && (
+            <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24, background: "var(--navy-50)" }}>
+              <Image src={post.cover} alt={post.titulo} fill className="object-cover" sizes="880px" priority />
+            </div>
+          )}
+
+          <header style={{ marginBottom: 22 }}>
             {post.categoria && <div className="es-eyebrow" style={{ marginBottom: 12 }}>{post.categoria}</div>}
             <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(28px,4.5vw,44px)", letterSpacing: "-.02em", lineHeight: 1.15, color: "var(--navy-800)", margin: "0 0 16px" }}>
               {post.titulo}
@@ -117,21 +125,15 @@ export default async function PostPage({ params }: Props) {
             </div>
           </header>
 
-          {post.cover && (
-            <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24, background: "var(--navy-50)" }}>
-              <Image src={post.cover} alt={post.titulo} fill className="object-cover" sizes="760px" priority />
-            </div>
-          )}
-
-          {/* Compartir (arriba) */}
-          <div style={{ marginBottom: 28, paddingBottom: 22, borderBottom: "1px solid var(--line-200)" }}>
+          {/* Compartir */}
+          <div style={{ marginBottom: 26, paddingBottom: 20, borderBottom: "1px solid var(--line-200)" }}>
             <ShareButtons url={url} title={post.titulo} />
           </div>
 
-          {/* Índice de contenidos */}
+          {/* Índice (cerrado por defecto) */}
           <TableOfContents items={toc} />
 
-          <div className="blog-prose" dangerouslySetInnerHTML={{ __html: html }} />
+          <ContenidoNota html={html} />
 
           {/* Compartir (abajo) */}
           <div style={{ marginTop: 36, paddingTop: 24, borderTop: "1px solid var(--line-200)" }}>
