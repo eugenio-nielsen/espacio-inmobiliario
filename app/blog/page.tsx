@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import PostCard from "@/components/blog/PostCard";
-import FadeIn from "@/components/ui/FadeIn";
+import ListadoPosts from "@/components/blog/ListadoPosts";
 import { getPublishedPosts } from "@/lib/blog/data";
 
 export const revalidate = 300;
@@ -65,13 +64,7 @@ export default async function BlogPage() {
             <p style={{ fontFamily: "var(--font-sans)", color: "var(--ink-500)", margin: 0 }}>Pronto vas a encontrar acá nuestras primeras notas.</p>
           </div>
         ) : (
-          <div className="grid-properties">
-            {posts.map((p, i) => (
-              <FadeIn key={p.id} delay={(i % 3) * 90} direction="up">
-                <PostCard post={p} />
-              </FadeIn>
-            ))}
-          </div>
+          <ListadoPosts posts={posts} />
         )}
       </main>
 

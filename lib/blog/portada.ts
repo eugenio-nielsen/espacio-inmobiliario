@@ -1,6 +1,6 @@
 import {
   Calculator, Scale, Receipt, FileSignature, KeyRound, TrendingUp,
-  Landmark, HandCoins, FileText,
+  Landmark, HandCoins, FileText, BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -19,7 +19,7 @@ import type { LucideIcon } from "lucide-react";
 export type Portada = { icono: LucideIcon; tono: Tono };
 
 /** Tonos disponibles, todos derivados de la paleta de la marca. */
-export type Tono = "navy" | "gold" | "verde" | "ciruela";
+export type Tono = "navy" | "gold" | "verde" | "ciruela" | "petroleo";
 
 export const TONOS: Record<Tono, { fondo: string; trama: string; icono: string; halo: string }> = {
   navy: {
@@ -45,6 +45,13 @@ export const TONOS: Record<Tono, { fondo: string; trama: string; icono: string; 
     trama: "rgba(255,255,255,.12)",
     icono: "#EFE4F5",
     halo:  "rgba(255,255,255,.16)",
+  },
+  // Reservado para la serie mensual de escrituras: que se reconozca de un vistazo
+  petroleo: {
+    fondo: "linear-gradient(135deg, #10333B 0%, #17505C 55%, #1F6E7E 100%)",
+    trama: "rgba(210,236,240,.15)",
+    icono: "#D8EEF2",
+    halo:  "rgba(210,236,240,.20)",
   },
 };
 
@@ -77,8 +84,9 @@ const POR_PALABRA: [RegExp, Portada][] = [
 ];
 
 const POR_CATEGORIA: Record<string, Portada> = {
-  "Legal y escrituras": { icono: FileSignature, tono: "navy" },
-  "Guía para vender":   { icono: KeyRound,      tono: "gold" },
+  "Seguimiento de Escrituras 2026": { icono: BarChart3,     tono: "petroleo" },
+  "Legal y escrituras":             { icono: FileSignature, tono: "navy" },
+  "Guía para vender":               { icono: KeyRound,      tono: "gold" },
 };
 
 const POR_DEFECTO: Portada = { icono: FileText, tono: "navy" };
@@ -90,6 +98,12 @@ export function portadaDe(post: {
 }): Portada {
   const directa = POR_SLUG[post.slug];
   if (directa) return directa;
+
+  // La serie mensual va primero: su categoría define la portada aunque el
+  // título contenga palabras que apuntarían a otro ícono ("escrituras").
+  if (post.categoria === "Seguimiento de Escrituras 2026") {
+    return POR_CATEGORIA[post.categoria];
+  }
 
   for (const [patron, portada] of POR_PALABRA) {
     if (patron.test(post.titulo)) return portada;
