@@ -803,17 +803,47 @@ select:focus, input:focus, textarea:focus {
   .home-search-bar > button { width: 100%; justify-content: center; padding: 14px !important; }
 }
 
-/* Gallery: shorter on mobile */
+/* Galería principal.
+   La galería va a todo el ancho del contenedor (~1080px en escritorio),
+   arriba de la ficha y la sidebar. Con los 420px que tenía, la foto
+   quedaba a 2,57:1 — casi una franja. Estas alturas la acercan a una
+   proporción de foto real, así se ve bastante más de cada imagen. */
 .property-gallery-main {
   position: relative;
-  height: 420px;
+  width: 100%;
+  height: 580px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--fill-100);
   cursor: zoom-in;
 }
+@media (max-width: 1023px) {
+  .property-gallery-main { height: 500px; }
+}
 @media (max-width: 767px) {
-  .property-gallery-main { height: 260px; border-radius: var(--radius-md); }
+  /* En mobile no conviene pasarse: a más de ~300px la foto queda
+     cuadrada y, como son apaisadas, se empieza a recortar por los
+     costados en vez de mostrarse más. */
+  .property-gallery-main { height: 300px; border-radius: var(--radius-md); }
+}
+
+/* Tira de miniaturas */
+.property-thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.property-thumb {
+  flex-shrink: 0;
+  width: 104px;
+  height: 78px;
+}
+@media (max-width: 767px) {
+  .property-thumbs { gap: 8px; }
+  .property-thumb { width: 88px; height: 66px; }
 }
 
 /* CRM property row: flex → wrap on mobile */

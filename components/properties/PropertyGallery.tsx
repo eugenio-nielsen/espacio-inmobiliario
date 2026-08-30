@@ -45,7 +45,7 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
   if (!items.length) {
     return (
       <div style={{
-        height: 400, borderRadius: "var(--radius-lg)",
+        width: "100%", height: 580, borderRadius: "var(--radius-lg)",
         background: "var(--fill-100)", display: "flex",
         alignItems: "center", justifyContent: "center",
         color: "var(--ink-400)",
@@ -153,15 +153,15 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
 
         {/* Thumbnails */}
         {items.length > 1 && (
-          <div style={{ display: "flex", gap: 10, marginTop: 10, overflowX: "auto", paddingBottom: 2 }}>
+          <div className="property-thumbs">
             {items.map((url, i) => {
               const esPlano = i === planoIndex;
               return (
                 <button
                   key={url}
+                  className="property-thumb"
                   onClick={() => setCurrent(i)}
                   style={{
-                    flexShrink: 0, width: 78, height: 58,
                     borderRadius: "var(--radius-sm)", overflow: "hidden",
                     outline: i === current
                       ? "2.5px solid var(--gold-500)"
@@ -180,7 +180,7 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
                     alt={esPlano ? "Miniatura del plano" : `Miniatura ${i + 1}`}
                     fill
                     className={esPlano ? "object-contain" : "object-cover"}
-                    sizes="78px"
+                    sizes="104px"
                   />
                   {esPlano && (
                     <span style={{
