@@ -68,7 +68,7 @@
 
 /* overflow-x: clip (no 'hidden') recorta el desborde horizontal SIN crear un
    contenedor de scroll — clave para que position:sticky funcione en descendientes
-   (p. ej. el scrollytelling de /como-funciona). */
+   (p. ej. .detail-sidebar en la ficha de propiedad). */
 html { overflow-x: clip; scroll-behavior: smooth; }
 
 body {
@@ -228,54 +228,6 @@ select:focus, input:focus, textarea:focus {
   }
   .grid-stats::-webkit-scrollbar { display: none; }
   .grid-stats > * { flex: 0 0 44%; scroll-snap-align: start; }
-}
-
-/* ── Scrollytelling (ScrollySteps) ──────────────────────────
-   IMPORTANTE: ningún ancestro de .ss-pin puede tener overflow:hidden,
-   o position:sticky deja de funcionar. */
-.ss-pin {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 100vh;   /* fuerza ambas columnas a ocupar la pantalla completa */
-  align-items: stretch;
-}
-.ss-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 clamp(28px, 5vw, 72px);
-  min-width: 0;
-}
-.ss-right {
-  position: relative;          /* containing block de las cards absolutas */
-  height: 100vh;
-}
-.ss-card-slot {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  padding: 40px clamp(20px, 4vw, 56px) 40px 0;
-}
-.ss-card {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  background: var(--navy-800);
-  border-radius: var(--radius-lg);
-  padding: clamp(32px, 4vw, 52px);
-  box-shadow: 0 24px 64px rgba(14, 44, 80, .22);
-}
-
-/* Mostrar desktop vs mobile */
-.ss-mobile { display: none; }
-@media (max-width: 767px) {
-  .ss-desktop { display: none; }
-  .ss-mobile  { display: block; padding: 48px 20px; }
-  .ss-mobile .ss-card { box-shadow: none; padding: 28px 24px; }
 }
 
 /* Hero animate-in */
