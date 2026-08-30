@@ -51,6 +51,9 @@ create unique index if not exists idx_visitas_slot_confirmado
   on public.visitas(property_id, inicio)
   where status = 'confirmada';
 
+-- create trigger no acepta "if not exists": lo borramos antes para que
+-- la migración se pueda correr dos veces sin romperse.
+drop trigger if exists trg_visitas_updated_at on public.visitas;
 create trigger trg_visitas_updated_at
   before update on public.visitas
   for each row execute function public.handle_updated_at();
@@ -59,11 +62,13 @@ create trigger trg_visitas_updated_at
 alter table public.visitas enable row level security;
 
 -- Cualquiera puede pedir una visita (mismo criterio que las consultas)
+drop policy if exists "Cualquiera puede pedir una visita" on public.visitas;
 create policy "Cualquiera puede pedir una visita"
   on public.visitas for insert
   with check (true);
 
 -- Solo el dueño de la propiedad ve las visitas de sus propiedades
+drop policy if exists "Dueño lee visitas de sus propiedades" on public.visitas;
 create policy "Dueño lee visitas de sus propiedades"
   on public.visitas for select
   using (
@@ -74,6 +79,7 @@ create policy "Dueño lee visitas de sus propiedades"
   );
 
 -- Solo el dueño confirma, rechaza o marca como realizada
+drop policy if exists "Dueño actualiza visitas de sus propiedades" on public.visitas;
 create policy "Dueño actualiza visitas de sus propiedades"
   on public.visitas for update
   using (
