@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
+import { normalizarTelefono } from "@/lib/utils/telefono";
 import {
   MapPin, Home, Sparkles, ArrowRight, ArrowLeft, Loader2,
   TrendingUp, TrendingDown, Check, RefreshCw, Building2,
 } from "lucide-react";
-import { guardarLead } from "@/lib/actions/estimador";
 import type { EstimadorInput, EstimadorResultado } from "@/lib/estimador/types";
 
 const CONDICION_OBRA = [
@@ -141,6 +141,9 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
   const [estimacionId, setEstimacionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // El contacto se pide ANTES de mostrar el resultado: así toda estimación
+  // queda registrada con nombre y teléfono, sin "sin contacto".
+  const [contacto, setContacto] = useState({ nombre: "", telefono: "", email: "" });
 
   function set<K extends keyof EstimadorInput>(key: K, value: EstimadorInput[K]) {
     setInput(prev => ({ ...prev, [key]: value }));
@@ -150,13 +153,24 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
   }
 
   async function calcular() {
+    if (!contacto.nombre.trim()) { setError("Ingresá tu nombre."); return; }
+    const tel = normalizarTelefono(contacto.telefono);
+    if (!tel.ok) { setError(tel.error); return; }
+
     setLoading(true);
     setError(null);
     try {
       const res = await fetch("/api/estimador", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
+        body: JSON.stringify({
+          ...input,
+          contacto: {
+            nombre: contacto.nombre.trim(),
+            telefono: tel.valor,
+            email: contacto.email.trim() || undefined,
+          },
+        }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -166,7 +180,7 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
       }
       setResult(data as EstimadorResultado);
       setEstimacionId(data.estimacionId ?? null);
-      setStep(3);
+      setStep(4);
     } catch {
       setError("Error de conexión. Intentá de nuevo.");
     }
@@ -176,6 +190,7 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
   function reset() {
     setInput(defaultInput);
     setResult(null);
+    setContacto({ nombre: "", telefono: "", email: "" });
     setStep(1);
     setError(null);
   }
@@ -345,16 +360,79 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
 
           <NavRow
             onBack={() => { setError(null); setStep(1); }}
-            onNext={() => { if (!input.m2Cubiertos || input.m2Cubiertos <= 0) { setError("Ingresá los metros cubiertos."); return; } setError(null); calcular(); }}
-            nextLabel={loading ? "Calculando…" : "Calcular estimación"}
+            onNext={() => { if (!input.m2Cubiertos || input.m2Cubiertos <= 0) { setError("Ingresá los metros cubiertos."); return; } setError(null); setStep(3); }}
+            nextLabel="Continuar"
             loading={loading}
             error={error}
           />
         </div>
       )}
 
-      {/* ── Paso 3: Resultado ─────────────────────────────────── */}
-      {step === 3 && result && (
+      {/* ── Paso 3: Contacto ──────────────────────────────────── */}
+      {step === 3 && (
+        <div style={card}>
+          <StepTitle
+            icon={<Sparkles size={20} />}
+            title="Último paso"
+            subtitle="¿A dónde te enviamos la estimación?"
+          />
+
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Nombre *</label>
+            <input
+              style={inputStyle}
+              type="text"
+              value={contacto.nombre}
+              onChange={e => setContacto(c => ({ ...c, nombre: e.target.value }))}
+              placeholder="Tu nombre"
+            />
+          </div>
+
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>Teléfono / WhatsApp *</label>
+            <input
+              style={inputStyle}
+              type="tel"
+              inputMode="tel"
+              value={contacto.telefono}
+              onChange={e => setContacto(c => ({ ...c, telefono: e.target.value }))}
+              placeholder="+54 9 11 1234-5678"
+            />
+          </div>
+
+          <div style={{ marginBottom: 18 }}>
+            <label style={labelStyle}>
+              Email <span style={{ color: "var(--ink-400)", fontWeight: 400 }}>(opcional)</span>
+            </label>
+            <input
+              style={inputStyle}
+              type="email"
+              value={contacto.email}
+              onChange={e => setContacto(c => ({ ...c, email: e.target.value }))}
+              placeholder="tu@email.com"
+            />
+          </div>
+
+          <p style={{
+            fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)",
+            lineHeight: 1.6, margin: "0 0 4px",
+          }}>
+            Usamos tus datos solo para enviarte la estimación y, si querés, revisarla
+            con vos sin cargo. No compartimos tu información con terceros.
+          </p>
+
+          <NavRow
+            onBack={() => { setError(null); setStep(2); }}
+            onNext={calcular}
+            nextLabel={loading ? "Calculando…" : "Ver mi estimación"}
+            loading={loading}
+            error={error}
+          />
+        </div>
+      )}
+
+      {/* ── Paso 4: Resultado ─────────────────────────────────── */}
+      {step === 4 && result && (
         <ResultadoView input={input} result={result} estimacionId={estimacionId} onReset={reset} />
       )}
     </div>
@@ -363,7 +441,7 @@ export default function EstimadorWizard({ barrios }: { barrios: string[] }) {
 
 // ── Sub-componentes ────────────────────────────────────────────
 function StepIndicator({ step }: { step: number }) {
-  const steps = ["Ubicación", "Características", "Resultado"];
+  const steps = ["Ubicación", "Características", "Contacto", "Resultado"];
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 24 }}>
       {steps.map((label, i) => {
@@ -531,7 +609,20 @@ function ResultadoView({ input, result, estimacionId, onReset }: { input: Estima
       </div>
 
       {/* Lead form */}
-      <LeadForm input={input} result={result} estimacionId={estimacionId} />
+      <div style={{ ...card, background: "var(--cream)" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <Sparkles size={18} color="var(--gold-600)" style={{ flexShrink: 0, marginTop: 2 }} />
+          <div>
+            <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 15, color: "var(--navy-800)", margin: "0 0 4px" }}>
+              Eugenio va a revisar tu estimación
+            </p>
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-600)", margin: 0, lineHeight: 1.55 }}>
+              Ya tenemos tus datos: se va a contactar con vos para repasarla sin cargo
+              y contarte qué esperar del mercado en tu zona.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Disclaimer */}
       <div style={{ background: "var(--cream)", border: "1px solid var(--gold-200)", borderRadius: "var(--radius-md)", padding: "16px 18px", marginTop: 16 }}>
@@ -604,82 +695,6 @@ function FactoresCard({ title, icon, color, factores, empty }: {
               </div>
             );
           })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function LeadForm({ input, result, estimacionId }: { input: EstimadorInput; result: EstimadorResultado; estimacionId: string | null }) {
-  const [open, setOpen] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({ nombre: "", email: "", telefono: "" });
-  const [isPending, startTransition] = useTransition();
-
-  function submit() {
-    if (!form.nombre || !form.email) { setError("Completá nombre y email."); return; }
-    setError(null);
-    startTransition(async () => {
-      const r = await guardarLead({
-        estimacionId, input, resultado: result, barrio: input.barrio,
-        nombre: form.nombre, email: form.email, telefono: form.telefono,
-      });
-      if (r.ok) setSent(true);
-      else setError(r.error || "No se pudo enviar.");
-    });
-  }
-
-  if (sent) {
-    return (
-      <div style={{ ...card, background: "#F0FDF4", border: "1px solid #BBF7D0", textAlign: "center" }}>
-        <Check size={28} strokeWidth={2.5} color="#15803D" style={{ marginBottom: 8 }} />
-        <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 15, color: "#15803D", margin: "0 0 4px" }}>¡Solicitud enviada!</p>
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-600)", margin: 0 }}>
-          Eugenio va a revisar tu estimación y se va a contactar con vos.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ ...card, background: "var(--cream)" }}>
-      <div style={{ marginBottom: open ? 18 : 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-          <Sparkles size={18} color="var(--gold-600)" style={{ flexShrink: 0 }} />
-          <p style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 15, color: "var(--navy-800)", margin: 0 }}>
-            ¿Querés una valuación profesional?
-          </p>
-        </div>
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", margin: "0 0 14px", lineHeight: 1.55 }}>
-          Revisamos tu estimación sin cargo.
-        </p>
-        {!open && (
-          <button type="button" onClick={() => setOpen(true)} style={{
-            fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14,
-            padding: "12px 22px", borderRadius: "var(--radius-sm)", cursor: "pointer",
-            background: "var(--navy-800)", color: "#fff", border: "none",
-          }}>
-            Quiero que la revisen
-          </button>
-        )}
-      </div>
-
-      {open && (
-        <div>
-          <div style={{ marginBottom: 12 }} className="estimador-lead-grid">
-            <input style={inputStyle} placeholder="Nombre *" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
-            <input style={inputStyle} placeholder="Email *" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-          </div>
-          <input style={{ ...inputStyle, marginBottom: 12 }} placeholder="Teléfono / WhatsApp (opcional)" value={form.telefono} onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))} />
-          {error && <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "#DC2626", margin: "0 0 12px" }}>{error}</p>}
-          <button type="button" onClick={submit} disabled={isPending} style={{
-            width: "100%", fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14,
-            padding: "13px", borderRadius: "var(--radius-sm)", cursor: isPending ? "not-allowed" : "pointer",
-            background: "var(--navy-800)", color: "#fff", border: "none",
-          }}>
-            {isPending ? "Enviando…" : "Enviar solicitud"}
-          </button>
         </div>
       )}
     </div>
