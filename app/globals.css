@@ -502,6 +502,34 @@ select:focus, input:focus, textarea:focus {
   .cf-grain::after { display: none; }
 }
 
+/* Panel del dueño: métricas y tarjetas compactas */
+.panel-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.panel-props-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 12px;
+}
+.panel-datos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 900px) {
+  .panel-kpis { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .panel-props-grid { grid-template-columns: 1fr 1fr; }
+  .panel-datos-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 380px) {
+  .panel-props-grid { grid-template-columns: 1fr; }
+}
+
 /* Skeletons de carga (loading.tsx) */
 .skeleton-shimmer {
   background: linear-gradient(

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import type { PropertyWithInquiries } from "@/lib/types";
-import CRMPanel from "@/components/panel/CRMPanel";
+import PanelDashboard from "@/components/panel/PanelDashboard";
 
 export const metadata: Metadata = {
   title: "Mi panel",
@@ -18,7 +18,7 @@ export default async function PanelPage({
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
-    .from("profiles").select("nombre").eq("id", user!.id).single();
+    .from("profiles").select("nombre, email, telefono").eq("id", user!.id).single();
 
   // Propiedades del dueño
   const { data: properties } = await supabase
@@ -60,10 +60,14 @@ export default async function PanelPage({
           ✓ Tu contraseña fue actualizada correctamente.
         </div>
       )}
-      <CRMPanel
+      <PanelDashboard
         properties={propertiesWithInquiries}
+        perfil={{
+          nombre: profile?.nombre ?? "",
+          email: profile?.email ?? user!.email ?? "",
+          telefono: profile?.telefono ?? null,
+        }}
         showWelcome={!!nuevo}
-        ownerName={profile?.nombre}
       />
     </>
   );

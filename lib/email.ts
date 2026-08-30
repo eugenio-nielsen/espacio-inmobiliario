@@ -313,3 +313,46 @@ export async function sendNewPropertyToAdmin(data: {
     html,
   });
 }
+
+// ── Pedido de ayuda para vender → al admin ─────────────────────
+export async function sendAyudaVenta(data: {
+  propiedadTitulo: string;
+  propiedadPrecio: number;
+  propiedadMoneda: string;
+  propiedadZona: string;
+  ownerNombre: string;
+  ownerEmail: string;
+  ownerTelefono: string | null;
+}) {
+  const resend = getResend(); if (!resend) return;
+
+  const precio = `${data.propiedadMoneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(data.propiedadPrecio))}`;
+  const wa = data.ownerTelefono ? data.ownerTelefono.replace(/\D/g, "") : null;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <strong>${data.ownerNombre}</strong> pidió ayuda para vender una propiedad.
+    </div>
+    <div style="${styles.body_p}">
+      <strong>Propiedad:</strong> ${data.propiedadTitulo}<br>
+      <strong>Zona:</strong> ${data.propiedadZona || "—"}<br>
+      <strong>Precio publicado:</strong> ${precio}
+    </div>
+    <div style="${styles.body_p}">
+      <strong>Contacto:</strong><br>
+      Email: <a href="mailto:${data.ownerEmail}">${data.ownerEmail}</a><br>
+      Teléfono: ${data.ownerTelefono ?? "no informado"}
+      ${wa ? `<br><a href="https://wa.me/${wa}">Escribirle por WhatsApp</a>` : ""}
+    </div>
+    <div style="${styles.body_p}">
+      Es una oportunidad para ofrecerle el acompañamiento de venta.
+    </div>
+  `);
+
+  await resend.emails.send({
+    from: FROM,
+    to: ADMIN,
+    subject: `Pedido de ayuda para vender: "${data.propiedadTitulo}"`,
+    html,
+  });
+}
