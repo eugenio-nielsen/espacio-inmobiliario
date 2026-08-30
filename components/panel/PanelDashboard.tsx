@@ -1,18 +1,21 @@
 "use client";
 
-import { Building2, MessageSquare, UserRound, Eye } from "lucide-react";
+import { Building2, MessageSquare, UserRound, Eye, CalendarClock } from "lucide-react";
 import Seccion from "@/components/panel/Seccion";
 import SeccionDatos from "@/components/panel/SeccionDatos";
 import SeccionPropiedades from "@/components/panel/SeccionPropiedades";
 import SeccionConsultas from "@/components/panel/SeccionConsultas";
-import type { PropertyWithInquiries } from "@/lib/types";
+import SeccionVisitas from "@/components/panel/SeccionVisitas";
+import type { PropertyWithInquiries, Visita } from "@/lib/types";
 
 export default function PanelDashboard({
   properties,
+  visitas,
   perfil,
   showWelcome,
 }: {
   properties: PropertyWithInquiries[];
+  visitas: Visita[];
   perfil: { nombre: string; email: string; telefono: string | null };
   showWelcome?: boolean;
 }) {
@@ -20,6 +23,15 @@ export default function PanelDashboard({
   const vistas = properties.reduce((a, p) => a + (p.views ?? 0), 0);
   const consultas = properties.reduce((a, p) => a + p.total_inquiries, 0);
   const nuevas = properties.reduce((a, p) => a + p.new_inquiries, 0);
+
+  const ahora = Date.now();
+  const visitasPendientes = visitas.filter(v => v.status === "pendiente").length;
+  const visitasProximas = visitas.filter(
+    v => v.status === "confirmada" && new Date(v.inicio).getTime() >= ahora
+  ).length;
+  const conAgenda = properties.filter(
+    p => p.status === "activa" && (p.visitas_config as { activa?: boolean } | null)?.activa
+  ).length;
 
   const primerNombre = perfil.nombre?.split(" ")[0] || "";
 
@@ -45,16 +57,17 @@ export default function PanelDashboard({
           {primerNombre ? `Hola, ${primerNombre}` : "Mi panel"}
         </h1>
         <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", margin: 0 }}>
-          Gestioná tus publicaciones, tus datos y las consultas que recibís.
+          Gestioná tus publicaciones, tus visitas y las consultas que recibís.
         </p>
       </div>
 
       {/* Métricas */}
       <div className="panel-kpis">
         <Kpi icono={<Building2 size={15} />} valor={activas} etiqueta={activas === 1 ? "Publicación activa" : "Publicaciones activas"} />
-        <Kpi icono={<Eye size={15} />} valor={vistas} etiqueta="Visitas totales" />
+        <Kpi icono={<Eye size={15} />} valor={vistas} etiqueta="Vistas de tus avisos" />
         <Kpi icono={<MessageSquare size={15} />} valor={consultas} etiqueta="Consultas recibidas" />
         <Kpi icono={<MessageSquare size={15} />} valor={nuevas} etiqueta="Sin responder" destacado={nuevas > 0} />
+        <Kpi icono={<CalendarClock size={15} />} valor={visitasPendientes} etiqueta="Visitas a confirmar" destacado={visitasPendientes > 0} />
       </div>
 
       <Seccion
@@ -73,6 +86,24 @@ export default function PanelDashboard({
         insignia={nuevas}
       >
         <SeccionConsultas properties={properties} />
+      </Seccion>
+
+      <Seccion
+        icono={<CalendarClock size={17} />}
+        titulo="Agenda de visitas"
+        resumen={
+          visitasPendientes
+            ? `${visitasPendientes} ${visitasPendientes === 1 ? "pedido" : "pedidos"} esperando tu confirmación`
+            : visitasProximas
+              ? `${visitasProximas} ${visitasProximas === 1 ? "visita confirmada" : "visitas confirmadas"}`
+              : conAgenda
+                ? "Sin pedidos por ahora"
+                : "Cargá tus horarios para recibir visitas"
+        }
+        insignia={visitasPendientes}
+        abiertaPorDefecto={visitasPendientes > 0}
+      >
+        <SeccionVisitas properties={properties} visitas={visitas} />
       </Seccion>
 
       <Seccion

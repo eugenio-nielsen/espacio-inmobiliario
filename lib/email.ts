@@ -356,3 +356,183 @@ export async function sendAyudaVenta(data: {
     html,
   });
 }
+
+// ── Agenda de visitas ─────────────────────────────────────────
+
+/** Pedido de visita → al dueño (con copia al admin) */
+export async function sendVisitaToOwner(data: {
+  ownerEmail: string;
+  ownerNombre: string;
+  propertyTitulo: string;
+  propertyUrl: string;
+  cuando: string;
+  interesadoNombre: string;
+  interesadoEmail: string;
+  interesadoTelefono: string;
+  mensaje?: string | null;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Te pidieron una visita</h1>
+      <p style="${styles.lead}">
+        Hola ${data.ownerNombre}, quieren conocer
+        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+        Confirmá o proponé otro horario desde tu panel.
+      </p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Horario pedido</p>
+        <p style="${styles.value}">${data.cuando}</p>
+
+        <p style="${styles.label}">Nombre</p>
+        <p style="${styles.value}">${data.interesadoNombre}</p>
+
+        <p style="${styles.label}">Teléfono / WhatsApp</p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.interesadoTelefono.replace(/\D/g,"")}" style="color:#15803D;">${data.interesadoTelefono}</a></p>
+
+        <p style="${styles.label}">Email</p>
+        <p style="${styles.value}"><a href="mailto:${data.interesadoEmail}" style="color:#0E2C50;">${data.interesadoEmail}</a></p>
+      </div>
+
+      ${data.mensaje ? `
+      <p style="${styles.label}">Mensaje</p>
+      <p style="${styles.message}">"${data.mensaje}"</p>
+      ` : ""}
+
+      <a href="${SITE}/panel" style="${styles.btn}">Confirmar la visita &rarr;</a>
+
+      <p style="color:#A39C8F;font-size:13px;margin-top:20px;">
+        El interesado ya sabe que el horario está a la espera de tu confirmación.
+      </p>
+    </div>
+  `);
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: data.ownerEmail,
+    bcc: ADMIN,
+    subject: `Pedido de visita: "${data.propertyTitulo}" — ${data.cuando}`,
+    html,
+  });
+}
+
+/** Pedido de visita → al interesado (acuse) */
+export async function sendVisitaPendiente(data: {
+  interesadoEmail: string;
+  interesadoNombre: string;
+  propertyTitulo: string;
+  propertyUrl: string;
+  cuando: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Pedimos tu visita</h1>
+      <p style="${styles.lead}">
+        Hola ${data.interesadoNombre}, le avisamos al dueño de
+        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>
+        que querés visitarla. Te escribimos apenas confirme.
+      </p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Horario pedido</p>
+        <p style="${styles.value}">${data.cuando}</p>
+      </div>
+
+      <a href="${data.propertyUrl}" style="${styles.btn}">Ver la propiedad &rarr;</a>
+
+      <p style="color:#A39C8F;font-size:13px;margin-top:20px;">
+        Todavía no está confirmada: esperá nuestro aviso antes de viajar.
+      </p>
+    </div>
+  `);
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: data.interesadoEmail,
+    subject: `Pedido de visita enviado — ${data.propertyTitulo}`,
+    html,
+  });
+}
+
+/** El dueño confirmó o rechazó → al interesado */
+export async function sendVisitaRespuesta(data: {
+  interesadoEmail: string;
+  interesadoNombre: string;
+  propertyTitulo: string;
+  propertyUrl: string;
+  cuando: string;
+  confirmada: boolean;
+  direccion?: string | null;
+  ownerNombre: string;
+  ownerTelefono?: string | null;
+  nota?: string | null;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+
+  const cuerpo = data.confirmada
+    ? `
+      <h1 style="${styles.h1}">¡Visita confirmada!</h1>
+      <p style="${styles.lead}">
+        Hola ${data.interesadoNombre}, ${data.ownerNombre} confirmó tu visita a
+        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+      </p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Cuándo</p>
+        <p style="${styles.value}">${data.cuando}</p>
+
+        ${data.direccion ? `
+        <p style="${styles.label}">Dónde</p>
+        <p style="${styles.value}">${data.direccion}</p>
+        ` : ""}
+
+        ${data.ownerTelefono ? `
+        <p style="${styles.label}">Contacto del dueño</p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.ownerTelefono.replace(/\D/g,"")}" style="color:#15803D;">${data.ownerTelefono}</a></p>
+        ` : ""}
+      </div>
+
+      ${data.nota ? `
+      <p style="${styles.label}">Mensaje del dueño</p>
+      <p style="${styles.message}">"${data.nota}"</p>
+      ` : ""}
+
+      <a href="${data.propertyUrl}" style="${styles.btn}">Ver la propiedad &rarr;</a>
+
+      <p style="color:#A39C8F;font-size:13px;margin-top:20px;">
+        Si no vas a poder ir, avisale al dueño con tiempo.
+      </p>
+    `
+    : `
+      <h1 style="${styles.h1}">Ese horario no le sirve al dueño</h1>
+      <p style="${styles.lead}">
+        Hola ${data.interesadoNombre}, ${data.ownerNombre} no puede recibirte
+        el ${data.cuando} en <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+      </p>
+
+      ${data.nota ? `
+      <p style="${styles.label}">Mensaje del dueño</p>
+      <p style="${styles.message}">"${data.nota}"</p>
+      ` : ""}
+
+      <p style="${styles.lead}">Podés elegir otro horario disponible desde la publicación.</p>
+
+      <a href="${data.propertyUrl}#visitas" style="${styles.btn}">Elegir otro horario &rarr;</a>
+    `;
+
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: data.interesadoEmail,
+    subject: data.confirmada
+      ? `Visita confirmada: ${data.propertyTitulo} — ${data.cuando}`
+      : `Sobre tu visita a ${data.propertyTitulo}`,
+    html: baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`),
+  });
+}

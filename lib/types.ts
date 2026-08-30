@@ -50,6 +50,8 @@ export interface Property {
   lat?: number | null;
   lng?: number | null;
   geo_aproximada?: boolean | null;
+  /** Disponibilidad para visitas. Sin configurar = null. */
+  visitas_config?: VisitasConfig | null;
   created_at: string;
   updated_at: string;
   profiles?: Pick<Profile, "nombre" | "email" | "telefono">;
@@ -92,4 +94,45 @@ export interface PropertyWithInquiries extends Property {
   total_inquiries: number;
   week_inquiries: number;
   new_inquiries: number;
+}
+
+// ── Agenda de visitas ──────────────────────────────────────────
+
+export type VisitaStatus =
+  | "pendiente" | "confirmada" | "rechazada" | "cancelada" | "realizada";
+
+/** Franja semanal recurrente. dia: 0 = domingo … 6 = sábado. */
+export interface Franja {
+  dia: number;
+  desde: string; // "10:00"
+  hasta: string; // "13:00"
+}
+
+/** Disponibilidad del dueño para una propiedad (columna properties.visitas_config). */
+export interface VisitasConfig {
+  activa: boolean;
+  /** Minutos que dura cada visita: 30, 45 o 60. */
+  duracion: number;
+  franjas: Franja[];
+}
+
+export interface Visita {
+  id: string;
+  property_id: string;
+  nombre: string;
+  email: string;
+  telefono: string;
+  mensaje?: string | null;
+  /** Instante exacto en ISO. Se muestra siempre en hora de Argentina. */
+  inicio: string;
+  duracion: number;
+  status: VisitaStatus;
+  nota_dueno?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface VisitaConPropiedad extends Visita {
+  propiedadTitulo: string;
+  propiedadBarrio?: string;
 }

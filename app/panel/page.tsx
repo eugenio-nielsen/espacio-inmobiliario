@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
-import type { PropertyWithInquiries } from "@/lib/types";
+import type { PropertyWithInquiries, Visita } from "@/lib/types";
 import PanelDashboard from "@/components/panel/PanelDashboard";
 
 export const metadata: Metadata = {
@@ -27,13 +27,22 @@ export default async function PanelPage({
     .eq("owner_id", user!.id)
     .order("created_at", { ascending: false });
 
-  // Todas las consultas de sus propiedades
+  // Todas las consultas y visitas de sus propiedades
   const propertyIds = (properties || []).map(p => p.id);
-  const { data: allInquiries } = await supabase
-    .from("inquiries")
-    .select("*")
-    .in("property_id", propertyIds.length ? propertyIds : ["none"])
-    .order("created_at", { ascending: false });
+  const idsParaFiltro = propertyIds.length ? propertyIds : ["none"];
+
+  const [{ data: allInquiries }, { data: allVisitas }] = await Promise.all([
+    supabase
+      .from("inquiries")
+      .select("*")
+      .in("property_id", idsParaFiltro)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("visitas")
+      .select("*")
+      .in("property_id", idsParaFiltro)
+      .order("inicio", { ascending: true }),
+  ]);
 
   // Calcular stats por propiedad
   const oneWeekAgo = new Date();
@@ -62,6 +71,7 @@ export default async function PanelPage({
       )}
       <PanelDashboard
         properties={propertiesWithInquiries}
+        visitas={(allVisitas as Visita[]) || []}
         perfil={{
           nombre: profile?.nombre ?? "",
           email: profile?.email ?? user!.email ?? "",

@@ -505,7 +505,7 @@ select:focus, input:focus, textarea:focus {
 /* Panel del dueño: métricas y tarjetas compactas */
 .panel-kpis {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
   gap: 10px;
   margin-bottom: 18px;
 }
@@ -939,4 +939,104 @@ select:focus, input:focus, textarea:focus {
 
 @media (prefers-reduced-motion: reduce) {
   .nota-chevron { transition: none; }
+}
+
+/* ── Agenda de visitas ────────────────────────────────────────
+   Chips de día (scroll horizontal) y grilla de horarios. */
+
+.agenda-dias {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.agenda-dias::-webkit-scrollbar { height: 4px; }
+.agenda-dias::-webkit-scrollbar-thumb {
+  background: var(--line-200); border-radius: 999px;
+}
+
+.agenda-dia {
+  flex: 0 0 auto;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-200);
+  background: #fff;
+  color: var(--ink-600);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--dur) var(--ease-out);
+}
+.agenda-dia:hover { border-color: var(--gold-400); color: var(--navy-800); }
+.agenda-dia-on,
+.agenda-dia-on:hover {
+  background: var(--navy-800);
+  border-color: var(--navy-800);
+  color: #fff;
+}
+
+.agenda-horas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(66px, 1fr));
+  gap: 6px;
+}
+
+.agenda-hora {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 4px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--line-200);
+  background: #fff;
+  color: var(--ink-600);
+  cursor: pointer;
+  transition: all var(--dur) var(--ease-out);
+}
+.agenda-hora:hover { border-color: var(--gold-500); color: var(--navy-800); }
+.agenda-hora-on,
+.agenda-hora-on:hover {
+  background: var(--gold-500);
+  border-color: var(--gold-500);
+  color: #26200f;
+}
+
+/* Editor de disponibilidad del panel */
+.agenda-editor-dias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.agenda-franja {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 9px 11px;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  margin-bottom: 7px;
+}
+
+.agenda-visitas-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .agenda-horas { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+  .agenda-visitas-lista { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agenda-dia, .agenda-hora { transition: none; }
 }

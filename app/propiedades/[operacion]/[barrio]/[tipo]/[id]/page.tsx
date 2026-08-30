@@ -14,7 +14,7 @@ import { PROPERTY_CARD_COLS, type Property, type Profile, type PropertyCardData 
 import Footer from "@/components/Footer";
 import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
-import InquiryForm from "@/components/properties/InquiryForm";
+import ContactoPropiedad from "@/components/properties/ContactoPropiedad";
 import CostosCompra from "@/components/properties/CostosCompra";
 import DescripcionExpandible from "@/components/properties/DescripcionExpandible";
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -22,6 +22,7 @@ import PropertyListCard from "@/components/properties/PropertyListCard";
 import VolverAResultados from "@/components/properties/VolverAResultados";
 import Navbar from "@/components/Navbar";
 import { getPreciosBarrios } from "@/lib/estimador/data";
+import { leerConfig, proximosDias } from "@/lib/utils/agenda";
 import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, LayoutGrid, Compass, AlignCenter, BadgeCheck, Eye, CalendarDays, Layers, Sparkles, Banknote } from "lucide-react";
 
 export const revalidate = 60;
@@ -102,8 +103,12 @@ export default async function PropiedadPage({ params }: PageProps) {
   const precioPorM2 = p.superficie_total && p.superficie_total > 0 ? p.precio / p.superficie_total : null;
   const usaRefBarrio = !!(precioPorM2 && p.moneda === "USD" && p.tipo === "departamento" && p.barrio);
 
+  // Agenda de visitas: las franjas se calculan en el servidor para que el
+  // horario no dependa de la zona horaria de quien mira la página.
+  const agendaConfig = leerConfig(p.visitas_config);
+
   // Todo esto depende solo de `p`, así que va en paralelo en vez de en cascada
-  const [geoResult, simBarrio, simTipo, precios] = await Promise.all([
+  const [geoResult, simBarrio, simTipo, precios, ocupadas] = await Promise.all([
     // Coordenadas guardadas al crear/editar; fallback a Nominatim solo para
     // propiedades viejas que aún no fueron re-guardadas
     p.lat != null && p.lng != null
@@ -125,7 +130,20 @@ export default async function PropiedadPage({ params }: PageProps) {
       .eq("status", "activa").neq("id", p.id).eq("tipo", p.tipo)
       .order("created_at", { ascending: false }).limit(3),
     usaRefBarrio ? getPreciosBarrios() : Promise.resolve({} as Record<string, number>),
+    // Las visitas no son públicas (RLS): se leen con el admin client y solo
+    // viaja al navegador el instante ocupado, sin datos de nadie.
+    agendaConfig.activa
+      ? createAdminClient()
+          .from("visitas").select("inicio")
+          .eq("property_id", p.id).eq("status", "confirmada")
+          .gte("inicio", new Date().toISOString())
+      : Promise.resolve({ data: [] }),
   ]);
+
+  const diasAgenda = proximosDias(
+    agendaConfig,
+    ((ocupadas.data as { inicio: string }[]) || []).map(v => v.inicio)
+  );
 
   // Similares: primero las del mismo barrio, después las del mismo tipo. Máx. 3, sin repetir.
   const similares: PropertyCardData[] = [];
@@ -433,7 +451,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                 )}
 
                 {/* Inquiry form */}
-                <InquiryForm propertyId={p.id} />
+                <ContactoPropiedad propertyId={p.id} dias={diasAgenda} />
               </div>
 
               {/* Reference */}
