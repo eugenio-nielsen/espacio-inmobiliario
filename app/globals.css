@@ -880,6 +880,25 @@ select:focus, input:focus, textarea:focus {
   border: 1px solid var(--line-200);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: clamp(18px, 3vw, 26px);
-  margin: 32px 0;
+  padding: clamp(14px, 2.2vw, 20px);
+  margin: 28px 0;
+}
+
+/* Dos columnas cuando entra: parte al medio el alto de la calculadora */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 5px;
+}
+.calc-resumen {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2px 18px;
+}
+@media (max-width: 560px) {
+  .calc-grid,
+  .calc-resumen { grid-template-columns: 1fr; }
 }
