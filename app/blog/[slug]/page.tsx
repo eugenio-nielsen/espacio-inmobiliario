@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import PortadaNota from "@/components/blog/PortadaNota";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/data";
@@ -105,11 +105,9 @@ export default async function PostPage({ params }: Props) {
 
         <article>
           {/* Portada primero: da contexto antes del título */}
-          {post.cover && (
-            <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24, background: "var(--navy-50)" }}>
-              <Image src={post.cover} alt={post.titulo} fill className="object-cover" sizes="880px" priority />
-            </div>
-          )}
+          <div style={{ position: "relative", aspectRatio: "21/9", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: 24 }}>
+            <PortadaNota post={post} tamano="hero" />
+          </div>
 
           <header style={{ marginBottom: 22 }}>
             {post.categoria && <div className="es-eyebrow" style={{ marginBottom: 12 }}>{post.categoria}</div>}

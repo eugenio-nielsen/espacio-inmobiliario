@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, Calculator, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag } from "lucide-react";
+import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag } from "lucide-react";
+import { HERRAMIENTAS } from "@/components/NavHerramientas";
 import { signOut } from "@/lib/actions/auth";
 
 const LINKS = [
   { href: "/propiedades", label: "Propiedades", icon: Building2, highlight: true },
-  { href: "/estimador", label: "Tasador CABA", icon: Calculator },
   { href: "/blog", label: "Blog", icon: FileText },
   { href: "/precios", label: "Precios", icon: Tag },
   { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
@@ -48,6 +48,20 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
                   fontWeight: 700, color: "var(--navy-800)", borderBottom: "none",
                   padding: "14px 12px", marginBottom: 4,
                 } : undefined}>
+                <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
+                {label}
+              </Link>
+            ))}
+
+            <p style={{
+              fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 10.5,
+              textTransform: "uppercase", letterSpacing: ".08em",
+              color: "var(--ink-400)", margin: "16px 0 2px",
+            }}>
+              Herramientas
+            </p>
+            {HERRAMIENTAS.map(({ href, label, icon: Icon }) => (
+              <Link key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}>
                 <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
                 {label}
               </Link>

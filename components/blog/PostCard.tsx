@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import PortadaNota from "@/components/blog/PortadaNota";
 import { readingTime } from "@/lib/blog/markdown";
 import type { Post } from "@/lib/blog/types";
 
@@ -14,12 +14,8 @@ export default function PostCard({ post }: { post: Post }) {
       borderRadius: "var(--radius-lg)", overflow: "hidden",
       textDecoration: "none", boxShadow: "var(--shadow-xs)",
     }}>
-      <div style={{ position: "relative", aspectRatio: "16/9", background: "var(--navy-50)" }}>
-        {post.cover ? (
-          <Image src={post.cover} alt={post.titulo} fill className="object-cover" sizes="(max-width:640px) 100vw, 380px" />
-        ) : (
-          <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>📄</div>
-        )}
+      <div style={{ position: "relative", aspectRatio: "16/9" }}>
+        <PortadaNota post={post} />
       </div>
       <div style={{ padding: "18px 20px", display: "flex", flexDirection: "column", flex: 1 }}>
         {post.categoria && (

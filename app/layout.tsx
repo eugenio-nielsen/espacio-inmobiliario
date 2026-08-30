@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import { Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import AsesoriaFlotante from "@/components/AsesoriaFlotante";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -42,6 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es-AR" className={`${outfit.variable} ${playfair.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         {children}
+
+        <AsesoriaFlotante />
 
         {/* Google Analytics — carga después de que la página es interactiva */}
         <Script

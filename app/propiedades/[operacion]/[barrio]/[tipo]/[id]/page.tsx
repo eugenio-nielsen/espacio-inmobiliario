@@ -484,7 +484,19 @@ export default async function PropiedadPage({ params }: PageProps) {
       </div>
 
       {/* Barra fija mobile con precio + contacto */}
-      <StickyPropertyBar precio={precio} whatsappUrl={whatsappUrl} />
+      <StickyPropertyBar
+        precio={precio}
+        whatsappUrl={whatsappUrl}
+        datos={{
+          precioPorM2: precioPorM2
+            ? `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(precioPorM2)}`
+            : null,
+          ambientes: p.ambientes,
+          dormitorios: p.dormitorios,
+          banos: p.banos,
+          superficieTotal: p.superficie_total,
+        }}
+      />
     </>
   );
 }

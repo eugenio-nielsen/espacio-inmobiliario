@@ -740,17 +740,40 @@ select:focus, input:focus, textarea:focus {
 }
 
 /* Barra fija de la ficha de propiedad (mobile) */
-.property-sticky-bar { display: none; }
+.property-sticky-wrap { display: none; }
 @media (max-width: 1023px) {
-  .property-sticky-bar {
-    display: flex; align-items: center; gap: 10px;
+  .property-sticky-wrap {
+    display: block;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
     background: #fff; border-top: 1px solid var(--line-200);
     box-shadow: 0 -4px 24px rgba(14,44,80,.10);
+  }
+  .property-sticky-bar {
+    display: flex; align-items: center; gap: 10px;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+  /* Detalle que se despliega hacia arriba desde la barra */
+  .property-sticky-detalle {
+    max-height: 45vh;
+    overflow-y: auto;
+    padding: 14px 16px 4px;
+    border-bottom: 1px solid var(--line-100);
+    animation: stickyUp .22s var(--ease-out);
+  }
+  .property-sticky-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 14px;
   }
   /* espacio para que el contenido no quede tapado por la barra */
   .property-page-pad { padding-bottom: 88px; }
+}
+@keyframes stickyUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .property-sticky-detalle { animation: none; }
 }
 
 /* Search bar: horizontal → vertical on mobile */
@@ -1040,4 +1063,105 @@ select:focus, input:focus, textarea:focus {
 
 @media (prefers-reduced-motion: reduce) {
   .agenda-dia, .agenda-hora { transition: none; }
+}
+
+/* ── CRM de consultas (panel) ─────────────────────────────────
+   Tabla para leer y seguir leads de un vistazo. En pantallas
+   chicas se achica y se ocultan las columnas secundarias. */
+
+.crm-tabla-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-sm);
+  -webkit-overflow-scrolling: touch;
+}
+
+.crm-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  min-width: 620px;
+}
+
+.crm-tabla thead th {
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ink-500);
+  background: var(--fill-100);
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line-200);
+  white-space: nowrap;
+}
+
+.crm-tabla td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line-100);
+  vertical-align: middle;
+}
+
+.crm-fila:hover { background: var(--navy-50); }
+.crm-fila-nueva { background: #FAFCFF; }
+.crm-fila-nueva:hover { background: #F2F8FF; }
+
+.crm-fila-mensaje td { padding-top: 0; border-bottom: 1px solid var(--line-100); }
+
+.crm-truncar {
+  display: inline-block;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* En pantallas chicas se sacan las columnas que se pueden deducir
+   del resto, para que la tabla entre sin scroll lateral */
+@media (max-width: 860px) {
+  .crm-tabla { min-width: 480px; }
+  .crm-col-prop, .crm-col-fecha { display: none; }
+  .crm-truncar { max-width: 130px; }
+}
+
+/* Desplegable "Herramientas" del menú de escritorio */
+.nav-herramienta { transition: background var(--dur-fast) var(--ease-out); }
+.nav-herramienta:hover { background: var(--navy-50); }
+
+/* ── Aviso flotante de asesoramiento ──────────────────────────
+   Discreto: abajo a la derecha en desktop, franja inferior en
+   mobile. Se cierra y no vuelve por 30 días. */
+
+.asesoria-flotante {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 35;
+  width: 300px;
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 15px 16px 16px;
+  animation: asesoriaEntra .4s var(--ease-out);
+}
+
+@keyframes asesoriaEntra {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 639px) {
+  .asesoria-flotante {
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asesoria-flotante { animation: none; }
 }

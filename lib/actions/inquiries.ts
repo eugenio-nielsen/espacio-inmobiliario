@@ -107,10 +107,43 @@ export async function toggleFavorito(id: string, current: boolean) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  await supabase
+  // RLS ya limita el update a las propiedades del usuario
+  const { error } = await supabase
     .from("inquiries")
     .update({ favorito: !current })
     .eq("id", id);
+
+  if (error) return { error: "No se pudo marcar la consulta." };
+
+  revalidatePath("/panel");
+  return { ok: true };
+}
+
+/**
+ * Guarda qué falta hacer con un lead y para cuándo.
+ * Vaciar el texto borra también la fecha: no tiene sentido una
+ * fecha suelta sin acción asociada.
+ */
+export async function actualizarProximaAccion(
+  id: string,
+  texto: string,
+  fecha: string | null
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "No autenticado" };
+
+  const limpio = texto.trim().slice(0, 200);
+
+  const { error } = await supabase
+    .from("inquiries")
+    .update({
+      proxima_accion: limpio || null,
+      proxima_accion_fecha: limpio ? (fecha || null) : null,
+    })
+    .eq("id", id);
+
+  if (error) return { error: "No se pudo guardar la próxima acción." };
 
   revalidatePath("/panel");
   return { ok: true };

@@ -84,7 +84,12 @@ export interface Inquiry {
   mensaje: string;
   leida: boolean;
   status: InquiryStatus;
+  /** Lead prioritario, marcado con la estrella del panel. */
   favorito: boolean;
+  /** Qué falta hacer con este lead: "llamar", "mandar plano"… */
+  proxima_accion?: string | null;
+  /** Para cuándo, en formato AAAA-MM-DD. */
+  proxima_accion_fecha?: string | null;
   created_at: string;
   properties?: Pick<Property, "titulo" | "slug" | "barrio" | "ciudad">;
 }

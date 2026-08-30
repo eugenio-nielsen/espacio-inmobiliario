@@ -4,6 +4,7 @@ import { UserRound, Plus, LayoutDashboard, LogOut } from "lucide-react";
 import { getCurrentUser, getCurrentProfile } from "@/lib/auth/user";
 import { signOut } from "@/lib/actions/auth";
 import MobileMenu from "@/components/MobileMenu";
+import NavHerramientas from "@/components/NavHerramientas";
 
 export default async function Navbar() {
   // Cacheados por request: si la página también los pide, no se repite la consulta
@@ -32,7 +33,9 @@ export default async function Navbar() {
             ...navLink, color: "var(--navy-800)", fontWeight: 700,
             background: "rgba(185,159,102,.16)", padding: "8px 16px", borderRadius: 999,
           }}>Propiedades</Link>
-          <Link href="/estimador" style={navLink} className="nav-hide-mobile">Tasador CABA</Link>
+          <div className="nav-hide-mobile">
+            <NavHerramientas style={navLink} />
+          </div>
           <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
           <Link href="/precios" style={navLink} className="nav-hide-mobile">Precios</Link>
           <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
