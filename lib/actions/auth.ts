@@ -3,31 +3,37 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
+import { normalizarTelefono } from "@/lib/utils/telefono";
 
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
-  const nombre = formData.get("nombre") as string;
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const telefono = (formData.get("telefono") as string) || "";
+  const nombre = ((formData.get("nombre") as string) || "").trim();
+  const email = ((formData.get("email") as string) || "").trim();
+  const password = (formData.get("password") as string) || "";
 
-  const { error } = await supabase.auth.signUp({
+  if (!nombre) return { error: "Ingresá tu nombre." };
+
+  // El teléfono es obligatorio: es la vía de contacto que ven los interesados
+  // (botón de WhatsApp en la ficha). Se valida acá, no solo en el formulario,
+  // para que no se pueda saltear.
+  const tel = normalizarTelefono(formData.get("telefono") as string);
+  if (!tel.ok) return { error: tel.error };
+
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { nombre, telefono } },
+    // El trigger handle_new_user copia estos datos al perfil
+    options: { data: { nombre, telefono: tel.valor } },
   });
 
   if (error) return { error: error.message };
 
-  // Actualizamos el perfil con el teléfono si viene
-  if (telefono) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from("profiles")
-        .update({ telefono, nombre })
-        .eq("id", user.id);
-    }
+  // Defensivo: si el trigger todavía no fue migrado, dejamos el perfil completo igual.
+  if (data.user) {
+    await supabase
+      .from("profiles")
+      .update({ telefono: tel.valor, nombre })
+      .eq("id", data.user.id);
   }
 
   redirect("/panel?nuevo=1");

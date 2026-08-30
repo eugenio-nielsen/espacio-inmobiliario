@@ -43,15 +43,20 @@ export default function AuthForm({ mode }: Props) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Teléfono (WhatsApp)
+              Teléfono / WhatsApp *
             </label>
             <input
               name="telefono"
               type="tel"
+              required
               autoComplete="tel"
+              inputMode="tel"
               className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Ej: +54 11 1234-5678"
+              placeholder="+54 9 11 1234-5678"
             />
+            <p className="text-xs text-gray-500 mt-1.5">
+              Es el número al que te van a escribir los interesados. Incluí el código de área.
+            </p>
           </div>
         </>
       )}
