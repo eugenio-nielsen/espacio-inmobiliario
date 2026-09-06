@@ -20,11 +20,11 @@ const DEMORA = 12;
  * Rutas donde no aparece:
  * - /panel  → ya es usuario nuestro, no hay nada que ofrecerle acá
  * - /auth   → está en medio de un registro, no lo distraemos
- * - /precios y /como-funciona → ya tienen su propio CTA de asesoría
+ * - /como-funciona → ya tiene su propio CTA de asesoría y su formulario
  * - las fichas de propiedad tienen barra fija abajo en mobile y se
  *   pisarían; ahí el contacto ya está resuelto
  */
-const RUTAS_EXCLUIDAS = [/^\/panel/, /^\/auth/, /^\/precios/, /^\/como-funciona/, /^\/propiedades\/[^/]+\/[^/]+\/[^/]+\//];
+const RUTAS_EXCLUIDAS = [/^\/panel/, /^\/auth/, /^\/como-funciona/, /^\/propiedades\/[^/]+\/[^/]+\/[^/]+\//];
 
 function fueCerrado(): boolean {
   try {

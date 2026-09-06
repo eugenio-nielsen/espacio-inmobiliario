@@ -19,8 +19,11 @@ export default function ComparadorComision() {
       borderRadius: "var(--radius-lg)", padding: "clamp(24px,4vw,40px)",
       boxShadow: "var(--shadow-sm)", maxWidth: 760, margin: "0 auto",
     }}>
-      {/* ── Foco: PRECIO FIJO ─────────────────────────────────── */}
-      <div style={{
+      {/* ── Foco: PRECIO FIJO ───────────────────────────────────
+          En móvil se oculta (ver .comparador-foco en globals.css): la
+          tarjeta destacada de más abajo ya dice "Precio fijo", y repetirlo
+          costaba 180px de scroll para no decir nada nuevo. */}
+      <div className="comparador-foco" style={{
         background: "var(--navy-800)", borderRadius: "var(--radius-lg)",
         padding: "clamp(24px,4vw,36px)", textAlign: "center", position: "relative", overflow: "hidden",
       }}>

@@ -37,7 +37,6 @@ export default async function Navbar() {
             <NavHerramientas style={navLink} />
           </div>
           <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
-          <Link href="/precios" style={navLink} className="nav-hide-mobile">Precios</Link>
           <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
 
           {user ? (

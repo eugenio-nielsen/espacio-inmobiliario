@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag } from "lucide-react";
+import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus } from "lucide-react";
 import { HERRAMIENTAS } from "@/components/NavHerramientas";
 import { signOut } from "@/lib/actions/auth";
 
 const LINKS = [
   { href: "/propiedades", label: "Propiedades", icon: Building2, highlight: true },
   { href: "/blog", label: "Blog", icon: FileText },
-  { href: "/precios", label: "Precios", icon: Tag },
   { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
 ];
 

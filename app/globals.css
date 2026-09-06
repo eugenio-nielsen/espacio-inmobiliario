@@ -503,6 +503,329 @@ select:focus, input:focus, textarea:focus {
   .cf-grain::after { display: none; }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   /como-funciona — capa dinámica
+   Movimiento continuo (no solo al entrar): barrido de luz en las
+   tarjetas, deriva lenta de las luces de fondo, cinta infinita y
+   firma que se dibuja. Todo se apaga con prefers-reduced-motion.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Luces de fondo con deriva permanente ──────────────────── */
+.cf-drift {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  animation: cf-drift 26s ease-in-out infinite alternate;
+}
+.cf-drift-slow { animation-duration: 38s; animation-direction: alternate-reverse; }
+@keyframes cf-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to   { transform: translate3d(3%, 2%, 0) scale(1.12); }
+}
+
+/* Partículas de polvo suspendidas: dan aire a las escenas oscuras */
+.cf-mote {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 999px;
+  background: var(--gold-400);
+  opacity: 0;
+  pointer-events: none;
+  animation: cf-mote 14s ease-in-out infinite;
+}
+@keyframes cf-mote {
+  0%   { opacity: 0;   transform: translateY(14px) scale(.6); }
+  25%  { opacity: .55; }
+  60%  { opacity: .3; }
+  100% { opacity: 0;   transform: translateY(-46px) scale(1.1); }
+}
+
+/* ── Tarjeta dinámica: spotlight al puntero + barrido continuo ── */
+.cf-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(185, 159, 102, .20);
+  border-radius: 3px;
+  background: linear-gradient(158deg, rgba(255,255,255,.06), rgba(255,255,255,.018));
+  padding: clamp(22px, 2.8vw, 32px);
+  height: 100%;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transition:
+    border-color .55s var(--ease-out),
+    transform .5s var(--ease-out),
+    box-shadow .55s var(--ease-out);
+}
+.cf-card > * { position: relative; z-index: 2; }
+
+/* Spotlight que sigue al cursor */
+.cf-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%),
+              rgba(185,159,102,.20), transparent 68%);
+  opacity: 0;
+  transition: opacity .45s ease;
+}
+.cf-card:hover::before { opacity: 1; }
+.cf-card:hover {
+  border-color: rgba(185, 159, 102, .52);
+  box-shadow: 0 18px 46px rgba(0,0,0,.32);
+}
+
+/* Barrido de luz permanente — es lo que mantiene viva la tarjeta
+   en touch, donde no existe :hover */
+.cf-card::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 42%;
+  z-index: 1;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.09), transparent);
+  transform: translateX(-160%);
+  animation: cf-sheen 8s cubic-bezier(.45,0,.2,1) infinite;
+  animation-delay: var(--sheen, 0s);
+}
+@keyframes cf-sheen {
+  0%, 62%, 100% { transform: translateX(-160%); }
+  84%           { transform: translateX(340%); }
+}
+
+/* Variante clara (secciones crema) */
+.cf-card-light {
+  background: linear-gradient(158deg, #fff, #FDFCF9);
+  border-color: var(--line-200);
+}
+.cf-card-light:hover { border-color: var(--gold-400); box-shadow: var(--shadow-lg); }
+.cf-card-light::after { background: linear-gradient(100deg, transparent, rgba(185,159,102,.10), transparent); }
+.cf-card-light::before {
+  background: radial-gradient(260px circle at var(--mx,50%) var(--my,0%),
+              rgba(185,159,102,.14), transparent 68%);
+}
+
+/* Numeral de la tarjeta */
+.cf-card-num {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 42px;
+  line-height: .85;
+  letter-spacing: -.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--gold-500);
+  opacity: .55;
+  transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+}
+.cf-card:hover .cf-card-num { opacity: 1; transform: translateY(-2px); }
+
+/* Icono con halo que late */
+.cf-card-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  border: 1px solid rgba(185,159,102,.32);
+  border-radius: 999px;
+  color: var(--gold-400);
+  flex-shrink: 0;
+}
+.cf-card-icon::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 999px;
+  border: 1px solid var(--gold-500);
+  opacity: 0;
+  animation: cf-pulse 4.5s ease-out infinite;
+  animation-delay: var(--sheen, 0s);
+}
+@keyframes cf-pulse {
+  0%        { opacity: .5; transform: scale(1); }
+  55%, 100% { opacity: 0;  transform: scale(1.45); }
+}
+.cf-card-light .cf-card-icon { color: var(--gold-600); border-color: var(--gold-300); }
+
+/* ── Rejilla de pasos: escritorio en grilla, móvil en carrusel ── */
+.cf-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+.cf-steps-3 { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 1000px) {
+  .cf-steps, .cf-steps-3 { grid-template-columns: repeat(2, 1fr); }
+}
+/* Móvil: carrusel horizontal con snap — corta el scroll vertical
+   de cuatro pantallas a una */
+@media (max-width: 640px) {
+  .cf-steps, .cf-steps-3 {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 -20px;
+    padding: 2px 20px 14px;
+  }
+  .cf-steps::-webkit-scrollbar, .cf-steps-3::-webkit-scrollbar { display: none; }
+  .cf-steps > *, .cf-steps-3 > * {
+    flex: 0 0 82%;
+    scroll-snap-align: center;
+  }
+}
+
+/* Pista de deslizamiento bajo los carruseles móviles */
+.cf-swipe-hint { display: none; }
+@media (max-width: 640px) {
+  .cf-swipe-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    opacity: .5;
+  }
+  .cf-swipe-hint svg { animation: cf-nudge 2.4s ease-in-out infinite; }
+}
+@keyframes cf-nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(6px); }
+}
+
+/* ── Conmutador Dueño / Comprador ──────────────────────────── */
+.cf-switch {
+  position: relative;
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid rgba(185,159,102,.30);
+  border-radius: 999px;
+  background: rgba(0,0,0,.22);
+  backdrop-filter: blur(6px);
+}
+.cf-switch-ind {
+  position: absolute;
+  top: 4px; bottom: 4px;
+  border-radius: 999px;
+  background: var(--gold-500);
+  transition: transform .55s var(--ease-out), width .55s var(--ease-out);
+  z-index: 0;
+}
+.cf-switch-btn {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .04em;
+  padding: 11px 22px;
+  border-radius: 999px;
+  color: rgba(255,255,255,.62);
+  transition: color .4s var(--ease-out);
+  white-space: nowrap;
+}
+.cf-switch-btn[data-on="true"] { color: var(--navy-950); }
+
+/* Panel que entra al cambiar de lado */
+.cf-panel { animation: cf-panel-in .6s var(--ease-out) both; }
+@keyframes cf-panel-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Cinta infinita ────────────────────────────────────────── */
+.cf-marquee {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.cf-marquee-track {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 40px;
+  padding-right: 40px;
+  animation: cf-marquee 38s linear infinite;
+}
+.cf-marquee:hover .cf-marquee-track { animation-play-state: paused; }
+@keyframes cf-marquee { to { transform: translateX(-100%); } }
+.cf-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 40px;
+  font-family: var(--font-display);
+  font-size: clamp(15px, 2.2vw, 22px);
+  font-style: italic;
+  white-space: nowrap;
+  color: rgba(255,255,255,.42);
+}
+.cf-marquee-dot { width: 5px; height: 5px; border-radius: 999px; background: var(--gold-500); flex-shrink: 0; }
+
+/* ── Firma que se dibuja ───────────────────────────────────── */
+.cf-firma path {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+}
+.cf-firma.is-in path {
+  animation: cf-draw 2.6s cubic-bezier(.5,0,.2,1) .25s forwards;
+}
+@keyframes cf-draw { to { stroke-dashoffset: 0; } }
+
+/* Sello giratorio permanente */
+.cf-seal { animation: cf-spin 34s linear infinite; transform-origin: 50% 50%; }
+@keyframes cf-spin { to { transform: rotate(360deg); } }
+
+/* ── Palabra rotativa del titular ──────────────────────────── */
+.cf-rotor {
+  display: inline-grid;
+  vertical-align: bottom;
+}
+.cf-rotor > * { grid-area: 1 / 1; }
+.cf-rotor-word {
+  animation: cf-rotor-in .7s var(--ease-out) both;
+  white-space: nowrap;
+}
+@keyframes cf-rotor-in {
+  from { opacity: 0; transform: translateY(.42em) rotateX(-55deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Compactación móvil: menos aire, mismo registro ────────── */
+@media (max-width: 640px) {
+  .cf-sect { padding-top: 52px !important; padding-bottom: 52px !important; }
+  .cf-hero { padding-top: 64px !important; padding-bottom: 52px !important; }
+  .cf-h1 { font-size: clamp(34px, 10.5vw, 52px); }
+
+  /* El bloque superior del comparador repite el "Precio fijo" que ya
+     canta la tarjeta destacada. En escritorio el aire sobra; en móvil
+     son 180px de scroll sin información nueva. */
+  .comparador-foco { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-drift, .cf-mote, .cf-seal,
+  .cf-card::after, .cf-card-icon::before,
+  .cf-marquee-track, .cf-swipe-hint svg { animation: none; }
+  .cf-mote { opacity: .3; }
+  .cf-card { transform: none; }
+  .cf-panel { animation: none; }
+  .cf-rotor-word { animation: none; }
+  .cf-firma path { stroke-dashoffset: 0; }
+}
+
 /* Panel del dueño: métricas y tarjetas compactas */
 .panel-kpis {
   display: grid;
