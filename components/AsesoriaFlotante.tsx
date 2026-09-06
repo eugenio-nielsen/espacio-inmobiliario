@@ -67,22 +67,22 @@ export default function AsesoriaFlotante() {
         type="button"
         onClick={cerrar}
         aria-label="Cerrar"
+        className="asesoria-cerrar"
         style={{
-          position: "absolute", top: 8, right: 8, lineHeight: 0,
-          background: "none", border: "none", cursor: "pointer",
-          color: "var(--ink-400)", padding: 4,
+          lineHeight: 0, background: "none", border: "none",
+          cursor: "pointer", color: "var(--ink-400)", padding: 4,
         }}
       >
         <X size={15} />
       </button>
 
-      <p style={{
+      <p className="asesoria-texto" style={{
         fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 15.5,
         color: "var(--navy-800)", margin: "0 26px 4px 0", lineHeight: 1.3,
       }}>
         ¿Necesitás ayuda para vender tu propiedad?
       </p>
-      <p style={{
+      <p className="asesoria-texto" style={{
         fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)",
         margin: "0 0 12px", lineHeight: 1.45,
       }}>
@@ -94,6 +94,7 @@ export default function AsesoriaFlotante() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={cerrar}
+        className="asesoria-cta"
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
           fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13.5,

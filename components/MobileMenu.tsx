@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus } from "lucide-react";
-import { HERRAMIENTAS } from "@/components/NavHerramientas";
+import { HERRAMIENTAS } from "@/lib/herramientas";
 import { signOut } from "@/lib/actions/auth";
 
 const LINKS = [

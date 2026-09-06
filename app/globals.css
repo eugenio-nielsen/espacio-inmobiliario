@@ -784,9 +784,11 @@ select:focus, input:focus, textarea:focus {
 }
 @keyframes cf-draw { to { stroke-dashoffset: 0; } }
 
-/* Sello giratorio permanente */
-.cf-seal { animation: cf-spin 34s linear infinite; transform-origin: 50% 50%; }
-@keyframes cf-spin { to { transform: rotate(360deg); } }
+/* Sello de marca giratorio. Sin prefijo .cf- porque no es de una
+   pagina: es la pieza que se repite en /como-funciona y en el footer
+   de todo el sitio (ver components/SelloEN.tsx). */
+.sello-gira { animation: sello-gira 34s linear infinite; transform-origin: 50% 50%; }
+@keyframes sello-gira { to { transform: rotate(360deg); } }
 
 /* ── Palabra rotativa del titular ──────────────────────────── */
 .cf-rotor {
@@ -816,7 +818,7 @@ select:focus, input:focus, textarea:focus {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cf-drift, .cf-mote, .cf-seal,
+  .cf-drift, .cf-mote, .sello-gira,
   .cf-card::after, .cf-card-icon::before,
   .cf-marquee-track, .cf-swipe-hint svg { animation: none; }
   .cf-mote { opacity: .3; }
@@ -987,23 +989,249 @@ select:focus, input:focus, textarea:focus {
 }
 
 /* Footer: 3col → 1col */
-.grid-footer {
+/* ═══════════════════════════════════════════════════════════════
+   Footer — tres bandas: marca, navegación y legales.
+   La banda de marca existe para la recordación: es la única pieza
+   del sitio que se ve en TODAS las páginas, así que es donde el
+   sello y el nombre trabajan mejor. Prefijo .ft-
+   ═══════════════════════════════════════════════════════════════ */
+
+.ft { background: var(--navy-800); color: #fff; }
+
+/* ── Banda 1 · Marca ───────────────────────────────────────── */
+.ft-marca {
+  position: relative;
+  background: var(--navy-950);
+  border-top: 1px solid rgba(185, 159, 102, .30);
+  overflow: hidden;
+}
+/* Luz cenital tenue, con la misma deriva lenta del resto del sitio */
+.ft-marca-luz {
+  position: absolute;
+  inset: -30%;
+  pointer-events: none;
+  background: radial-gradient(60% 70% at 18% 0%, rgba(185,159,102,.16), transparent 62%);
+  animation: cf-drift 30s ease-in-out infinite alternate;
+}
+.ft-marca-in {
+  position: relative;
   max-width: var(--container);
   margin: 0 auto;
-  padding: 56px 24px 28px;
+  padding: clamp(30px, 4.5vw, 52px) 24px;
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: auto 1fr auto;
+  gap: clamp(20px, 3.5vw, 44px);
+  align-items: center;
 }
-@media (max-width: 767px) {
-  .grid-footer {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 26px 20px;
-    padding: 36px 20px 24px;
+.ft-nombre {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(24px, 3.4vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  color: #fff;
+  margin: 0;
+}
+.ft-rol {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+  margin: 8px 0 0;
+}
+.ft-lema {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(14.5px, 1.8vw, 17px);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .62);
+  margin: 14px 0 0;
+  max-width: 46ch;
+}
+.ft-acciones { display: flex; flex-direction: column; gap: 10px; }
+
+@media (max-width: 900px) {
+  .ft-marca-in {
+    grid-template-columns: auto 1fr;
+    gap: 18px;
+    padding: 30px 20px;
   }
-  /* el bloque del logo + descripción ocupa las 2 columnas */
-  .grid-footer > *:first-child { grid-column: 1 / -1; }
-  .grid-footer a { overflow-wrap: anywhere; }
+  /* Sello y nombre comparten fila; los botones pasan abajo, a lo ancho */
+  .ft-marca-texto { align-self: center; }
+  .ft-acciones { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+  .ft-acciones > * { flex: 1 1 180px; justify-content: center; }
+}
+
+/* ── Banda 2 · Navegación ──────────────────────────────────── */
+.ft-nav {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: clamp(36px, 5vw, 56px) 24px 30px;
+  display: grid;
+  grid-template-columns: 1.5fr repeat(4, 1fr);
+  gap: 34px 26px;
+}
+@media (max-width: 1023px) {
+  .ft-nav { grid-template-columns: repeat(3, 1fr); }
+  .ft-nav > *:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 639px) {
+  .ft-nav {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px 16px;
+    padding: 30px 20px 20px;
+  }
+  /* La banda de marca, justo arriba, ya presenta el proyecto con el
+     sello, el nombre y el lema. Repetir acá el logo grande y el
+     párrafo descriptivo eran ~130px de scroll diciendo lo mismo por
+     tercera vez: en móvil este bloque queda solo con los contactos. */
+  .ft-desc { display: none; }
+  .ft-logo { height: 40px; margin-bottom: 10px; }
+  .ft-sello { --sello-size: 74px; }
+  .ft-lema { margin-top: 10px; font-size: 14px; line-height: 1.5; }
+  .ft-nombre { font-size: 23px; }
+
+  /* En dos columnas, cada fila mide lo que su columna más alta. Con el
+     orden del HTML quedaban emparejadas una larga y una corta (6 links
+     junto a 3, y 2 junto a 5), y sobraba hueco en ambas filas. Acá se
+     emparejan larga con larga y corta con corta: mismos links, ~60px
+     menos de alto. */
+  .ft-nav > *:nth-child(2) { order: 2; }  /* Propiedades (6) */
+  .ft-nav > *:nth-child(5) { order: 3; }  /* Espacio     (5) */
+  .ft-nav > *:nth-child(3) { order: 4; }  /* Barrios     (3) */
+  .ft-nav > *:nth-child(4) { order: 5; }  /* Herramientas(2) */
+}
+
+.ft-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .2em;
+  color: var(--gold-400);
+  margin: 0 0 14px;
+}
+/* Hairline que completa el ancho de la columna: el mismo recurso
+   gráfico de los títulos de /como-funciona */
+.ft-h::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(185, 159, 102, .22);
+}
+
+.ft-link {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, .78);
+  text-decoration: none;
+  padding: 5px 0;
+  transition: color .3s var(--ease-out);
+}
+/* Subrayado dorado que crece desde la izquierda */
+.ft-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 100%;
+  height: 1px;
+  background: var(--gold-400);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .4s var(--ease-out);
+}
+.ft-link:hover { color: #fff; }
+.ft-link:hover::after { transform: scaleX(1); }
+
+@media (max-width: 639px) {
+  .ft-link { font-size: 13px; padding: 4px 0; }
+}
+
+/* Contacto destacado dentro de la columna de marca */
+.ft-contacto {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color .3s var(--ease-out);
+}
+.ft-contacto:hover { color: var(--gold-300); }
+.ft-contacto svg { flex-shrink: 0; }
+
+/* ── Botones de la banda de marca ──────────────────────────── */
+.ft-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .02em;
+  padding: 12px 22px;
+  border-radius: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .3s var(--ease-out), color .3s var(--ease-out), border-color .3s var(--ease-out);
+}
+.ft-btn-oro {
+  background: var(--gold-500);
+  color: var(--navy-950);
+  border: 1px solid var(--gold-500);
+}
+.ft-btn-oro:hover { background: var(--gold-400); border-color: var(--gold-400); }
+.ft-btn-linea {
+  background: transparent;
+  color: rgba(255, 255, 255, .86);
+  border: 1px solid rgba(255, 255, 255, .24);
+}
+.ft-btn-linea:hover { border-color: var(--gold-400); color: #fff; }
+
+/* ── Banda 3 · Legales ─────────────────────────────────────── */
+.ft-legal {
+  background: var(--navy-950);
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+.ft-legal-in {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  flex-wrap: wrap;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--navy-300);
+}
+.ft-legal-in a {
+  color: var(--navy-300);
+  text-decoration: none;
+  transition: color .3s var(--ease-out);
+}
+.ft-legal-in a:hover { color: var(--gold-300); }
+.ft-sep { color: var(--navy-600); margin: 0 8px; }
+
+@media (max-width: 639px) {
+  .ft-legal-in { justify-content: center; text-align: center; padding: 14px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-marca-luz { animation: none; }
+  .ft-link::after { transition: none; }
 }
 
 /* Filters: 5+1col → 2col+button */
@@ -1506,12 +1734,38 @@ select:focus, input:focus, textarea:focus {
   to   { opacity: 1; transform: none; }
 }
 
+/* En escritorio el botón de cerrar flota sobre la esquina de la tarjeta */
+.asesoria-cerrar { position: absolute; top: 8px; right: 8px; }
+
 @media (max-width: 639px) {
+  /* En móvil la tarjeta tapaba media pantalla sobre el contenido. Queda
+     solo la acción: el título y la bajada explicaban algo que el propio
+     botón ya dice, y costaban ~70px de pantalla ajena. */
   .asesoria-flotante {
     left: 12px;
     right: 12px;
     bottom: calc(12px + env(safe-area-inset-bottom));
     width: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 7px 7px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .asesoria-texto { display: none; }
+  .asesoria-cta {
+    flex: 1;
+    margin: 0;
+    border-radius: var(--radius-pill) !important;
+    padding: 12px 16px !important;
+  }
+  /* Deja de flotar: pasa a ser un elemento más de la fila, para no
+     pisar el botón ahora que la tarjeta mide lo que mide el botón */
+  .asesoria-cerrar {
+    position: static;
+    flex-shrink: 0;
+    order: 2;
+    padding: 8px;
   }
 }
 

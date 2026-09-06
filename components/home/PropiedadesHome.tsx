@@ -27,10 +27,26 @@ export default function PropiedadesHome({
   const [items, setItems] = useState<PropertyCardData[]>(iniciales);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [esMovil, setEsMovil] = useState(false);
   const centinelaRef = useRef<HTMLDivElement>(null);
 
   const disponibles = Math.min(totalActivas, TOPE_HOME);
-  const hayMas = !error && items.length < disponibles;
+  // En móvil la home no sigue cargando: se queda en la primera tanda y
+  // deriva al listado con el botón. El scroll infinito en una pantalla
+  // angosta convierte la home en una lista interminable y aleja el pie
+  // de página, que es donde están el contacto y el resto del sitio.
+  const hayMas = !error && !esMovil && items.length < disponibles;
+
+  // Arranca en false (igual que el servidor) y se corrige al montar, así
+  // el primer render del cliente coincide con el HTML y no hay error de
+  // hidratación. El observador recién se instala después de montar.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const leer = () => setEsMovil(mq.matches);
+    leer();
+    mq.addEventListener("change", leer);
+    return () => mq.removeEventListener("change", leer);
+  }, []);
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -50,6 +66,11 @@ export default function PropiedadesHome({
 
   useEffect(() => {
     if (!hayMas || cargando) return;
+    // Se relee el ancho acá, en vez de confiar en el estado: en el primer
+    // commit los dos efectos corren juntos y `esMovil` todavía vale false,
+    // así que el observador alcanzaba a instalarse y a traer una tanda de
+    // más antes de que el re-render lo desmontara. En móvil se veían 12.
+    if (window.matchMedia("(max-width: 639px)").matches) return;
     const el = centinelaRef.current;
     if (!el) return;
 
@@ -71,9 +92,9 @@ export default function PropiedadesHome({
       <div className="grid-properties home-destacados">
         {items.map((p, i) => (
           <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
-            <div className="card-lift">
-              <PropertyListCard property={p} priority={i < 3} />
-            </div>
+            {/* Sin card-lift acá: la tarjeta ya lo trae, y anidados los dos
+                el hover levantaba 6px en vez de 3 */}
+            <PropertyListCard property={p} priority={i < 3} />
           </FadeIn>
         ))}
       </div>
@@ -109,14 +130,19 @@ export default function PropiedadesHome({
       )}
 
       <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
-        <Link href="/propiedades" className="esbtn esbtn-primary" style={{
+        <Link href="/propiedades" className="esbtn esbtn-primary home-ver-todas" style={{
           display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
           fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14.5,
           borderRadius: "var(--radius-sm)", border: "1.5px solid transparent",
           padding: "13px 26px", background: "var(--navy-800)", color: "#fff",
           textDecoration: "none",
         }}>
-          Ver todas las propiedades <ArrowRight size={16} strokeWidth={2} />
+          {/* El total sale de props, así que servidor y cliente escriben
+              lo mismo en el primer render */}
+          {totalActivas > items.length
+            ? `Ver las ${totalActivas} propiedades disponibles`
+            : "Ver todas las propiedades disponibles"}
+          <ArrowRight size={16} strokeWidth={2} />
         </Link>
       </div>
     </>

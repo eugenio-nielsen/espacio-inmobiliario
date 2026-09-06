@@ -98,6 +98,10 @@ export type PropertyCardData = Pick<
   | "id" | "titulo" | "precio" | "moneda" | "tipo" | "operacion"
   | "barrio" | "ciudad" | "fotos" | "ambientes" | "dormitorios"
   | "superficie_total" | "cochera" | "apto_credito"
+  // Baños y expensas son de los primeros datos que se miran al comparar
+  // (las expensas cambian la cuota real de un departamento), asi que
+  // viajan con la tarjeta y no solo en la ficha.
+  | "banos" | "expensas"
 >;
 
 /** Tope de propiedades que la home llega a mostrar antes de derivar al listado. */
@@ -105,7 +109,7 @@ export const TOPE_HOME = 24;
 
 /** Lista de columnas para los SELECT de listados (coincide con PropertyCardData). */
 export const PROPERTY_CARD_COLS =
-  "id, titulo, precio, moneda, tipo, operacion, barrio, ciudad, fotos, ambientes, dormitorios, superficie_total, cochera, apto_credito";
+  "id, titulo, precio, moneda, tipo, operacion, barrio, ciudad, fotos, ambientes, dormitorios, superficie_total, banos, expensas, cochera, apto_credito";
 
 export interface Inquiry {
   id: string;

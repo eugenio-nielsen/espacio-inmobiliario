@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SelloEN from "@/components/SelloEN";
 
 /**
  * El sello y la firma de Eugenio Nielsen.
@@ -33,53 +34,10 @@ export default function FirmaEugenio() {
 
   return (
     <div ref={ref} style={{ textAlign: "center" }}>
-      {/* ── Sello: anillo de texto que gira sin parar ────────── */}
-      <div style={{ position: "relative", width: 168, height: 168, margin: "0 auto 34px" }}>
-        <svg viewBox="0 0 200 200" width="168" height="168" aria-hidden="true">
-          <defs>
-            <path
-              id="cf-sello-arco"
-              d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"
-              fill="none"
-            />
-          </defs>
-          <g className="cf-seal">
-            <text
-              fill="var(--gold-600)"
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: 11,
-                fontWeight: 500,
-                letterSpacing: "3.4px",
-                textTransform: "uppercase",
-              }}
-            >
-              <textPath href="#cf-sello-arco" startOffset="0">
-                Espacio Inmobiliario · Eugenio Nielsen · Buenos Aires ·
-              </textPath>
-            </text>
-          </g>
-          <circle cx="100" cy="100" r="60" fill="none" stroke="var(--gold-400)" strokeWidth="1" opacity=".55" />
-          <circle cx="100" cy="100" r="54" fill="none" stroke="var(--gold-500)" strokeWidth="1" opacity=".3" />
-        </svg>
-
-        <div style={{
-          position: "absolute", inset: 0, display: "flex",
-          flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5,
-        }}>
-          <span style={{
-            fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 42,
-            letterSpacing: ".02em", color: "var(--navy-800)", lineHeight: 1,
-          }}>
-            EN
-          </span>
-          <span style={{
-            fontFamily: "var(--font-sans)", fontSize: 8, fontWeight: 500,
-            letterSpacing: ".3em", textTransform: "uppercase", color: "var(--gold-700)",
-          }}>
-            Responsable
-          </span>
-        </div>
+      {/* Sello compartido con el footer: la misma pieza en los dos
+          lugares es lo que la vuelve reconocible (components/SelloEN.tsx) */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 34 }}>
+        <SelloEN size={168} tono="claro" />
       </div>
 
       {/* ── Nombre + firma dibujada ──────────────────────────── */}

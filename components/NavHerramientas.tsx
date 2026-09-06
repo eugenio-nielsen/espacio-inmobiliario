@@ -2,22 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Calculator, LineChart } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { HERRAMIENTAS } from "@/lib/herramientas";
 
-export const HERRAMIENTAS = [
-  {
-    href: "/estimador",
-    label: "Tasador de Departamentos en CABA",
-    detalle: "Estimá cuánto vale tu propiedad",
-    icon: LineChart,
-  },
-  {
-    href: "/blog/calculadora-aranceles-rpi-registro-de-la-propiedad-inmueble",
-    label: "Calculadora Aranceles RPI 2026",
-    detalle: "Cuánto cobra el Registro por cada trámite",
-    icon: Calculator,
-  },
-];
 
 /** Desplegable "Herramientas" del menú de escritorio. */
 export default function NavHerramientas({ style }: { style?: React.CSSProperties }) {

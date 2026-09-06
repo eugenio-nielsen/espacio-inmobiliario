@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Maximize2, BedDouble, Car, LayoutGrid } from "lucide-react";
+import { MapPin, Maximize2, BedDouble, Car, LayoutGrid, Bath, Banknote } from "lucide-react";
 import type { PropertyCardData } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 
@@ -9,8 +9,11 @@ const TIPO_LABEL: Record<string, string> = {
   local: "Local", oficina: "Oficina",
 };
 
+const fmtNum = (n: number) =>
+  new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
+
 function fmtPrecio(precio: number, moneda: string): string {
-  return `${moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(precio))}`;
+  return `${moneda === "USD" ? "US$" : "$"} ${fmtNum(Math.round(precio))}`;
 }
 
 /** `priority`: usar solo en las primeras tarjetas visibles (mejora el LCP). */
@@ -104,7 +107,7 @@ export default function PropertyListCard({ property: p, priority = false }: { pr
               fontFamily: "var(--font-sans)", fontSize: 12.5,
               color: "rgba(255,255,255,.75)", margin: "4px 0 0",
             }}>
-              {p.moneda === "USD" ? "US$" : "$"} {new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(precioPorM2)}/m²
+              {p.moneda === "USD" ? "US$" : "$"} {fmtNum(precioPorM2)}/m²
             </p>
           )}
         </div>
@@ -122,7 +125,9 @@ export default function PropertyListCard({ property: p, priority = false }: { pr
           {p.titulo}
         </h3>
 
-        {/* Location */}
+        {/* Location — solo el barrio. Se probó agregar `ciudad` como
+            contexto, pero esa columna guarda la provincia: quedaba
+            "Escobar · Provincia de Buenos Aires", largo y redundante. */}
         <div style={{
           display: "flex", alignItems: "center", gap: 4,
           fontFamily: "var(--font-sans)", fontSize: 13,
@@ -130,13 +135,14 @@ export default function PropertyListCard({ property: p, priority = false }: { pr
         }}>
           <MapPin size={13} strokeWidth={1.75} style={{ flexShrink: 0 }} />
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {p.barrio ? `${p.barrio}` : p.ciudad}
+            {p.barrio || p.ciudad}
           </span>
         </div>
 
-        {/* Features row */}
+        {/* Features row — con baños agregados ya son hasta cinco datos,
+            asi que envuelve en vez de desbordar la tarjeta */}
         <div style={{
-          display: "flex", alignItems: "center", gap: 14,
+          display: "flex", alignItems: "center", flexWrap: "wrap", gap: "7px 13px",
           fontFamily: "var(--font-sans)", fontSize: 13,
           color: "var(--ink-600)", borderTop: "1px solid var(--line-100)", paddingTop: 12,
         }}>
@@ -149,13 +155,19 @@ export default function PropertyListCard({ property: p, priority = false }: { pr
           {p.superficie_total != null && (
             <span style={feat}>
               <Maximize2 size={14} strokeWidth={1.75} />
-              {new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(p.superficie_total)} m²
+              {fmtNum(p.superficie_total)} m²
             </span>
           )}
           {p.dormitorios != null && (
             <span style={feat}>
               <BedDouble size={14} strokeWidth={1.75} />
               {p.dormitorios} dorm.
+            </span>
+          )}
+          {p.banos != null && (
+            <span style={feat}>
+              <Bath size={14} strokeWidth={1.75} />
+              {p.banos} baño{p.banos === 1 ? "" : "s"}
             </span>
           )}
           {p.cochera && (
@@ -165,6 +177,19 @@ export default function PropertyListCard({ property: p, priority = false }: { pr
             </span>
           )}
         </div>
+
+        {/* Expensas: cambian el costo mensual real de un departamento, así
+            que conviene verlas antes de entrar a la ficha */}
+        {p.expensas != null && p.expensas > 0 && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 5,
+            fontFamily: "var(--font-sans)", fontSize: 12.5,
+            color: "var(--ink-500)", marginTop: 10,
+          }}>
+            <Banknote size={13} strokeWidth={1.75} style={{ flexShrink: 0 }} />
+            Expensas $ {fmtNum(p.expensas)}/mes
+          </div>
+        )}
       </div>
     </Link>
   );
