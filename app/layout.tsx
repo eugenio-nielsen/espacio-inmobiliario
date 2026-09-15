@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | Espacio Inmobiliario",
   },
   description:
-    "Comprá, vendé o alquilá propiedades directamente con los dueños en Buenos Aires. Sin comisiones ni intermediarios.",
+    "Comprá o vendé propiedades directamente con los dueños en Buenos Aires. Sin comisiones, con acompañamiento profesional.",
   openGraph: {
     siteName: "Espacio Inmobiliario",
     locale: "es_AR",

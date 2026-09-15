@@ -175,7 +175,7 @@ export default async function BarrioPage({ params }: PageProps) {
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 15, color: "rgba(255,255,255,.78)", maxWidth: 480, margin: "0 auto 22px", lineHeight: 1.6 }}>
             {esCaba
               ? "Averiguá cuánto vale con nuestro tasador online y publicala gratis. Recibís las consultas directo, sin pagar comisión."
-              : "Publicala gratis y recibí las consultas directo, sin intermediarios ni comisión inmobiliaria."}
+              : "Publicala gratis y recibí las consultas directo, sin comisión inmobiliaria."}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             {esCaba && (

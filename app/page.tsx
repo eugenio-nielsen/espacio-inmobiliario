@@ -19,7 +19,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Espacio Inmobiliario · Propiedades directas de dueños en Argentina",
-  description: "Comprá, vendé o alquilá propiedades directamente con los dueños. Sin comisiones ni intermediarios. Espacio Inmobiliario, Buenos Aires.",
+  description: "Comprá o vendé propiedades directamente con los dueños, sin comisiones y con acompañamiento profesional. Espacio Inmobiliario, Buenos Aires.",
   alternates: { canonical: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000" },
   openGraph: {
     title: "Espacio Inmobiliario · Dueños Directos",
@@ -94,7 +94,7 @@ export default async function HomePage() {
             <span style={{ fontStyle: "italic", color: "var(--gold-300)" }}>Publicá tu propiedad Gratis</span>
           </h1>
           <p className="hero-subtitle hero-animate hero-animate-delay-2">
-            Comprá, vendé o alquilá tratando directamente con los dueños.
+            Comprá o vendé tratando directamente con los dueños.
             Sin comisiones en toda la Argentina.
           </p>
           <div className="hero-animate hero-animate-delay-2" style={{ width: "100%" }}>

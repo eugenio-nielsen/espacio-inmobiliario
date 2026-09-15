@@ -21,7 +21,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.co
 export const metadata: Metadata = {
   title: "Cómo funciona · Publicar es gratis, siempre",
   description:
-    "Publicá tu propiedad gratis, sin comisiones ni intermediarios, con el acompañamiento de Eugenio Nielsen. Y si querés delegar la venta, precio fijo en lugar de un porcentaje.",
+    "Publicá tu propiedad gratis y sin comisiones, con el acompañamiento de Eugenio Nielsen. Y si querés delegar la venta, precio fijo en lugar de un porcentaje.",
   alternates: { canonical: `${SITE}/como-funciona` },
   openGraph: {
     title: "Cómo funciona · Espacio Inmobiliario",
@@ -99,7 +99,7 @@ export default function ComoFuncionaPage() {
               <span className="cf-italic">abierto</span>
               <span style={{ color: "var(--gold-500)", opacity: .5 }}> · </span>
               <PalabraRotativa
-                palabras={["sin comisiones", "sin intermediarios", "sin sorpresas"]}
+                palabras={["sin comisiones", "con acompañamiento", "sin sorpresas"]}
                 style={{ fontStyle: "italic", color: "var(--gold-300)" }}
               />
             </h1>
@@ -197,8 +197,8 @@ export default function ComoFuncionaPage() {
               </h2>
               <p className="cf-lead" style={{ color: "var(--ink-600)", margin: 0 }}>
                 Crear tu cuenta, publicar, editar, recibir consultas y cerrar el trato
-                directo con el comprador es <strong>100% gratuito</strong>. Sin comisiones
-                ni intermediarios. Esa es la esencia del proyecto, no una promoción.
+                directo con el comprador es <strong>100% gratuito</strong>. Sin comisiones.
+                Esa es la esencia del proyecto, no una promoción.
               </p>
             </header>
           </Reveal>

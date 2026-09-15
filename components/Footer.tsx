@@ -83,8 +83,8 @@ export default function Footer() {
             fontFamily: "var(--font-sans)", fontSize: 13.5, lineHeight: 1.7,
             color: "var(--navy-300)", maxWidth: 300, margin: "0 0 16px",
           }}>
-            El portal de propiedades directas de dueños en Argentina.
-            Sin comisiones, sin intermediarios.
+            Propiedades directas de dueños en Argentina, con acompañamiento
+            profesional en cada operación.
           </p>
           <a
             className="ft-contacto"
@@ -127,7 +127,7 @@ export default function Footer() {
           <h5 className="ft-h">Herramientas</h5>
           {HERRAMIENTAS.map(h => (
             <Link key={h.href} className="ft-link" href={h.href}>
-              {h.corto}
+              {h.label}
             </Link>
           ))}
         </div>

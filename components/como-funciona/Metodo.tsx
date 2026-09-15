@@ -42,7 +42,7 @@ const COMPRADOR: Paso[] = [
   {
     icon: Phone,
     titulo: "Contactá al dueño",
-    texto: "Cada ficha tiene un formulario que llega directo al propietario. Sin intermediarios que filtren o demoren.",
+    texto: "Cada ficha tiene un formulario que llega directo al propietario, sin filtros ni demoras en el medio.",
   },
   {
     icon: BadgeCheck,

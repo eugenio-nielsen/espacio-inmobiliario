@@ -82,7 +82,7 @@ export default function InquiryForm({ propertyId }: { propertyId: string }) {
         {isPending ? "Enviando…" : "Enviar consulta"}
       </button>
       <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", textAlign: "center", margin: "12px 0 0" }}>
-        Tu consulta va directamente al dueño. Sin intermediarios.
+        Tu consulta llega directo al dueño de la propiedad.
       </p>
     </form>
   );
