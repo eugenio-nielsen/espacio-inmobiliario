@@ -22,6 +22,7 @@ export const CATEGORIAS_BLOG = [
   // Serie mensual con los datos del Colegio de Escribanos porteño
   "Seguimiento de Escrituras 2026",
   "Guía para vender",
+  "Guía para comprar",
   "Mercado inmobiliario",
   "Legal y escrituras",
   "Créditos hipotecarios",

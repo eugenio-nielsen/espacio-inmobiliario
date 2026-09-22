@@ -1,6 +1,6 @@
 import {
   Calculator, Scale, Receipt, FileSignature, KeyRound, TrendingUp,
-  Landmark, HandCoins, FileText, BarChart3,
+  Landmark, HandCoins, FileText, BarChart3, ClipboardCheck, FileSearch,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -69,6 +69,12 @@ const POR_SLUG: Record<string, Portada> = {
     { icono: TrendingUp, tono: "navy" },
   "guia-practica-para-propietarios-que-venden-sin-inmobiliaria-en-caba":
     { icono: KeyRound, tono: "gold" },
+  "que-revisar-antes-de-comprar-una-propiedad-en-caba":
+    { icono: ClipboardCheck, tono: "petroleo" },
+  "que-documentacion-pedirle-al-dueno-antes-de-firmar":
+    { icono: FileSearch, tono: "navy" },
+  "cuanto-cuesta-escriturar-los-gastos-del-comprador":
+    { icono: Receipt, tono: "ciruela" },
 };
 
 /** Para notas futuras: se deduce del título. El orden importa. */
@@ -80,6 +86,7 @@ const POR_PALABRA: [RegExp, Portada][] = [
   [/costo|gasto|comisi/i,          { icono: Receipt,       tono: "verde" }],
   [/precio|tasaci|valor|mercado/i, { icono: TrendingUp,    tono: "verde" }],
   [/crédito|credito|hipotec|uva/i, { icono: HandCoins,     tono: "gold" }],
+  [/comprar|comprador/i,           { icono: ClipboardCheck, tono: "petroleo" }],
   [/vender|dueño|propietario/i,    { icono: KeyRound,      tono: "gold" }],
 ];
 
@@ -87,6 +94,7 @@ const POR_CATEGORIA: Record<string, Portada> = {
   "Seguimiento de Escrituras 2026": { icono: BarChart3,     tono: "petroleo" },
   "Legal y escrituras":             { icono: FileSignature, tono: "navy" },
   "Guía para vender":               { icono: KeyRound,      tono: "gold" },
+  "Guía para comprar":              { icono: ClipboardCheck, tono: "petroleo" },
 };
 
 const POR_DEFECTO: Portada = { icono: FileText, tono: "navy" };
