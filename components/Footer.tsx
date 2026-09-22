@@ -21,7 +21,7 @@ const TIPOS: [string, string][] = [
 
 const ESPACIO: [string, string][] = [
   ["Cómo funciona", "/como-funciona"],
-  ["Precios", "/como-funciona#precios"],
+  ["Vender mi propiedad", "/vender"],
   ["Blog", "/blog"],
   ["Publicar gratis", "/auth/registro"],
   ["Ingresar", "/auth/login"],

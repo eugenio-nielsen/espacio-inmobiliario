@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // /precios se fusionó dentro de /como-funciona. El redirect es permanente
-  // (308) para que los buscadores trasladen el posicionamiento de la URL
-  // vieja en lugar de dejar dos páginas compitiendo por lo mismo.
+  // El contenido de /precios vivió un tiempo en /como-funciona y ahora
+  // está en /vender, su lugar natural. El 308 apunta directo al destino
+  // final en vez de encadenar dos saltos.
   async redirects() {
     return [
-      { source: "/precios", destination: "/como-funciona#precios", permanent: true },
+      { source: "/precios", destination: "/vender", permanent: true },
     ];
   },
   experimental: {

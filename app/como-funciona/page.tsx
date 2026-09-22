@@ -8,20 +8,15 @@ import Cinta from "@/components/como-funciona/Cinta";
 import Motas from "@/components/como-funciona/Motas";
 import FirmaEugenio from "@/components/como-funciona/FirmaEugenio";
 import PalabraRotativa from "@/components/como-funciona/PalabraRotativa";
-import TarjetaViva from "@/components/ui/TarjetaViva";
-import ComparadorComision from "@/components/precios/ComparadorComision";
 import AsesoriaContacto from "@/components/precios/AsesoriaContacto";
-import {
-  BadgeCheck, ShieldCheck, MessageSquare, CalendarClock,
-  Users, Scale, ArrowRight, Plus, Check, MoveRight, Tag,
-} from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
 export const metadata: Metadata = {
-  title: "Cómo funciona · Publicar es gratis, siempre",
+  title: "Cómo funciona · Comprar y vender con acompañamiento",
   description:
-    "Publicá tu propiedad gratis y sin comisiones, con el acompañamiento de Eugenio Nielsen. Y si querés delegar la venta, precio fijo en lugar de un porcentaje.",
+    "Cómo funciona Espacio Inmobiliario paso a paso, para quien vende y para quien compra, con el acompañamiento de Eugenio Nielsen en cada operación.",
   alternates: { canonical: `${SITE}/como-funciona` },
   openGraph: {
     title: "Cómo funciona · Espacio Inmobiliario",
@@ -30,16 +25,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-/* Lo que suma el acompañamiento profesional (venía de /precios) */
-const INCLUYE = [
-  { icon: BadgeCheck, t: "Un responsable con nombre y apellido", d: "Alguien a cargo de tu operación de principio a fin. No un call center ni un formulario que nadie lee." },
-  { icon: MessageSquare, t: "Gestión diaria de consultas", d: "Respondemos y filtramos las consultas por vos, para que solo te llegue lo que vale la pena." },
-  { icon: CalendarClock, t: "Coordinación de visitas", d: "Organizamos y acompañamos las visitas a tu propiedad, sin que tengas que estar pendiente." },
-  { icon: Users, t: "Red de profesionales de confianza", d: "Escribanos, fotógrafos y reparadores que conocemos y recomendamos, cuando los necesites." },
-  { icon: ShieldCheck, t: "Respaldo legal y documental", d: "Te acompañamos con la documentación, los certificados y el cierre seguro de la operación." },
-  { icon: Scale, t: "Precio fijo, no un porcentaje", d: "Cobramos un valor fijo por la venta. No un porcentaje del valor de tu propiedad como el resto del mercado." },
-];
 
 const CINTA = [
   "Sin comisiones",
@@ -129,8 +114,8 @@ export default function ComoFuncionaPage() {
                 <Plus size={15} strokeWidth={2.2} />
                 Publicar mi propiedad gratis
               </Link>
-              <Link href="#precios" style={ctaLine}>
-                Ver precios
+              <Link href="/vender" style={ctaLine}>
+                Quiero vender
                 <ArrowRight size={14} strokeWidth={1.8} />
               </Link>
             </div>
@@ -176,126 +161,36 @@ export default function ComoFuncionaPage() {
         </div>
       </section>
 
-      {/* ══ Precio · publicar es gratis ════════════════════════ */}
+      {/* ══ Puntero a /vender ══════════════════════════════════
+          Acá vivían el comparador de precio fijo y los seis puntos del
+          acompañamiento. Se mudaron a /vender, su lugar natural: tener
+          el mismo contenido en dos URLs las ponía a competir entre sí
+          por la misma búsqueda. Queda el ancla #precios porque hubo
+          links externos apuntando ahí. */}
       <section
         id="precios"
         className="cf-sect"
-        style={{
-          background: "var(--cream)",
-          padding: "clamp(64px,9vw,110px) 24px",
-          scrollMarginTop: 80,
-        }}
+        style={{ background: "var(--cream)", padding: "clamp(52px,7vw,88px) 24px", scrollMarginTop: 80 }}
       >
-        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
           <Reveal>
-            <header style={{ textAlign: "center", maxWidth: 680, margin: "0 auto clamp(30px,4vw,44px)" }}>
-              <span className="cf-label cf-label-dark cf-label-center">Precios</span>
-              <h2 className="cf-h2" style={{ color: "var(--navy-800)", margin: "26px 0 18px" }}>
-                Publicar es{" "}
-                <span style={{ fontStyle: "italic", color: "var(--gold-700)" }}>gratis</span>.
-                Y va a seguir siéndolo.
-              </h2>
-              <p className="cf-lead" style={{ color: "var(--ink-600)", margin: 0 }}>
-                Crear tu cuenta, publicar, editar, recibir consultas y cerrar el trato
-                directo con el comprador es <strong>100% gratuito</strong>. Sin comisiones.
-                Esa es la esencia del proyecto, no una promoción.
-              </p>
-            </header>
-          </Reveal>
-
-          <Reveal delay={100}>
-            <div style={{
-              display: "flex", flexWrap: "wrap", gap: 10,
-              justifyContent: "center", marginBottom: "clamp(38px,5vw,56px)",
-            }}>
-              {["Publicación gratis", "Sin comisiones", "Consultas directas", "Gratis para siempre"].map(t => (
-                <span key={t} style={{
-                  display: "inline-flex", alignItems: "center", gap: 7,
-                  fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600,
-                  color: "var(--navy-800)", background: "#fff",
-                  border: "1px solid var(--line-200)", padding: "9px 16px", borderRadius: 999,
-                }}>
-                  <Check size={14} strokeWidth={2.6} color="var(--success)" /> {t}
-                </span>
-              ))}
-            </div>
-          </Reveal>
-
-          {/* Comparador interactivo: precio fijo vs. comisión */}
-          <Reveal delay={160}>
-            <ComparadorComision />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ══ El acompañamiento, si lo querés ════════════════════ */}
-      <section
-        className="cf-grain cf-letterbox cf-sect"
-        style={{
-          position: "relative",
-          background: "var(--navy-900)",
-          padding: "clamp(64px,9vw,110px) 24px",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          className="cf-drift cf-drift-slow"
-          style={{ background: "radial-gradient(70% 50% at 0% 0%, rgba(185,159,102,.12), transparent 60%)" }}
-        />
-
-        <div style={{ position: "relative", maxWidth: "var(--container)", margin: "0 auto" }}>
-          <Reveal>
-            <header style={{ textAlign: "center", maxWidth: 640, margin: "0 auto clamp(32px,4vw,48px)" }}>
-              <span className="cf-label cf-label-center">Acompañamiento · opcional</span>
-              <h2 className="cf-h2" style={{ color: "#fff", margin: "26px 0 18px" }}>
-                ¿Preferís que lo{" "}
-                <span className="cf-italic">hagamos juntos</span>?
-              </h2>
-              <p className="cf-lead" style={{ color: "rgba(255,255,255,.58)", margin: 0 }}>
-                Vos elegís: lo hacés solo, gratis, o sumás el acompañamiento integral
-                con precio fijo. Nunca un porcentaje de tu propiedad.
-              </p>
-            </header>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <div className="cf-steps-3">
-              {INCLUYE.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <TarjetaViva key={item.t} sheenDelay={i * 700}>
-                    <span className="cf-card-icon" style={{ ["--sheen" as string]: `${i * 700}ms`, marginBottom: 18 }}>
-                      <Icon size={19} strokeWidth={1.5} />
-                    </span>
-                    <h3 style={{
-                      fontFamily: "var(--font-display)", fontWeight: 600,
-                      fontSize: "clamp(17px,2vw,20px)", lineHeight: 1.25,
-                      letterSpacing: "-.015em", color: "#fff", margin: "0 0 9px",
-                    }}>
-                      {item.t}
-                    </h3>
-                    <p style={{
-                      fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 14,
-                      lineHeight: 1.7, color: "rgba(255,255,255,.6)", margin: 0,
-                    }}>
-                      {item.d}
-                    </p>
-                  </TarjetaViva>
-                );
-              })}
-            </div>
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 14 }}>
-              <span className="cf-swipe-hint" style={{ color: "var(--gold-400)" }}>
-                Deslizá <MoveRight size={14} strokeWidth={1.6} />
-              </span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={200}>
-            <div style={{ display: "flex", justifyContent: "center", marginTop: "clamp(32px,4vw,44px)" }}>
-              <Link href="#contacto" style={ctaGold}>
-                <Tag size={15} strokeWidth={2.2} />
-                Consultar el precio fijo
+            <span className="cf-label cf-label-dark cf-label-center">Cuánto cuesta</span>
+            <h2 className="cf-h2" style={{ color: "var(--navy-800)", margin: "24px 0 16px" }}>
+              Publicar es <span style={{ fontStyle: "italic", color: "var(--gold-700)" }}>gratis</span>.
+              Delegar la venta, precio fijo.
+            </h2>
+            <p className="cf-lead" style={{ color: "var(--ink-600)", margin: "0 auto 30px", maxWidth: "52ch" }}>
+              Publicar, recibir consultas y cerrar el trato no cuesta nada, nunca.
+              Y si preferís que nos ocupemos nosotros, cobramos un valor fijo
+              en vez de un porcentaje de tu propiedad.
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href="/vender" style={ctaGoldDark}>
+                Ver cómo vender
+                <ArrowRight size={14} strokeWidth={2} />
+              </Link>
+              <Link href="/estimador" style={ctaLineDark}>
+                Tasar mi propiedad
               </Link>
             </div>
           </Reveal>
@@ -464,6 +359,23 @@ const ctaGold: React.CSSProperties = {
   background: "var(--gold-500)", color: "var(--navy-950)",
   padding: "15px 30px", borderRadius: 2, textDecoration: "none",
   border: "1px solid var(--gold-500)",
+};
+/* Variantes para las secciones claras */
+const ctaGoldDark: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: 9,
+  fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13.5,
+  letterSpacing: ".02em",
+  background: "var(--navy-800)", color: "#fff",
+  padding: "15px 30px", borderRadius: 2, textDecoration: "none",
+  border: "1px solid var(--navy-800)",
+};
+const ctaLineDark: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: 9,
+  fontFamily: "var(--font-sans)", fontWeight: 500, fontSize: 13.5,
+  letterSpacing: ".02em",
+  background: "transparent", color: "var(--navy-800)",
+  border: "1px solid var(--gold-400)",
+  padding: "15px 30px", borderRadius: 2, textDecoration: "none",
 };
 const ctaLine: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: 9,
