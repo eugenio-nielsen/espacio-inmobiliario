@@ -198,7 +198,7 @@ export default function VenderPage() {
             </div>
           </FadeIn>
           <FadeIn direction="up" delay={110}>
-            <AsesoriaContacto />
+            <AsesoriaContacto motivo="vender" />
           </FadeIn>
         </div>
       </section>

@@ -39,6 +39,7 @@ export default async function Navbar() {
           <Link href="/vender" style={navLink} className="nav-hide-mobile">Vender</Link>
           <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
           <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
+          <Link href="/contacto" style={navLink} className="nav-hide-mobile">Contacto</Link>
 
           {user ? (
             // — Usuario logueado —

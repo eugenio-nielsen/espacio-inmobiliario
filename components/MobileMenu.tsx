@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag } from "lucide-react";
+import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag, MessageCircle } from "lucide-react";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { signOut } from "@/lib/actions/auth";
 
@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/vender", label: "Vender", icon: Tag },
   { href: "/blog", label: "Blog", icon: FileText },
   { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
+  { href: "/contacto", label: "Contacto", icon: MessageCircle },
 ];
 
 export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; nombre?: string | null }) {

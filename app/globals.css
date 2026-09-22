@@ -1450,6 +1450,215 @@ select:focus, input:focus, textarea:focus {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   /contacto — formulario con selector de motivo (prefijo .ct-)
+   El motivo cambia el encabezado y viaja en el asunto del mail, así
+   cada consulta llega ya clasificada.
+   ═══════════════════════════════════════════════════════════════ */
+
+.ct-main { flex: 1; padding: clamp(36px, 6vw, 76px) 20px clamp(48px, 7vw, 88px); }
+.ct-grid {
+  max-width: var(--container);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: start;
+}
+@media (max-width: 880px) {
+  .ct-grid { grid-template-columns: 1fr; gap: 30px; }
+  .ct-aside { text-align: center; justify-items: center; }
+  .ct-datos { align-items: center; }
+}
+
+.ct-aside { display: grid; gap: 20px; justify-items: start; }
+.ct-h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(28px, 4.4vw, 44px);
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  color: var(--navy-800);
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+.ct-i { font-style: italic; color: var(--gold-700); }
+.ct-lead {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(14.5px, 1.8vw, 16.5px);
+  line-height: 1.7;
+  color: var(--ink-600);
+  margin: 0 0 24px;
+  max-width: 44ch;
+}
+
+.ct-datos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.ct-datos li,
+.ct-datos a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--ink-600);
+  text-decoration: none;
+}
+.ct-datos a { transition: color .25s var(--ease-out); }
+.ct-datos a:hover { color: var(--navy-800); }
+.ct-dato-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border: 1px solid var(--line-200);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--gold-600);
+  flex-shrink: 0;
+}
+
+/* ── Formulario ────────────────────────────────────────────── */
+.ct-form {
+  background: var(--paper);
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: clamp(20px, 3vw, 34px);
+}
+.ct-motivos { border: 0; margin: 0 0 20px; padding: 0; }
+.ct-motivos-t {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+  padding: 0;
+  margin-bottom: 11px;
+}
+.ct-motivos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+@media (max-width: 620px) { .ct-motivos-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.ct-motivo {
+  appearance: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13px;
+  padding: 11px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-200);
+  background: var(--cream);
+  color: var(--ink-600);
+  transition: border-color .25s var(--ease-out), background .25s var(--ease-out), color .25s var(--ease-out);
+  white-space: nowrap;
+}
+.ct-motivo:hover { border-color: var(--gold-400); color: var(--navy-800); }
+.ct-motivo[data-on="true"] {
+  background: var(--navy-800);
+  border-color: var(--navy-800);
+  color: #fff;
+}
+
+.ct-cabecera { margin-bottom: 18px; }
+.ct-cabecera h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(18px, 2.2vw, 23px);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+  margin: 0 0 6px;
+}
+.ct-cabecera p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-500);
+  margin: 0;
+}
+
+.ct-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+@media (max-width: 540px) { .ct-fila { grid-template-columns: 1fr; } }
+
+.ct-inp {
+  width: 100%;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  /* 16px evita que iOS haga zoom al enfocar el campo */
+  font-size: 16px;
+  font-family: var(--font-sans);
+  background: #fff;
+  color: var(--ink-800);
+  outline: none;
+  margin-bottom: 10px;
+}
+.ct-area { resize: vertical; min-height: 116px; line-height: 1.55; }
+
+.ct-error {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin: 0 0 12px;
+}
+
+.ct-acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.ct-enviar,
+.ct-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 13px 24px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .25s var(--ease-out), border-color .25s var(--ease-out);
+  flex: 1 1 auto;
+}
+.ct-enviar { background: var(--navy-800); color: #fff; border-color: var(--navy-800); }
+.ct-enviar:hover:not(:disabled) { background: var(--navy-700); border-color: var(--navy-700); }
+.ct-enviar:disabled { opacity: .6; cursor: default; }
+.ct-wa { background: #fff; color: var(--navy-800); border-color: var(--line-200); }
+.ct-wa:hover { border-color: #22c55e; color: #15803D; }
+
+/* ── Confirmación ──────────────────────────────────────────── */
+.ct-ok {
+  background: var(--success-bg);
+  border: 1px solid var(--success-line);
+  border-radius: var(--radius-lg);
+  padding: clamp(30px, 4vw, 46px) 26px;
+  text-align: center;
+  color: var(--success);
+}
+.ct-ok h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--success);
+  margin: 12px 0 8px;
+}
+.ct-ok p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-600);
+  margin: 0 auto;
+  max-width: 42ch;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Footer — tres bandas: marca, navegación y legales.
    La banda de marca existe para la recordación: es la única pieza
    del sitio que se ve en TODAS las páginas, así que es donde el

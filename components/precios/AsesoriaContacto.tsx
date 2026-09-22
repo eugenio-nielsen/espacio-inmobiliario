@@ -11,7 +11,9 @@ const inp: React.CSSProperties = {
   padding: "12px 14px", fontSize: 16, fontFamily: "var(--font-sans)", outline: "none", background: "#fff",
 };
 
-export default function AsesoriaContacto() {
+/** `motivo`: id de lib/motivos.ts. Etiqueta el lead en el asunto del
+    mail cuando el formulario vive en una página de tema definido. */
+export default function AsesoriaContacto({ motivo }: { motivo?: string } = {}) {
   const [form, setForm] = useState({ nombre: "", email: "", telefono: "", mensaje: "", website: "" });
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ export default function AsesoriaContacto() {
     if (!form.nombre || !form.email || !form.mensaje) { setError("Completá nombre, email y mensaje."); return; }
     setError(null);
     startTransition(async () => {
-      const r = await enviarConsultaAsesoria(form);
+      const r = await enviarConsultaAsesoria({ ...form, motivo });
       if (r.ok) setSent(true); else setError(r.error || "No se pudo enviar.");
     });
   }

@@ -33,14 +33,14 @@ const CAMINOS = [
     titulo: "Quiero invertir",
     texto: "Analicemos cuándo conviene comprar o vender, según tus objetivos y el momento del mercado.",
     cta: "Quiero asesorarme",
-    href: "/como-funciona#contacto",
+    href: "/contacto?motivo=invertir",
   },
   {
     icon: MessageCircle,
     titulo: "Quiero asesoramiento",
     texto: "Comprar, vender o invertir. Si todavía no sabés por dónde empezar, conversemos primero.",
     cta: "Hablemos",
-    href: "/como-funciona#contacto",
+    href: "/contacto",
   },
 ];
 

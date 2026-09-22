@@ -181,15 +181,22 @@ export async function sendAsesoriaLead(data: {
   email: string;
   telefono?: string;
   mensaje: string;
+  /** Qué vino a resolver: vender, comprar, invertir u otra consulta. */
+  motivo?: string;
 }) {
   if (!process.env.RESEND_API_KEY) return;
 
   const html = baseLayout(`
     <div style="${styles.body_p}">
-      <h1 style="${styles.h1}">Nueva consulta de asesoría</h1>
-      <p style="${styles.lead}">Un propietario quiere conversar sobre el acompañamiento para vender.</p>
+      <h1 style="${styles.h1}">Nueva consulta${data.motivo ? `: ${data.motivo}` : " de asesoría"}</h1>
+      <p style="${styles.lead}">Alguien quiere conversar desde el sitio.</p>
 
       <div style="${styles.card}">
+        ${data.motivo ? `
+        <p style="${styles.label}">Motivo</p>
+        <p style="${styles.value}">${data.motivo}</p>
+        ` : ""}
+
         <p style="${styles.label}">Nombre</p>
         <p style="${styles.value}">${data.nombre}</p>
 
@@ -212,7 +219,7 @@ export async function sendAsesoriaLead(data: {
     from: FROM,
     to: ADMIN,
     replyTo: data.email,
-    subject: `Asesoría: ${data.nombre}`,
+    subject: data.motivo ? `${data.motivo} — ${data.nombre}` : `Asesoría: ${data.nombre}`,
     html,
   });
 }
