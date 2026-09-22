@@ -1255,6 +1255,201 @@ select:focus, input:focus, textarea:focus {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   /vender — la página del propietario (prefijo .vd-)
+   El bloque central es la escalera: las dos vías lado a lado, que
+   es el modelo de negocio hecho visible.
+   ═══════════════════════════════════════════════════════════════ */
+
+.vd-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--navy-950);
+  padding: clamp(56px, 9vw, 116px) 24px clamp(48px, 7vw, 88px);
+}
+.vd-hero-in {
+  position: relative;
+  max-width: var(--container);
+  margin: 0 auto;
+  text-align: center;
+}
+.vd-h1 {
+  margin: 26px auto 0;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+.vd-hero-lead {
+  color: rgba(255, 255, 255, .66);
+  margin: clamp(20px, 3vw, 30px) auto 0;
+  max-width: 56ch;
+}
+.vd-hero-ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: clamp(26px, 4vw, 40px);
+}
+.vd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: .02em;
+  padding: 15px 28px;
+  border-radius: 2px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background .3s var(--ease-out), border-color .3s var(--ease-out);
+}
+.vd-btn-oro { background: var(--gold-500); color: var(--navy-950); border-color: var(--gold-500); }
+.vd-btn-oro:hover { background: var(--gold-400); border-color: var(--gold-400); }
+.vd-btn-linea { background: transparent; color: rgba(255,255,255,.86); border-color: rgba(255,255,255,.24); }
+.vd-btn-linea:hover { border-color: var(--gold-400); color: #fff; }
+
+/* ── La escalera ───────────────────────────────────────────── */
+.vd-escalera {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+.vd-escalera > * { height: 100%; }
+@media (max-width: 760px) {
+  .vd-escalera { grid-template-columns: 1fr; gap: 14px; }
+}
+
+.vd-via {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-lg);
+  padding: clamp(22px, 3vw, 34px);
+}
+/* La vía delegada se destaca, pero la gratuita no queda "apagada":
+   es cierta y esconderla erosionaría la confianza del resto del sitio */
+.vd-via-destacada {
+  background: var(--navy-800);
+  border-color: var(--gold-500);
+  box-shadow: 0 18px 44px rgba(14, 44, 80, .22);
+}
+.vd-via-cinta {
+  position: absolute;
+  top: -11px;
+  left: clamp(22px, 3vw, 34px);
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  background: var(--gold-500);
+  color: var(--navy-950);
+  padding: 4px 13px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.vd-via-top { margin-bottom: 14px; }
+.vd-via-tag {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+  margin-bottom: 8px;
+}
+.vd-via-destacada .vd-via-tag { color: var(--gold-300); }
+.vd-via-precio {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(26px, 3.6vw, 38px);
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--navy-800);
+  margin: 0;
+}
+.vd-via-destacada .vd-via-precio { color: #fff; }
+.vd-via-precio-sub {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--ink-500);
+  margin-top: 7px;
+}
+.vd-via-destacada .vd-via-precio-sub { color: rgba(255,255,255,.62); }
+
+.vd-via-desc {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.66;
+  color: var(--ink-600);
+  margin: 0 0 18px;
+}
+.vd-via-destacada .vd-via-desc { color: rgba(255,255,255,.66); }
+
+.vd-lista {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  flex: 1;
+}
+.vd-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-600);
+}
+.vd-lista li svg { color: var(--success); flex-shrink: 0; margin-top: 3px; }
+.vd-lista-clara li { color: rgba(255,255,255,.76); }
+.vd-lista-clara li svg { color: var(--gold-400); }
+
+.vd-via-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 14px 24px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  margin-top: auto;
+  background: transparent;
+  color: var(--navy-800);
+  border: 1.5px solid var(--navy-800);
+  transition: background .3s var(--ease-out), color .3s var(--ease-out);
+}
+.vd-via-cta:hover { background: var(--navy-800); color: #fff; }
+.vd-via-cta-oro {
+  background: var(--gold-500);
+  color: var(--navy-950);
+  border-color: var(--gold-500);
+}
+.vd-via-cta-oro:hover { background: var(--gold-400); border-color: var(--gold-400); color: var(--navy-950); }
+
+@media (max-width: 560px) {
+  .vd-via { padding: 20px 18px; }
+  .vd-via-precio { font-size: 25px; }
+  .vd-lista li { font-size: 13px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Footer — tres bandas: marca, navegación y legales.
    La banda de marca existe para la recordación: es la única pieza
    del sitio que se ve en TODAS las páginas, así que es donde el

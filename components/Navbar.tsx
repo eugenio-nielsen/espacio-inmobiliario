@@ -36,6 +36,7 @@ export default async function Navbar() {
           <div className="nav-hide-mobile">
             <NavHerramientas style={navLink} />
           </div>
+          <Link href="/vender" style={navLink} className="nav-hide-mobile">Vender</Link>
           <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
           <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
 

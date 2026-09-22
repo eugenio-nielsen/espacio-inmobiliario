@@ -25,8 +25,8 @@ const CAMINOS = [
     icon: Tag,
     titulo: "Quiero vender",
     texto: "Conocé el valor de tu propiedad y definamos juntos la mejor estrategia para venderla.",
-    cta: "Tasar mi propiedad",
-    href: "/estimador",
+    cta: "Cómo vender",
+    href: "/vender",
   },
   {
     icon: TrendingUp,
