@@ -13,6 +13,9 @@ import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
 import Counter from "@/components/ui/Counter";
 import FadeIn from "@/components/ui/FadeIn";
 import SkylineVivo from "@/components/ui/SkylineVivo";
+import Caminos from "@/components/home/Caminos";
+import ComoTrabajamos from "@/components/home/ComoTrabajamos";
+import Respaldo from "@/components/home/Respaldo";
 import { BARRIOS_CABA, PARTIDOS_PBA } from "@/lib/ubicaciones";
 
 export const revalidate = 60;
@@ -143,11 +146,28 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Concepto + las cuatro puertas ─────────────────────── */}
+      <section className="hm-sect" style={{ background: "var(--cream)", borderBottom: "1px solid var(--gold-200)" }}>
+        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
+          <FadeIn direction="up">
+            <div className="hm-concepto" style={{ marginBottom: "clamp(28px,4vw,44px)" }}>
+              <h2>Una propiedad es mucho más que <span className="hm-i">una publicación</span>.</h2>
+              <p>
+                Comprar, vender o invertir implica decisiones importantes. No queremos
+                que solo encuentres una propiedad: queremos que entiendas la operación
+                y tengas acompañamiento profesional durante todo el proceso.
+              </p>
+            </div>
+          </FadeIn>
+          <Caminos />
+        </div>
+      </section>
+
       {/* ── Últimas propiedades ───────────────────────────────── */}
       <section className="section-pad" style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 24, gap: 12 }}>
           <div>
-            <div className="es-eyebrow" style={{ marginBottom: 8 }}>Recién publicadas</div>
+            <div className="es-eyebrow" style={{ marginBottom: 8 }}>El portal es solo el comienzo</div>
             <h2 className="section-heading">Últimas propiedades</h2>
           </div>
           <Link href="/propiedades" style={{
@@ -178,34 +198,26 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* ── CTA para propietarios ─────────────────────────────── */}
-      <section className="section-pad" style={{ background: "var(--cream)", borderTop: "1px solid var(--gold-200)", borderBottom: "1px solid var(--gold-200)" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
-          <div className="es-eyebrow" style={{ marginBottom: 14 }}>Para propietarios</div>
-          <h2 style={{
-            fontFamily: "var(--font-display)", fontWeight: 600,
-            fontSize: "clamp(22px,4vw,34px)", letterSpacing: "-.02em",
-            color: "var(--navy-800)", margin: "0 0 14px",
-          }}>
-            ¿Sos dueño y querés vender?
-          </h2>
-          <p style={{
-            fontFamily: "var(--font-sans)", fontSize: "clamp(14px,2vw,16.5px)",
-            lineHeight: 1.65, color: "var(--ink-600)", maxWidth: 480, margin: "0 auto 28px",
-          }}>
-            Publicá tu propiedad gratis, recibí consultas directamente
-            y cerrá el trato sin pagar comisión.
-          </p>
-          <Link href="/auth/registro" className="esbtn esbtn-primary" style={{
-            fontFamily: "var(--font-sans)", fontWeight: 600, borderRadius: "var(--radius-sm)",
-            border: "1.5px solid transparent", display: "inline-flex", alignItems: "center",
-            gap: 8, fontSize: 14.5, padding: "13px 28px",
-            background: "var(--navy-800)", color: "#fff",
-            transition: "all var(--dur) var(--ease-out)", textDecoration: "none",
-          }}>
-            <Plus size={16} strokeWidth={2} />
-            Publicar mi propiedad gratis
-          </Link>
+      {/* ── Cómo trabajamos ───────────────────────────────────── */}
+      <section className="hm-sect" style={{ background: "var(--cream)", borderTop: "1px solid var(--gold-200)" }}>
+        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
+          <FadeIn direction="up">
+            <div className="hm-concepto" style={{ marginBottom: "clamp(24px,3.5vw,36px)" }}>
+              <div className="es-eyebrow" style={{ marginBottom: 10 }}>Cómo trabajamos</div>
+              <h2>Te acompañamos en <span className="hm-i">cada paso</span></h2>
+            </div>
+          </FadeIn>
+          <ComoTrabajamos />
+        </div>
+      </section>
+
+      {/* ── Respaldo ──────────────────────────────────────────────
+          Ocupa el lugar del viejo bloque "¿Sos dueño y querés vender?",
+          que repetía palabra por palabra el camino "Quiero vender" de
+          más arriba. Su CTA de publicar se conservó acá dentro. */}
+      <section className="hm-sect" style={{ background: "var(--cream)", borderTop: "1px solid var(--gold-200)", borderBottom: "1px solid var(--gold-200)" }}>
+        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
+          <Respaldo />
         </div>
       </section>
 

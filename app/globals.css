@@ -990,6 +990,271 @@ select:focus, input:focus, textarea:focus {
 
 /* Footer: 3col → 1col */
 /* ═══════════════════════════════════════════════════════════════
+   Home — bloques del reposicionamiento (prefijo .hm-)
+   Cuatro puertas de entrada, el método y el respaldo. Todo pensado
+   para ocupar poca pantalla: en móvil los caminos van 2×2 y los
+   pasos en dos columnas, en vez de apilarse.
+   ═══════════════════════════════════════════════════════════════ */
+
+.hm-i { font-style: italic; color: var(--gold-700); }
+
+/* ── Las cuatro puertas ────────────────────────────────────── */
+.hm-caminos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+.hm-caminos > * { height: 100%; }
+
+@media (max-width: 1023px) { .hm-caminos { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) {
+  /* Siguen 2×2: cuatro tarjetas apiladas serían cuatro pantallas
+     antes de llegar a las propiedades */
+  .hm-caminos { gap: 10px; }
+}
+
+.hm-camino {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-md);
+  padding: clamp(16px, 2vw, 24px);
+}
+.hm-camino-t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(16px, 1.9vw, 21px);
+  line-height: 1.18;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+  margin: 0 0 7px;
+}
+.hm-camino-p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 13.5px;
+  line-height: 1.58;
+  color: var(--ink-600);
+  margin: 0 0 14px;
+  flex: 1;
+}
+.hm-camino-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--gold-700);
+  text-decoration: none;
+  margin-top: auto;
+}
+.hm-camino-cta svg { transition: transform .3s var(--ease-out); }
+.hm-camino:hover .hm-camino-cta svg { transform: translateX(3px); }
+
+@media (max-width: 560px) {
+  .hm-camino { padding: 15px 14px; }
+  .hm-camino-t { font-size: 15.5px; }
+  .hm-camino-p { font-size: 12.5px; line-height: 1.5; margin-bottom: 11px; }
+  .hm-camino-cta { font-size: 12px; }
+  .hm-camino .cf-card-icon { width: 36px; height: 36px; margin-bottom: 11px; }
+}
+
+/* ── El método en cinco etapas ─────────────────────────────── */
+.hm-pasos {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+@media (max-width: 1023px) { .hm-pasos { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) {
+  .hm-pasos { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  /* La quinta cierra el proceso y la frase de abajo se apoya en
+     ella: ocupa el ancho en vez de quedar sola en media fila */
+  .hm-pasos > .hm-paso-wrap:nth-child(5) { grid-column: 1 / -1; }
+}
+.hm-paso-wrap { height: 100%; }
+
+.hm-paso {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  background: var(--paper);
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-md);
+  padding: clamp(14px, 1.6vw, 20px);
+  transition: border-color .45s var(--ease-out);
+}
+.hm-paso:hover { border-color: var(--gold-400); }
+
+/* Mismo barrido de luz que las tarjetas del resto del sitio: en
+   touch no hay :hover y sin esto los pasos quedarían inertes */
+.hm-paso::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(185,159,102,.13), transparent);
+  transform: translateX(-160%);
+  animation: cf-sheen 9s cubic-bezier(.45,0,.2,1) infinite;
+  animation-delay: var(--sheen, 0s);
+  pointer-events: none;
+}
+.hm-paso > * { position: relative; z-index: 1; }
+
+.hm-paso-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--gold-600);
+}
+.hm-paso-n {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--gold-500);
+  opacity: .6;
+}
+.hm-paso-t {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--navy-800);
+  margin: 0 0 6px;
+}
+.hm-paso-d {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-600);
+  margin: 0;
+}
+.hm-pasos-cierre {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(15px, 2vw, 21px);
+  line-height: 1.45;
+  color: var(--navy-800);
+  text-align: center;
+  max-width: 44ch;
+  margin: clamp(20px, 3vw, 30px) auto 0;
+}
+
+/* ── Respaldo ──────────────────────────────────────────────── */
+.hm-respaldo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 48px);
+  align-items: center;
+  max-width: 880px;
+  margin: 0 auto;
+}
+@media (max-width: 680px) {
+  .hm-respaldo { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 18px; }
+  .hm-sello { --sello-size: 96px; }
+  .hm-pruebas { justify-content: center; }
+}
+.hm-respaldo-t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(21px, 3vw, 32px);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+  color: var(--navy-800);
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.hm-respaldo-p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(14px, 1.6vw, 16px);
+  line-height: 1.68;
+  color: var(--ink-600);
+  margin: 0 0 18px;
+  max-width: 56ch;
+}
+.hm-pruebas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.hm-prueba {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--navy-800);
+  background: var(--paper);
+  border: 1px solid var(--line-200);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+}
+.hm-prueba svg { color: var(--success); flex-shrink: 0; }
+.hm-respaldo-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--navy-800);
+  border: 1px solid var(--gold-400);
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background .3s var(--ease-out), border-color .3s var(--ease-out);
+}
+.hm-respaldo-cta:hover { background: var(--gold-50); border-color: var(--gold-500); }
+.hm-respaldo-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 680px) { .hm-respaldo-ctas { justify-content: center; } }
+.hm-cta-primario {
+  background: var(--navy-800);
+  border-color: var(--navy-800);
+  color: #fff;
+}
+.hm-cta-primario:hover { background: var(--navy-700); border-color: var(--navy-700); }
+
+/* ── Bloque conceptual ─────────────────────────────────────── */
+.hm-concepto {
+  max-width: 660px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hm-concepto h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 3.2vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+  color: var(--navy-800);
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+.hm-concepto p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(14px, 1.7vw, 16.5px);
+  line-height: 1.7;
+  color: var(--ink-600);
+  margin: 0;
+}
+
+/* Secciones nuevas: más ajustadas que .section-pad en móvil */
+.hm-sect { padding: clamp(40px, 6vw, 76px) 20px; }
+@media (max-width: 640px) { .hm-sect { padding: 34px 18px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hm-paso::after { animation: none; }
+  .hm-camino-cta svg { transition: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Footer — tres bandas: marca, navegación y legales.
    La banda de marca existe para la recordación: es la única pieza
    del sitio que se ve en TODAS las páginas, así que es donde el

@@ -8,7 +8,7 @@ import Cinta from "@/components/como-funciona/Cinta";
 import Motas from "@/components/como-funciona/Motas";
 import FirmaEugenio from "@/components/como-funciona/FirmaEugenio";
 import PalabraRotativa from "@/components/como-funciona/PalabraRotativa";
-import TarjetaViva from "@/components/como-funciona/TarjetaViva";
+import TarjetaViva from "@/components/ui/TarjetaViva";
 import ComparadorComision from "@/components/precios/ComparadorComision";
 import AsesoriaContacto from "@/components/precios/AsesoriaContacto";
 import {

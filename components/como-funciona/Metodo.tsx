@@ -6,7 +6,7 @@ import {
   UserRound, Camera, MessageSquare, Handshake,
   Search, Phone, BadgeCheck, ArrowRight, MoveRight,
 } from "lucide-react";
-import TarjetaViva from "./TarjetaViva";
+import TarjetaViva from "@/components/ui/TarjetaViva";
 
 type Paso = { icon: React.ElementType; titulo: string; texto: string };
 
