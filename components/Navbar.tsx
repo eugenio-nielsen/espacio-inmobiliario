@@ -37,6 +37,7 @@ export default async function Navbar() {
             <NavHerramientas style={navLink} />
           </div>
           <Link href="/vender" style={navLink} className="nav-hide-mobile">Vender</Link>
+          <Link href="/comprar" style={navLink} className="nav-hide-mobile">Comprar</Link>
           <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
           <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
           <Link href="/contacto" style={navLink} className="nav-hide-mobile">Contacto</Link>
@@ -104,4 +105,5 @@ export default async function Navbar() {
 const navLink: React.CSSProperties = {
   fontFamily: "var(--font-sans)", fontSize: 14.5, fontWeight: 500,
   color: "var(--ink-600)", cursor: "pointer", textDecoration: "none",
+  whiteSpace: "nowrap",
 };

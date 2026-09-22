@@ -1926,7 +1926,13 @@ select:focus, input:focus, textarea:focus {
 }
 
 /* Navbar: hide secondary links on mobile */
-.nav-links-desktop { display: flex; align-items: center; gap: 22px; }
+/* clamp en el gap: con seis destinos + Herramientas + sesión, 22px
+   fijos partían "Cómo funciona" en dos líneas en pantallas medianas */
+.nav-links-desktop { display: flex; align-items: center; gap: clamp(12px, 1.6vw, 22px); }
+@media (max-width: 1100px) {
+  .nav-links-desktop { font-size: 13.5px; }
+  .nav-links-desktop a, .nav-links-desktop button { font-size: 13.5px !important; }
+}
 .mobile-menu-btn { display: none; }
 @media (max-width: 767px) {
   .nav-links-desktop { display: none !important; }

@@ -18,8 +18,8 @@ const CAMINOS = [
     icon: Search,
     titulo: "Quiero comprar",
     texto: "Encontrá propiedades y analizá tus opciones con acompañamiento profesional.",
-    cta: "Ver propiedades",
-    href: "/propiedades",
+    cta: "Comprar con respaldo",
+    href: "/comprar",
   },
   {
     icon: Tag,
