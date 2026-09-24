@@ -74,7 +74,10 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
             fill
             className={enPlano ? "object-contain" : "object-cover"}
             sizes="(max-width: 1024px) 100vw, 66vw"
-            priority={current === 0}
+            // `priority` está deprecado en Next 16 y ya no hacía nada: la foto
+            // principal es lo primero que se ve de la ficha, va con prioridad
+            loading={current === 0 ? "eager" : undefined}
+            fetchPriority={current === 0 ? "high" : undefined}
             style={{ transition: "transform 0.35s ease" }}
           />
 
@@ -228,7 +231,7 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
               fill
               className="object-contain"
               sizes="92vw"
-              priority
+              loading="eager"
             />
           </div>
 
