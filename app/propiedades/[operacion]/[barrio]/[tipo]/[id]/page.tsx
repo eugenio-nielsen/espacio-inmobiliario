@@ -301,7 +301,10 @@ export default async function PropiedadPage({ params }: PageProps) {
               {/* Location */}
               <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 15, color: "var(--ink-600)", marginBottom: 10 }}>
                 <MapPin size={17} strokeWidth={1.75} color="var(--gold-600)" />
-                {[p.barrio, p.ciudad, p.provincia].filter(Boolean).join(", ")}
+                {/* `ciudad` guarda la provincia en la mayoría de las publicaciones:
+                    sin descartar repetidos quedaba "Provincia de Buenos Aires,
+                    Provincia de Buenos Aires" */}
+                {[...new Set([p.barrio, p.ciudad, p.provincia].filter(Boolean))].join(", ")}
                 {p.direccion && ` · ${p.direccion}`}
               </div>
 
