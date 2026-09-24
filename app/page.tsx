@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth/user";
 import type { Metadata } from "next";
 import { PROPERTY_CARD_COLS, TOPE_HOME, type PropertyCardData } from "@/lib/types";
 import PropiedadesHome from "@/components/home/PropiedadesHome";
+import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -50,6 +51,8 @@ export default async function HomePage() {
       .order("created_at", { ascending: false }).limit(TOPE_HOME),
     supabase.rpc("home_stats").maybeSingle<{ total_activas: number; total_views: number }>(),
   ]);
+
+  const destacadas = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
 
   const activeCount = statsRow?.total_activas ?? 0;
   const totalViews = statsRow?.total_views ?? 0;
@@ -181,7 +184,7 @@ export default async function HomePage() {
         ) : (
           <>
             <PropiedadesHome
-              iniciales={(properties ?? []) as PropertyCardData[]}
+              iniciales={destacadas}
               totalActivas={activeCount}
             />
           </>

@@ -4,7 +4,8 @@ import RecordarBusqueda from "@/components/properties/RecordarBusqueda";
 import { createClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
-import PropertyListCard from "@/components/properties/PropertyListCard";
+import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
+import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import ListadoFilters from "@/components/properties/ListadoFilters";
 import SortSelect from "@/components/properties/SortSelect";
 import Navbar from "@/components/Navbar";
@@ -74,6 +75,7 @@ export default async function PropiedadesPage({
   }
 
   const { data: properties, count } = await query;
+  const lista = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
   const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
 
   return (
@@ -138,9 +140,9 @@ export default async function PropiedadesPage({
           </div>
         ) : (
           <div className="grid-properties">
-            {(properties as PropertyCardData[]).map((p, i) => (
+            {lista.map((p, i) => (
               // Las 3 primeras entran arriba del pliegue: se cargan con prioridad
-              <PropertyListCard key={p.id} property={p} priority={i < 3} />
+              <TarjetaPropiedad key={p.id} property={p} priority={i < 3} />
             ))}
           </div>
         )}

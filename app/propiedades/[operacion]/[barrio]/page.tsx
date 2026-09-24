@@ -7,7 +7,8 @@ import type { Metadata } from "next";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import { getBarrioPage, BARRIO_PAGES } from "@/lib/barrios";
 import { getPreciosBarrios } from "@/lib/estimador/data";
-import PropertyListCard from "@/components/properties/PropertyListCard";
+import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
+import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MapPin, TrendingUp, Building2, Calculator, Plus } from "lucide-react";
@@ -51,6 +52,7 @@ export default async function BarrioPage({ params }: PageProps) {
     getPreciosBarrios(),
   ]);
 
+  const lista = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
   const precioM2 = precios[data.nombre];
   const count = properties?.length || 0;
   // El tasador solo cubre CABA: no lo ofrecemos en partidos de provincia
@@ -155,8 +157,8 @@ export default async function BarrioPage({ params }: PageProps) {
           </div>
         ) : (
           <div className="grid-properties" style={{ marginBottom: 36 }}>
-            {(properties as PropertyCardData[]).map((p, i) => (
-              <PropertyListCard key={p.id} property={p} priority={i < 3} />
+            {lista.map((p, i) => (
+              <TarjetaPropiedad key={p.id} property={p} priority={i < 3} />
             ))}
           </div>
         )}

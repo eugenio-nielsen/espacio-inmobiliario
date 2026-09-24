@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import PropertyListCard from "@/components/properties/PropertyListCard";
+import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
 import FadeIn from "@/components/ui/FadeIn";
 import type { PropertyCardData } from "@/lib/types";
 
 /**
- * Grilla de propiedades de la home: tres filas y un botón al listado.
+ * Grilla de propiedades de la home: seis y un botón al listado.
  *
- * Llegan hasta TOPE_HOME (3 filas de escritorio); en tablet y móvil el CSS
- * de .home-destacados oculta las que pasarían de la tercera fila, así la
- * sección ocupa lo mismo en cualquier pantalla y el resto queda en /propiedades.
+ * Llegan TOPE_HOME (6): dos filas en escritorio, tres en tablet. En móvil
+ * el CSS de .home-destacados deja tres, porque cada tarjeta ocupa casi una
+ * pantalla y seis alejarían todo lo que viene después. El resto queda en
+ * /propiedades.
  */
 export default function PropiedadesHome({
   iniciales,
@@ -23,9 +24,7 @@ export default function PropiedadesHome({
       <div className="grid-properties home-destacados">
         {iniciales.map((p, i) => (
           <FadeIn key={p.id} delay={(i % 3) * 110} direction="up">
-            {/* Sin card-lift acá: la tarjeta ya lo trae, y anidados los dos
-                el hover levantaba 6px en vez de 3 */}
-            <PropertyListCard property={p} priority={i < 3} />
+            <TarjetaPropiedad property={p} priority={i < 3} />
           </FadeIn>
         ))}
       </div>

@@ -127,10 +127,7 @@ select:focus, input:focus, textarea:focus {
 @media (max-width: 639px) {
   .grid-properties { grid-template-columns: 1fr; gap: 16px; }
 }
-/* Home: siempre tres filas, sea cual sea la cantidad de columnas */
-@media (max-width: 1023px) {
-  .home-destacados > :nth-child(n+7) { display: none; }
-}
+/* Home: seis en escritorio y tablet, tres en móvil (ver PropiedadesHome) */
 @media (max-width: 639px) {
   .home-destacados > :nth-child(n+4) { display: none; }
 }

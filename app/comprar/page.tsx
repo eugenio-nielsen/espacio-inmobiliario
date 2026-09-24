@@ -6,7 +6,8 @@ import FadeIn from "@/components/ui/FadeIn";
 import Indice, { type ItemIndice } from "@/components/ui/Indice";
 import Secuencia from "@/components/ui/Secuencia";
 import Motas from "@/components/como-funciona/Motas";
-import PropertyListCard from "@/components/properties/PropertyListCard";
+import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
+import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import AsesoriaContacto from "@/components/precios/AsesoriaContacto";
 import { createClient } from "@/lib/supabase/server";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
@@ -75,7 +76,7 @@ export default async function ComprarPage() {
     .order("created_at", { ascending: false })
     .limit(3);
 
-  const propiedades = (properties ?? []) as PropertyCardData[];
+  const propiedades = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
 
   return (
     <div className="cf-page">
@@ -199,7 +200,7 @@ export default async function ComprarPage() {
             <div className="grid-properties">
               {propiedades.map((p, i) => (
                 <FadeIn key={p.id} delay={i * 100} direction="up">
-                  <PropertyListCard property={p} />
+                  <TarjetaPropiedad property={p} />
                 </FadeIn>
               ))}
             </div>

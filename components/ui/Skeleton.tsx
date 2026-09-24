@@ -24,28 +24,32 @@ export function SkeletonBox({
   );
 }
 
-/** Tarjeta de propiedad en carga — imita a PropertyListCard. */
+/** Tarjeta de propiedad en carga — imita a TarjetaPropiedad (foto 3:2,
+ *  rótulo, título, precio, libro de datos y pie). */
 export function SkeletonPropertyCard() {
   return (
     <div
       style={{
         background: "#fff",
-        borderRadius: "var(--radius-lg)",
+        borderRadius: 6,
         border: "1px solid var(--line-200)",
         overflow: "hidden",
-        boxShadow: "var(--shadow-sm)",
       }}
     >
-      <SkeletonBox height={220} radius="0" />
-      <div style={{ padding: "14px 16px 16px" }}>
-        <SkeletonBox height={15} width="88%" style={{ marginBottom: 8 }} />
-        <SkeletonBox height={15} width="60%" style={{ marginBottom: 14 }} />
-        <SkeletonBox height={13} width="45%" style={{ marginBottom: 16 }} />
-        <div style={{ display: "flex", gap: 14, borderTop: "1px solid var(--line-100)", paddingTop: 12 }}>
-          <SkeletonBox height={13} width={58} />
-          <SkeletonBox height={13} width={58} />
-          <SkeletonBox height={13} width={58} />
-        </div>
+      <SkeletonBox height="auto" radius="0" style={{ aspectRatio: "3 / 2" }} />
+      <div style={{ padding: "16px 20px 0" }}>
+        <SkeletonBox height={10} width="42%" style={{ marginBottom: 12 }} />
+        <SkeletonBox height={17} width="92%" style={{ marginBottom: 7 }} />
+        <SkeletonBox height={17} width="64%" style={{ marginBottom: 16 }} />
+        <SkeletonBox height={24} width="46%" style={{ marginBottom: 16 }} />
+      </div>
+      <div style={{ display: "flex", gap: 18, padding: "12px 20px", borderTop: "1px solid var(--line-200)", borderBottom: "1px solid var(--line-200)" }}>
+        <SkeletonBox height={28} width={52} />
+        <SkeletonBox height={28} width={40} />
+        <SkeletonBox height={28} width={40} />
+      </div>
+      <div style={{ padding: "13px 20px" }}>
+        <SkeletonBox height={10} width="55%" />
       </div>
     </div>
   );

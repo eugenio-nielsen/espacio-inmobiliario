@@ -90,29 +90,36 @@ export interface Property {
 }
 
 /**
- * Campos que realmente usa PropertyListCard.
+ * Campos que realmente usa TarjetaPropiedad.
  * Evita traer columnas pesadas (descripcion, plano, geo…) en los listados.
  */
 export type PropertyCardData = Pick<
   Property,
-  | "id" | "titulo" | "precio" | "moneda" | "tipo" | "operacion"
+  | "id" | "owner_id" | "titulo" | "precio" | "moneda" | "tipo" | "operacion"
   | "barrio" | "ciudad" | "fotos" | "ambientes" | "dormitorios"
   | "superficie_total" | "cochera" | "apto_credito"
   // Baños y expensas son de los primeros datos que se miran al comparar
   // (las expensas cambian la cuota real de un departamento), asi que
   // viajan con la tarjeta y no solo en la ficha.
   | "banos" | "expensas"
->;
+  // Lo que suma la tarjeta editorial: cubiertos, estado, piso, agenda de
+  // visitas, la verificación de la escritura y la fecha (marca "Nueva").
+  | "superficie_cubierta" | "estado" | "piso" | "visitas_config"
+  | "dominio_estado" | "created_at"
+> & {
+  /** Identidad del dueño aprobada. La completa conPropietarioVerificado(). */
+  propietario_verificado?: boolean;
+};
 
 /**
- * Propiedades que trae la home: tres filas de la grilla de escritorio
- * (3 columnas). En tablet y móvil el CSS recorta a tres filas también.
+ * Propiedades que trae la home: dos filas de la grilla de escritorio
+ * (3 columnas). En móvil el CSS de .home-destacados muestra tres.
  */
-export const TOPE_HOME = 9;
+export const TOPE_HOME = 6;
 
 /** Lista de columnas para los SELECT de listados (coincide con PropertyCardData). */
 export const PROPERTY_CARD_COLS =
-  "id, titulo, precio, moneda, tipo, operacion, barrio, ciudad, fotos, ambientes, dormitorios, superficie_total, banos, expensas, cochera, apto_credito";
+  "id, owner_id, titulo, precio, moneda, tipo, operacion, barrio, ciudad, fotos, ambientes, dormitorios, superficie_total, superficie_cubierta, banos, expensas, cochera, apto_credito, estado, piso, visitas_config, dominio_estado, created_at";
 
 export interface Inquiry {
   id: string;

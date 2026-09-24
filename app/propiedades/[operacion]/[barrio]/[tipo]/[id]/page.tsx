@@ -19,7 +19,8 @@ import { SelloPropietario, SelloDominio } from "@/components/properties/SellosVe
 import CostosCompra from "@/components/properties/CostosCompra";
 import DescripcionExpandible from "@/components/properties/DescripcionExpandible";
 import ShareButtons from "@/components/blog/ShareButtons";
-import PropertyListCard from "@/components/properties/PropertyListCard";
+import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
+import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import VolverAResultados from "@/components/properties/VolverAResultados";
 import Navbar from "@/components/Navbar";
 import { getPreciosBarrios } from "@/lib/estimador/data";
@@ -164,6 +165,7 @@ export default async function PropiedadPage({ params }: PageProps) {
     if (similares.length >= 3) break;
     if (!similares.some(x => x.id === s.id)) similares.push(s);
   }
+  const similaresConSello = await conPropietarioVerificado(supabase, similares);
 
   // Comparación contra la referencia del barrio (estimador)
   let comparacionBarrio: { pct: number; ref: number } | null = null;
@@ -489,8 +491,8 @@ export default async function PropiedadPage({ params }: PageProps) {
                 Otras propiedades que te pueden interesar
               </h2>
               <div className="grid-properties">
-                {similares.map((s) => (
-                  <PropertyListCard key={s.id} property={s} />
+                {similaresConSello.map((s) => (
+                  <TarjetaPropiedad key={s.id} property={s} />
                 ))}
               </div>
             </section>

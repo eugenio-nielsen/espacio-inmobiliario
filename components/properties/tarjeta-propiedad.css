@@ -1,0 +1,363 @@
+/* Estilos de TarjetaPropiedad y GaleriaTarjeta (prefijo .tp-).
+   Fuera de globals.css porque el cache de Tailwind no ve sus cambios
+   en Windows; un CSS plano sí recarga. */
+
+.tp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-radius: 6px;
+  overflow: hidden;
+  transition:
+    border-color .5s var(--ease-out),
+    box-shadow .5s var(--ease-out),
+    transform .5s var(--ease-out);
+}
+.tp:hover {
+  border-color: var(--gold-300);
+  box-shadow: 0 26px 50px -26px rgba(14,44,80,.32), 0 2px 6px rgba(20,17,11,.04);
+  transform: translateY(-3px);
+}
+
+/* ── Fotos ─────────────────────────────────────────────────── */
+.tp-media { position: relative; }
+.tp-galeria {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--fill-100);
+}
+/* Velo inferior: le da lectura a las marcas sobre cualquier foto */
+.tp-galeria::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 34%;
+  background: linear-gradient(to top, rgba(7,24,44,.42), transparent);
+  pointer-events: none;
+}
+.tp-pista {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.tp-pista::-webkit-scrollbar { display: none; }
+.tp-lamina {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  display: block;
+}
+.tp-foto { object-fit: cover; transition: transform 1.8s var(--ease-out); }
+.tp:hover .tp-foto { transform: scale(1.045); }
+
+.tp-lamina-mas { background: var(--navy-900); }
+.tp-foto-velada { filter: brightness(.4) blur(2px); }
+.tp-mas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 19px;
+  color: #fff;
+}
+.tp-mas svg { color: var(--gold-300); }
+
+.tp-sin-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--ink-400);
+  background: repeating-linear-gradient(45deg, #efe9dd 0 11px, #f4f0e7 11px 22px);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+.tp-sin-foto::after { display: none; }
+
+/* Marcas: una por lámina, la actual en blanco */
+.tp-marcas {
+  position: absolute;
+  left: 14px; right: 14px; bottom: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 4px;
+  pointer-events: none;
+}
+.tp-marcas span {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.35);
+  transition: background .45s var(--ease-out);
+}
+.tp-marcas span[data-on="true"] { background: #fff; }
+
+.tp-contador {
+  position: absolute;
+  top: 12px; right: 12px;
+  z-index: 2;
+  padding: 5px 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(7,24,44,.55);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.tp-flecha {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.94);
+  color: var(--navy-800);
+  box-shadow: 0 6px 16px rgba(7,24,44,.22);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .35s var(--ease-out), transform .35s var(--ease-out), background .3s;
+}
+.tp-flecha:hover { background: #fff; }
+.tp-flecha-izq { left: 10px; transform: translateX(-6px); }
+.tp-flecha-der { right: 10px; transform: translateX(6px); }
+.tp:hover .tp-flecha,
+.tp-flecha:focus-visible { opacity: 1; transform: none; }
+.tp-flecha:disabled { opacity: 0 !important; pointer-events: none; }
+/* En touch se desliza con el dedo: las flechas sobran */
+@media (hover: none) { .tp-flecha { display: none; } }
+
+.tp-insignias {
+  position: absolute;
+  top: 12px; left: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+}
+.tp-insignia {
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,.94);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--navy-800);
+}
+.tp-insignia-oro { background: var(--gold-500); color: var(--navy-950); }
+
+/* ── Cuerpo ────────────────────────────────────────────────── */
+.tp-cuerpo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px 20px 0;
+}
+.tp-lugar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.tp-lugar i { font-style: normal; color: var(--gold-400); }
+
+.tp-titulo {
+  margin: 0 0 12px;
+  min-height: calc(2em * 1.28);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.28;
+  letter-spacing: -.015em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tp-enlace { color: var(--navy-800); text-decoration: none; transition: color .4s var(--ease-out); }
+/* El título se estira sobre todo el cuerpo: la tarjeta entera es la ficha */
+.tp-enlace::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.tp:hover .tp-enlace { color: var(--navy-700); }
+.tp-enlace:focus-visible { outline: none; }
+.tp:has(.tp-enlace:focus-visible) { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+.tp-precio-fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tp-precio {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+  white-space: nowrap;
+  font-variant-numeric: lining-nums;
+}
+.tp-m2 {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--ink-500);
+  white-space: nowrap;
+}
+.tp-expensas {
+  margin: 4px 0 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--ink-500);
+}
+
+/* Libro de datos: valor arriba, rótulo abajo, filetes entre celdas */
+.tp-datos {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 14px -20px 0;
+  border-top: 1px solid var(--line-200);
+  border-bottom: 1px solid var(--line-200);
+}
+.tp-datos > div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  padding: 10px 10px 10px 14px;
+  border-left: 1px solid var(--line-100);
+  min-width: 0;
+}
+.tp-datos > div:first-child { border-left: 0; padding-left: 20px; }
+.tp-datos dd {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy-800);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.tp-datos dt {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Rasgos con rombo dorado */
+.tp-rasgos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+  margin: 0;
+  padding: 12px 0 13px;
+  list-style: none;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--ink-600);
+}
+.tp-rasgos li { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.tp-rasgos li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: var(--gold-500);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+/* Pie: respaldo a la izquierda, "Ver ficha" a la derecha */
+.tp-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: auto -20px 0;
+  padding: 11px 20px;
+  border-top: 1px solid var(--line-100);
+  background: linear-gradient(180deg, #FDFCF9, #F9F6F0);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+/* Sin rasgos, el filete inferior del libro de datos ya separa: el pie
+   no suma otro encima */
+.tp-datos + .tp-pie { border-top: 0; }
+.tp-origen { color: var(--ink-500); }
+/* El sello va en caja normal: se lee distinto del texto de siempre y
+   "Dueño y escritura verificados" entra en una línea */
+.tp-sello {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--success);
+  white-space: nowrap;
+}
+.tp-ver { display: inline-flex; align-items: center; gap: 6px; color: var(--gold-700); white-space: nowrap; }
+.tp-ver svg { transition: transform .45s var(--ease-out); }
+.tp:hover .tp-ver svg { transform: translateX(4px); }
+
+/* ── Móvil ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .tp-cuerpo { padding: 16px 16px 0; }
+  .tp-datos { margin-left: -16px; margin-right: -16px; }
+  .tp-datos > div:first-child { padding-left: 16px; }
+  .tp-pie { margin-left: -16px; margin-right: -16px; padding: 12px 16px; }
+  .tp-titulo { font-size: 17px; }
+  .tp-precio { font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp, .tp-foto, .tp-flecha, .tp-ver svg { transition: none; }
+  .tp:hover { transform: none; }
+  .tp:hover .tp-foto { transform: none; }
+}
