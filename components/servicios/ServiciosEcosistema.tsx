@@ -110,82 +110,29 @@ export default function ServiciosEcosistema({ isLoggedIn }: Props) {
             </p>
           </div>
 
-          {/* grid de cards (carrusel horizontal en mobile) */}
-          <div className="hscroll-cards">
+          {/* grid de cards: cuatro en escritorio, dos columnas en tablet y móvil */}
+          <div className="srv-grid">
             {SERVICIOS.map(s => {
               const Icon = s.icon;
               const done = success === s.id;
               return (
-                <div
-                  key={s.id}
-                  style={{
-                    background: "rgba(255,255,255,.05)",
-                    border: done ? "1px solid rgba(185,159,102,.5)" : "1px solid rgba(255,255,255,.10)",
-                    borderRadius: "var(--radius-lg)",
-                    padding: "24px 22px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 12,
-                    transition: "border-color .2s, background .2s",
-                  }}
-                >
-                  <div style={{
-                    width: 44, height: 44,
-                    background: "rgba(185,159,102,.15)",
-                    borderRadius: "var(--radius-md)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0,
-                  }}>
-                    <Icon size={22} strokeWidth={1.75} color="var(--gold-400)" />
+                <div key={s.id} className={done ? "srv-card is-done" : "srv-card"}>
+                  <div className="srv-icon">
+                    <Icon size={22} strokeWidth={1.75} />
                   </div>
 
                   <div style={{ flex: 1 }}>
-                    <h3 style={{
-                      fontFamily: "var(--font-sans)", fontWeight: 700,
-                      fontSize: 15.5, color: "#fff", margin: "0 0 6px",
-                    }}>
-                      {s.titulo}
-                    </h3>
-                    <p style={{
-                      fontFamily: "var(--font-sans)", fontSize: 13.5,
-                      color: "rgba(255,255,255,.62)", margin: 0, lineHeight: 1.55,
-                    }}>
-                      {s.descripcion}
-                    </p>
+                    <h3 className="srv-t">{s.titulo}</h3>
+                    <p className="srv-d">{s.descripcion}</p>
                   </div>
 
                   {done ? (
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                      fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600,
-                      color: "var(--gold-400)",
-                    }}>
+                    <div className="srv-done">
                       <CheckCircle size={15} strokeWidth={2} />
                       Solicitud enviada
                     </div>
                   ) : (
-                    <button
-                      onClick={() => openModal(s.id)}
-                      style={{
-                        alignSelf: "flex-start",
-                        fontFamily: "var(--font-sans)", fontWeight: 600,
-                        fontSize: 13, padding: "9px 18px",
-                        background: "transparent",
-                        border: "1px solid rgba(185,159,102,.6)",
-                        color: "var(--gold-300)",
-                        borderRadius: "var(--radius-sm)",
-                        cursor: "pointer",
-                        transition: "background .15s, border-color .15s",
-                      }}
-                      onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = "rgba(185,159,102,.12)";
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--gold-400)";
-                      }}
-                      onMouseLeave={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(185,159,102,.6)";
-                      }}
-                    >
+                    <button type="button" className="srv-btn" onClick={() => openModal(s.id)}>
                       Quiero conectar →
                     </button>
                   )}

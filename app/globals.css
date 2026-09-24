@@ -135,21 +135,81 @@ select:focus, input:focus, textarea:focus {
   .home-destacados > :nth-child(n+4) { display: none; }
 }
 
-/* ── Carrusel horizontal en mobile (regla general: 3+ bloques → scroll-x) ── */
-.hscroll-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-@media (max-width: 767px) {
-  .hscroll-cards {
-    display: flex;
-    grid-template-columns: none;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 12px;
-    padding-bottom: 6px;
-  }
-  .hscroll-cards::-webkit-scrollbar { display: none; }
-  .hscroll-cards > * { flex: 0 0 80%; scroll-snap-align: start; }
+/* ── Ecosistema de servicios ───────────────────────────────────
+   Igual que "Cómo trabajamos": en móvil van en dos columnas y a la
+   vista, en vez de un carrusel que esconde la mitad de las opciones. */
+.srv-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1023px) { .srv-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .srv-grid { gap: 8px; } }
+
+.srv-card {
+  height: 100%;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: var(--radius-lg);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color .2s, background .2s;
+}
+.srv-card.is-done { border-color: rgba(185,159,102,.5); }
+.srv-icon {
+  width: 44px; height: 44px;
+  background: rgba(185,159,102,.15);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--gold-400);
+}
+.srv-t {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 15.5px;
+  color: #fff;
+  margin: 0 0 6px;
+}
+.srv-d {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,.62);
+  margin: 0;
+}
+.srv-btn {
+  align-self: flex-start;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid rgba(185,159,102,.6);
+  color: var(--gold-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.srv-btn:hover { background: rgba(185,159,102,.12); border-color: var(--gold-400); }
+.srv-done {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold-400);
+}
+@media (max-width: 640px) {
+  .srv-card { padding: 14px; gap: 10px; border-radius: var(--radius-md); }
+  .srv-icon { width: 34px; height: 34px; }
+  .srv-icon svg { width: 18px; height: 18px; }
+  .srv-t { font-size: 13.5px; margin-bottom: 4px; }
+  .srv-d { font-size: 12.5px; }
+  /* A media pantalla el botón no entra al costado: ocupa el ancho */
+  .srv-btn { align-self: stretch; font-size: 12.5px; padding: 8px 6px; }
+  .srv-done { font-size: 12px; }
 }
 
 /* Home: 'Últimas propiedades' en mobile = lista vertical (máx 5) + botón Ver todas.
