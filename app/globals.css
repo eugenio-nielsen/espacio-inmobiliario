@@ -127,6 +127,13 @@ select:focus, input:focus, textarea:focus {
 @media (max-width: 639px) {
   .grid-properties { grid-template-columns: 1fr; gap: 16px; }
 }
+/* Home: siempre tres filas, sea cual sea la cantidad de columnas */
+@media (max-width: 1023px) {
+  .home-destacados > :nth-child(n+7) { display: none; }
+}
+@media (max-width: 639px) {
+  .home-destacados > :nth-child(n+4) { display: none; }
+}
 
 /* ── Carrusel horizontal en mobile (regla general: 3+ bloques → scroll-x) ── */
 .hscroll-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }

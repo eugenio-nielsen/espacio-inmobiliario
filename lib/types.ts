@@ -104,8 +104,11 @@ export type PropertyCardData = Pick<
   | "banos" | "expensas"
 >;
 
-/** Tope de propiedades que la home llega a mostrar antes de derivar al listado. */
-export const TOPE_HOME = 24;
+/**
+ * Propiedades que trae la home: tres filas de la grilla de escritorio
+ * (3 columnas). En tablet y móvil el CSS recorta a tres filas también.
+ */
+export const TOPE_HOME = 9;
 
 /** Lista de columnas para los SELECT de listados (coincide con PropertyCardData). */
 export const PROPERTY_CARD_COLS =

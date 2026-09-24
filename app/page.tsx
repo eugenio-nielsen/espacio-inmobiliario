@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/user";
 import type { Metadata } from "next";
-import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
+import { PROPERTY_CARD_COLS, TOPE_HOME, type PropertyCardData } from "@/lib/types";
 import PropiedadesHome from "@/components/home/PropiedadesHome";
 import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
@@ -47,7 +47,7 @@ export default async function HomePage() {
   const [{ data: properties }, { data: statsRow }] = await Promise.all([
     supabase
       .from("properties").select(PROPERTY_CARD_COLS).eq("status", "activa")
-      .order("created_at", { ascending: false }).limit(6),
+      .order("created_at", { ascending: false }).limit(TOPE_HOME),
     supabase.rpc("home_stats").maybeSingle<{ total_activas: number; total_views: number }>(),
   ]);
 
