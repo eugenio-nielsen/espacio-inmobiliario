@@ -1,15 +1,19 @@
 import Link from "next/link";
-import Logo from "@/components/Logo";
+import { ArrowRight } from "lucide-react";
 import SelloEN from "@/components/SelloEN";
+import FirmaTrazo from "@/components/FirmaTrazo";
+import Guilloche from "@/components/ui/Guilloche";
+import Reveal from "@/components/como-funciona/Reveal";
 import { BARRIO_PAGES } from "@/lib/barrios";
 import { HERRAMIENTAS } from "@/lib/herramientas";
-import { Plus, Mail } from "lucide-react";
+import { PROTOCOLO } from "@/lib/protocolo";
+import "./footer.css";
 
 const WHATSAPP = "5491164519421";
 const EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 /* Los tipos coinciden con la columna `tipo` de properties (minúscula).
-   Antes estos cuatro links apuntaban todos a /propiedades sin filtro:
+   Antes estos links apuntaban todos a /propiedades sin filtro:
    prometían un listado filtrado y entregaban el listado completo. */
 const TIPOS: [string, string][] = [
   ["Departamentos en venta", "departamento"],
@@ -22,6 +26,7 @@ const TIPOS: [string, string][] = [
 const ESPACIO: [string, string][] = [
   ["Cómo funciona", "/como-funciona"],
   ["Vender mi propiedad", "/vender"],
+  ["Comprar con respaldo", "/comprar"],
   ["Blog", "/blog"],
   ["Publicar gratis", "/auth/registro"],
   ["Ingresar", "/auth/login"],
@@ -35,126 +40,187 @@ function IconoWhatsapp({ size = 15 }: { size?: number }) {
   );
 }
 
+/**
+ * Footer: el cierre de cada página, firmado.
+ *
+ * Es la versión nocturna del documento de Respaldo de la home: el mismo
+ * idioma notarial (sello EN sobre guilloché, firma que se dibuja,
+ * cláusulas en números romanos) grabado en oro sobre navy, como la tapa
+ * de una escritura. Es lo único que se ve en TODAS las páginas, así que
+ * es donde la identidad y la promesa trabajan la recordación.
+ *
+ * Cuatro bandas:
+ *   1. Cierre      · invitación a hablar, con sello, firma y contacto.
+ *   2. Protocolo   · los cuatro controles (lib/protocolo.ts), en corto.
+ *   3. Directorio  · contacto directo + navegación del sitio.
+ *   4. Legales     · y la marca grabada a todo el ancho, cortada al pie.
+ *
+ * Estilos en footer.css (prefijo .pie-), fuera de globals.css por el
+ * cache de Tailwind que no ve los cambios en Windows.
+ */
 export default function Footer() {
   const anio = new Date().getFullYear();
 
   return (
-    <footer className="ft">
-      {/* ══ Banda 1 · Marca ═══════════════════════════════════
-          El footer es lo único que se ve en todas las páginas del
-          sitio, así que es el mejor lugar para que el sello y el
-          nombre trabajen la recordación. */}
-      <div className="ft-marca">
-        <div className="ft-marca-luz" aria-hidden="true" />
-        <div className="ft-marca-in">
-          <SelloEN size={104} tono="oscuro" etiqueta="" className="ft-sello" />
+    <footer className="pie">
+      {/* ══ 1 · Cierre ════════════════════════════════════════ */}
+      <section className="pie-cierre" aria-labelledby="pie-titulo">
+        <div className="pie-luz" aria-hidden="true" />
+        <div className="pie-cierre-in">
+          <div className="pie-medalla">
+            <Guilloche id="pie-gq" className="pie-gq" />
+            <SelloEN size={176} tono="oscuro" etiqueta="Fundador" className="pie-sello" />
+          </div>
 
-          <div className="ft-marca-texto">
-            <p className="ft-nombre">Eugenio Nielsen</p>
-            <p className="ft-rol">Fundador · Espacio Inmobiliario</p>
-            <p className="ft-lema">
-              &ldquo;Detrás de cada publicación hay una persona con nombre y apellido.&rdquo;
+          <div className="pie-carta">
+            <span className="pie-eyebrow">Atención personal</span>
+            <h2 id="pie-titulo" className="pie-t">
+              Hablemos de tu <em>próxima operación.</em>
+            </h2>
+            <p className="pie-lead">
+              Vender, comprar, invertir o entender una operación antes de
+              decidir: te responde Eugenio Nielsen en persona, sin
+              intermediarios y sin compromiso.
             </p>
-          </div>
 
-          <div className="ft-acciones">
-            <a
-              className="ft-btn ft-btn-oro"
-              href={`https://wa.me/${WHATSAPP}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <IconoWhatsapp size={14} />
-              Hablar con Eugenio
-            </a>
-            <Link className="ft-btn ft-btn-linea" href="/auth/registro">
-              <Plus size={14} strokeWidth={2.2} />
-              Publicar gratis
-            </Link>
+            <div className="pie-firma-fila">
+              <Reveal className="cf-firma pie-firma">
+                <FirmaTrazo height={48} grosor={3.6} color="var(--gold-400)" />
+              </Reveal>
+              <div>
+                <p className="pie-nombre">Eugenio Nielsen</p>
+                <p className="pie-rol">Fundador · Espacio Inmobiliario</p>
+              </div>
+            </div>
+
+            <div className="pie-ctas">
+              <a
+                className="pie-cta pie-cta-oro"
+                href={`https://wa.me/${WHATSAPP}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <IconoWhatsapp size={15} />
+                Hablar con Eugenio
+              </a>
+              <Link className="pie-cta pie-cta-texto" href="/contacto">
+                Escribir una consulta
+                <ArrowRight size={15} strokeWidth={1.8} />
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ══ Banda 2 · Navegación ══════════════════════════════ */}
-      <nav className="ft-nav" aria-label="Pie de página">
-        <div>
-          <Logo className="ft-logo h-14 w-auto mb-4" />
-          <p className="ft-desc" style={{
-            fontFamily: "var(--font-sans)", fontSize: 13.5, lineHeight: 1.7,
-            color: "var(--navy-300)", maxWidth: 300, margin: "0 0 16px",
-          }}>
-            Propiedades directas de dueños en Argentina, con acompañamiento
-            profesional en cada operación.
+      {/* ══ 2 · Protocolo ═════════════════════════════════════
+          La promesa de la home, en todas las páginas y en una línea
+          por punto. Misma fuente que el documento de Respaldo. */}
+      <section className="pie-protocolo" aria-label="Protocolo de respaldo">
+        <div className="pie-protocolo-in">
+          <p className="pie-protocolo-t">
+            Protocolo <em>de respaldo</em>
           </p>
-          <a
-            className="ft-contacto"
-            href={`https://wa.me/${WHATSAPP}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span style={{ color: "#4ade80", display: "inline-flex" }}>
-              <IconoWhatsapp />
-            </span>
-            +54 9 11 6451-9421
-          </a>
-          <br />
-          <a className="ft-contacto" href={`mailto:${EMAIL}`} style={{ overflowWrap: "anywhere" }}>
-            <Mail size={15} strokeWidth={1.75} color="var(--gold-400)" />
-            {EMAIL}
-          </a>
+          <ol className="pie-clausulas">
+            {PROTOCOLO.map(c => (
+              <li key={c.n} className="pie-clausula">
+                <span className="pie-num" aria-hidden="true">{c.n}</span>
+                <span>
+                  <strong>{c.clave}</strong>
+                  {c.corto}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ══ 3 · Directorio ════════════════════════════════════ */}
+      <nav className="pie-nav" aria-label="Pie de página">
+        {/* Contacto con formato de membrete: rótulo y dato */}
+        <div className="pie-col pie-membrete">
+          <h3 className="pie-h">Contacto directo</h3>
+          <dl>
+            <div>
+              <dt>WhatsApp</dt>
+              <dd>
+                <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener noreferrer">
+                  +54 9 11 6451-9421
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt>Correo</dt>
+              <dd>
+                {/* Si no entra, que corte después de la arroba y no en ".com.ar" */}
+                <a href={`mailto:${EMAIL}`}>
+                  {EMAIL.split("@")[0]}@<wbr />{EMAIL.split("@")[1]}
+                </a>
+              </dd>
+            </div>
+            <div>
+              <dt>Base</dt>
+              <dd>Buenos Aires, Argentina</dd>
+            </div>
+          </dl>
         </div>
 
-        <div>
-          <h5 className="ft-h">Propiedades</h5>
+        <div className="pie-col">
+          <h3 className="pie-h">Propiedades</h3>
           {TIPOS.map(([texto, tipo]) => (
-            <Link key={tipo} className="ft-link" href={`/propiedades?tipo=${tipo}`}>
+            <Link key={tipo} className="pie-link" href={`/propiedades?tipo=${tipo}`}>
               {texto}
             </Link>
           ))}
-          <Link className="ft-link" href="/propiedades">Ver todas</Link>
+          <Link className="pie-link" href="/propiedades">Ver todas</Link>
         </div>
 
-        <div>
-          <h5 className="ft-h">Barrios</h5>
+        <div className="pie-col">
+          <h3 className="pie-h">Barrios</h3>
           {BARRIO_PAGES.map(b => (
-            <Link key={b.slug} className="ft-link" href={`/propiedades/venta/${b.slug}`}>
+            <Link key={b.slug} className="pie-link" href={`/propiedades/venta/${b.slug}`}>
               {b.nombre}
             </Link>
           ))}
         </div>
 
-        <div>
-          <h5 className="ft-h">Herramientas</h5>
+        <div className="pie-col">
+          <h3 className="pie-h">Herramientas</h3>
           {HERRAMIENTAS.map(h => (
-            <Link key={h.href} className="ft-link" href={h.href}>
+            <Link key={h.href} className="pie-link" href={h.href}>
               {h.label}
             </Link>
           ))}
         </div>
 
-        <div>
-          <h5 className="ft-h">Espacio</h5>
+        <div className="pie-col">
+          <h3 className="pie-h">Espacio</h3>
           {ESPACIO.map(([texto, href]) => (
-            <Link key={href} className="ft-link" href={href}>{texto}</Link>
+            <Link key={href} className="pie-link" href={href}>{texto}</Link>
           ))}
         </div>
       </nav>
 
-      {/* ══ Banda 3 · Legales ═════════════════════════════════ */}
-      <div className="ft-legal">
-        <div className="ft-legal-in">
+      {/* ══ 4 · Legales + marca grabada ═══════════════════════ */}
+      <div className="pie-legal">
+        <div className="pie-legal-in">
           <span>
             © {anio} Espacio Inmobiliario
-            <span className="ft-sep">·</span>
+            <span className="pie-sep" aria-hidden="true">◆</span>
             Buenos Aires, Argentina
           </span>
           <span>
             <Link href="/terminos">Términos y condiciones</Link>
-            <span className="ft-sep">·</span>
+            <span className="pie-sep" aria-hidden="true">◆</span>
             <Link href="/privacidad">Privacidad</Link>
           </span>
         </div>
       </div>
+
+      {/* El nombre, grabado a todo el ancho y cortado por el borde:
+          la última imagen de cada página es la marca. */}
+      <p className="pie-marca" aria-hidden="true">
+        <span>Espacio</span> <em>Inmobiliario</em>
+      </p>
     </footer>
   );
 }

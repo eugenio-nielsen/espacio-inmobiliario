@@ -1,0 +1,407 @@
+/* Estilos de components/Footer.tsx (prefijo .pie-).
+   Fuera de globals.css a propósito: el plugin de PostCSS de Tailwind
+   cachea globals.css y en Windows no ve los cambios. Un CSS plano no
+   pasa por ese cache y el HMR funciona.
+
+   El footer es la versión nocturna del documento de Respaldo: el mismo
+   idioma notarial grabado en oro sobre navy, como la tapa de una
+   escritura. */
+
+.pie {
+  position: relative;
+  overflow: clip;
+  background: var(--navy-950);
+  color: #fff;
+}
+
+/* ── 1 · Cierre ────────────────────────────────────────────── */
+.pie-cierre {
+  position: relative;
+  border-top: 1px solid rgba(185,159,102,.35);
+  padding: clamp(72px, 9vw, 124px) 24px clamp(64px, 8vw, 104px);
+  overflow: clip;
+}
+.pie-luz {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  background:
+    radial-gradient(45% 55% at 24% 34%, rgba(185,159,102,.15), transparent 66%),
+    radial-gradient(40% 50% at 88% 100%, rgba(35,76,122,.42), transparent 70%);
+  animation: cf-drift 30s ease-in-out infinite alternate;
+}
+.pie-cierre-in {
+  position: relative;
+  max-width: var(--container);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+}
+
+/* Sello sobre guilloché: el medallón de la casa */
+.pie-medalla {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  width: 100%;
+}
+.pie-gq {
+  width: 580px;
+  height: 580px;
+  left: 50%;
+  top: 50%;
+  margin: -290px 0 0 -290px;
+  color: var(--gold-400);
+  opacity: .3;
+  -webkit-mask-image: radial-gradient(circle, #000 50%, transparent 71%);
+  mask-image: radial-gradient(circle, #000 50%, transparent 71%);
+}
+.pie-sello {
+  position: relative;
+  z-index: 1;
+  --sello-size: 176px;
+  padding: 9px;
+  border-radius: 50%;
+  background: var(--navy-950);
+  box-shadow:
+    0 0 0 1px rgba(185,159,102,.38),
+    0 0 0 7px var(--navy-950),
+    0 0 0 8px rgba(185,159,102,.16),
+    0 30px 60px -18px rgba(0,0,0,.7);
+}
+
+.pie-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+}
+.pie-eyebrow::before { content: ""; width: 40px; height: 1px; background: var(--gold-500); }
+.pie-t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(32px, 4.4vw, 54px);
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  color: #fff;
+  margin: 18px 0 20px;
+  text-wrap: balance;
+}
+.pie-t em { font-style: italic; font-weight: 500; color: var(--gold-300); }
+.pie-lead {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.75;
+  color: rgba(255,255,255,.66);
+  margin: 0 0 30px;
+  max-width: 52ch;
+}
+
+.pie-firma-fila {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  max-width: 480px;
+  padding-top: 22px;
+  margin-bottom: 32px;
+  border-top: 1px solid rgba(185,159,102,.22);
+}
+.pie-firma { width: 168px; flex-shrink: 0; margin-bottom: -2px; }
+.pie-nombre {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: #fff;
+  margin: 0;
+}
+.pie-rol {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+  margin: 5px 0 0;
+}
+
+.pie-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; }
+.pie-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 17px 26px;
+  border-radius: 2px;
+  transition: background .4s var(--ease-out), color .4s var(--ease-out);
+}
+.pie-cta svg { flex-shrink: 0; transition: transform .4s var(--ease-out); }
+.pie-cta-oro {
+  background: var(--gold-500);
+  color: var(--navy-950);
+  box-shadow: 0 16px 34px -16px rgba(185,159,102,.6);
+}
+.pie-cta-oro:hover { background: var(--gold-400); }
+/* El segundo llamado es un enlace: un solo botón manda */
+.pie-cta-texto { position: relative; padding: 17px 0; color: rgba(255,255,255,.86); }
+.pie-cta-texto::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 11px;
+  height: 1px;
+  background: var(--gold-500);
+  transform-origin: left;
+  transition: transform .5s var(--ease-out);
+}
+.pie-cta-texto:hover { color: var(--gold-300); }
+.pie-cta-texto:hover::after { transform: scaleX(.35); }
+.pie-cta-texto:hover svg { transform: translateX(4px); }
+
+/* ── 2 · Protocolo ─────────────────────────────────────────── */
+.pie-protocolo {
+  border-top: 1px solid rgba(185,159,102,.2);
+  border-bottom: 1px solid rgba(185,159,102,.2);
+  background: rgba(255,255,255,.018);
+}
+.pie-protocolo-in {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 28px 24px;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+.pie-protocolo-t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0;
+}
+.pie-protocolo-t em { display: block; font-style: italic; font-weight: 500; color: var(--gold-300); }
+.pie-clausulas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.pie-clausula {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 4px 20px;
+  border-left: 1px solid rgba(185,159,102,.2);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255,255,255,.56);
+}
+.pie-clausula strong {
+  display: block;
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 5px;
+}
+.pie-num {
+  flex-shrink: 0;
+  min-width: 24px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--gold-400);
+}
+
+/* ── 3 · Directorio ────────────────────────────────────────── */
+.pie-nav {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: clamp(44px, 5.5vw, 64px) 24px clamp(36px, 4.5vw, 52px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) repeat(4, minmax(0, 1fr));
+  gap: 36px 28px;
+}
+.pie-col { display: flex; flex-direction: column; align-items: flex-start; }
+.pie-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--gold-300);
+  margin: 0 0 14px;
+}
+.pie-h::after { content: ""; flex: 1; height: 1px; background: rgba(185,159,102,.22); }
+
+/* Al pasar, una línea dorada entra por la izquierda y empuja el texto */
+.pie-link {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: rgba(255,255,255,.7);
+  text-decoration: none;
+  padding: 5px 0;
+  transition: color .35s var(--ease-out), padding-left .45s var(--ease-out);
+}
+.pie-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 1px;
+  background: var(--gold-400);
+  transition: width .45s var(--ease-out);
+}
+.pie-link:hover { color: #fff; padding-left: 16px; }
+.pie-link:hover::before { width: 10px; }
+
+/* Membrete: rótulo en versalitas, dato en serif */
+.pie-membrete dl { margin: 0; display: grid; gap: 16px; }
+.pie-membrete dt {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold-500);
+  margin-bottom: 4px;
+}
+.pie-membrete dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.35;
+  color: #fff;
+}
+.pie-membrete a { color: inherit; text-decoration: none; transition: color .3s var(--ease-out); }
+.pie-membrete a:hover { color: var(--gold-300); }
+
+/* ── 4 · Legales + marca ───────────────────────────────────── */
+.pie-legal { border-top: 1px solid rgba(255,255,255,.07); }
+.pie-legal-in {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: .02em;
+  color: var(--navy-300);
+}
+.pie-legal-in a { color: var(--navy-300); text-decoration: none; transition: color .3s var(--ease-out); }
+.pie-legal-in a:hover { color: var(--gold-300); }
+.pie-sep { color: var(--gold-600); font-size: 6px; margin: 0 10px; vertical-align: middle; }
+
+/* Grabado: solo el contorno y un velo dorado que se apaga hacia abajo.
+   El margen negativo lo corta contra el borde de la página. */
+.pie-marca {
+  margin: 6px 0 -.2em;
+  padding: 0 12px;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(44px, 10.4vw, 152px);
+  line-height: 1;
+  letter-spacing: -.035em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(185,159,102,.34);
+  background: linear-gradient(180deg, rgba(185,159,102,.18), rgba(185,159,102,0) 72%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  user-select: none;
+  pointer-events: none;
+}
+.pie-marca em { font-style: italic; font-weight: 500; }
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  /* Contacto a lo ancho arriba; debajo, las cuatro columnas en una fila */
+  .pie-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pie-membrete { grid-column: 1 / -1; }
+  .pie-membrete dl { grid-template-columns: repeat(3, auto); justify-content: start; gap: 16px 48px; }
+  .pie-clausula { padding: 4px 14px; }
+}
+@media (max-width: 900px) {
+  .pie-cierre-in { grid-template-columns: minmax(0, 1fr); gap: 8px; text-align: center; }
+  .pie-medalla { width: 280px; justify-self: center; }
+  .pie-gq { width: 440px; height: 440px; margin: -220px 0 0 -220px; }
+  .pie-sello { --sello-size: 140px; }
+  .pie-lead { margin-left: auto; margin-right: auto; }
+  .pie-firma-fila { justify-content: center; margin-left: auto; margin-right: auto; text-align: left; }
+  .pie-ctas { justify-content: center; }
+
+  .pie-protocolo-in { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .pie-protocolo-t { text-align: center; }
+  .pie-protocolo-t em { display: inline; }
+  .pie-clausulas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 0; }
+}
+@media (max-width: 639px) {
+  .pie-cierre { padding: 28px 18px 44px; }
+  .pie-medalla { width: 200px; }
+  .pie-gq { width: 340px; height: 340px; margin: -170px 0 0 -170px; }
+  .pie-sello { --sello-size: 108px; }
+  .pie-t { margin: 12px 0 14px; }
+  .pie-lead { margin-bottom: 24px; }
+  /* Firma arriba y nombre abajo: al costado el cargo se partía en dos */
+  .pie-firma-fila { flex-direction: column; align-items: center; gap: 6px; text-align: center; padding-top: 18px; margin-bottom: 24px; }
+  .pie-firma { width: 150px; }
+  .pie-ctas { flex-direction: column; gap: 4px; }
+  .pie-cta-oro { width: 100%; }
+
+  .pie-protocolo-in { padding: 24px 18px; }
+  .pie-clausula { padding: 0 10px; gap: 8px; font-size: 12.5px; }
+  .pie-num { font-size: 19px; min-width: 20px; }
+
+  .pie-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; padding: 36px 18px 28px; }
+  .pie-membrete dl { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  /* La ciudad ya está en la línea legal, dos bandas más abajo */
+  .pie-membrete dl > :last-child { display: none; }
+  /* En dos columnas cada fila mide lo que su columna más alta: se
+     emparejan las largas entre sí y las cortas entre sí */
+  .pie-nav > :nth-child(2) { order: 2; }  /* Propiedades  (6) */
+  .pie-nav > :nth-child(5) { order: 3; }  /* Espacio      (6) */
+  .pie-nav > :nth-child(3) { order: 4; }  /* Barrios      (3) */
+  .pie-nav > :nth-child(4) { order: 5; }  /* Herramientas (2) */
+  .pie-link { font-size: 13px; padding: 4px 0; }
+
+  .pie-legal-in { justify-content: center; text-align: center; padding: 16px 18px; }
+  .pie-marca { font-size: 17vw; line-height: .92; margin-top: 10px; }
+  .pie-marca span, .pie-marca em { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pie-luz { animation: none; }
+  .pie-link, .pie-link::before { transition: none; }
+}

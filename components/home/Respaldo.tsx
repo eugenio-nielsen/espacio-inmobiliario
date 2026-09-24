@@ -5,6 +5,7 @@ import FirmaTrazo from "@/components/FirmaTrazo";
 import FadeIn from "@/components/ui/FadeIn";
 import Guilloche from "@/components/ui/Guilloche";
 import Reveal from "@/components/como-funciona/Reveal";
+import { PROTOCOLO } from "@/lib/protocolo";
 import "./respaldo.css";
 
 const WHATSAPP = "5491164519421";
@@ -18,35 +19,14 @@ const WHATSAPP = "5491164519421";
  * entramado de billetes y escrituras) y la firma de Eugenio que se
  * dibuja al pie. A la izquierda, la carta; a la derecha, lo firmado.
  *
- * Las cuatro cláusulas no son promesas de marca: cada una es algo que
- * el sistema hace de verdad (validación de identidad y de dominio,
- * revisión previa de cada publicación, acompañamiento de la operación).
- * La experiencia se transmite con precisión, no con cifras infladas.
+ * Las cuatro cláusulas salen de lib/protocolo.ts, la misma fuente que la
+ * franja del footer: cada una es algo que el sistema hace de verdad. La
+ * experiencia se transmite con precisión, no con cifras infladas.
  *
  * El vocabulario visual vive en respaldo.css, al lado de este archivo
  * (prefijo .rs-; el guilloché trae el suyo, .gq-), y es el punto de
  * partida del rediseño del resto del sitio.
  */
-const CLAUSULAS = [
-  {
-    t: "Identidad del titular",
-    d: "Validamos a quien publica contra su documento de identidad, y la ficha lo muestra con un sello.",
-  },
-  {
-    t: "Dominio de la propiedad",
-    d: "Cotejamos la escritura: el sello confirma que quien vende es el titular.",
-  },
-  {
-    t: "Revisión previa",
-    d: "Ninguna publicación sale al portal sin haber sido revisada, una por una.",
-  },
-  {
-    t: "Acompañamiento",
-    d: "Del primer contacto a la escritura: valor, visitas, documentación y firma.",
-  },
-];
-
-const ROMANOS = ["I", "II", "III", "IV"];
 
 /** Lo que se sostiene en el tiempo; la cinta lo repite sin apuro. */
 const VALORES = ["Criterio", "Transparencia", "Discreción", "Palabra", "Compromiso", "Trato directo"];
@@ -118,9 +98,9 @@ export default function Respaldo() {
             <div className="rs-doble" aria-hidden="true" />
 
             <ol className="rs-clausulas">
-              {CLAUSULAS.map((c, i) => (
+              {PROTOCOLO.map((c, i) => (
                 <li key={c.t} className="rs-clausula" style={{ ["--i" as string]: i }}>
-                  <span className="rs-num" aria-hidden="true">{ROMANOS[i]}</span>
+                  <span className="rs-num" aria-hidden="true">{c.n}</span>
                   <div>
                     <h4 className="rs-clausula-t">{c.t}</h4>
                     <p className="rs-clausula-d">{c.d}</p>
