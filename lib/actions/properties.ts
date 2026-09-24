@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
 import { buildPropertyUrl } from "@/lib/utils/urls";
-import { geocodeProperty } from "@/lib/utils/geocode";
+import { geocodeProperty, type GeoResult } from "@/lib/utils/geocode";
 import { sendNewPropertyToAdmin } from "@/lib/email";
 import { TOPE_SIN_VALIDAR } from "@/lib/types";
 
@@ -19,22 +19,51 @@ function slugify(str: string): string {
     .replace(/\s+/g, "-");
 }
 
-async function uploadFotos(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, files: File[]) {
-  const urls: string[] = [];
+/**
+ * Sube los archivos en orden y devuelve un array alineado con la entrada:
+ * la URL de cada uno, o null si ese falló. Mantener la posición importa:
+ * el orden de las fotos decide la portada, y si un fallo corriera los
+ * índices, la portada elegida quedaría en otra foto.
+ */
+async function subirEnOrden(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, files: File[]) {
+  const urls: (string | null)[] = [];
   for (const file of files) {
-    if (!file.size) continue;
+    if (!file.size) { urls.push(null); continue; }
     const ext = file.name.split(".").pop();
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage
       .from("property-photos")
       .upload(path, file, { contentType: file.type });
-    if (error) continue;
+    if (error) { urls.push(null); continue; }
     const { data: { publicUrl } } = supabase.storage
       .from("property-photos")
       .getPublicUrl(path);
     urls.push(publicUrl);
   }
   return urls;
+}
+
+async function uploadFotos(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, files: File[]) {
+  return (await subirEnOrden(supabase, userId, files)).filter((u): u is string => !!u);
+}
+
+/**
+ * Ubicación marcada en el mapa del formulario (pin puesto a mano o
+ * confirmado). Si viene, manda sobre la geocodificación: en islas del
+ * Delta o lotes sin calle el buscador no encuentra nada, y re-geocodificar
+ * en cada edición pisaba el lugar que el dueño había marcado.
+ * Se descartan coordenadas fuera de Argentina.
+ */
+function ubicacionElegida(formData: FormData): GeoResult | null {
+  const lat = Number(formData.get("lat"));
+  const lng = Number(formData.get("lng"));
+  if (!formData.get("lat") || !formData.get("lng") || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (lat < -56 || lat > -21 || lng < -74 || lng > -53) return null;
+  return {
+    lat: Math.round(lat * 1e6) / 1e6,
+    lng: Math.round(lng * 1e6) / 1e6,
+    aproximada: formData.get("geo_aproximada") === "true",
+  };
 }
 
 export async function createProperty(formData: FormData) {
@@ -73,8 +102,8 @@ export async function createProperty(formData: FormData) {
 
   const slug = `${slugify(barrio)}-${tipo}-${tempId.slice(0, 8)}`;
 
-  // Geocodificar una sola vez al guardar (la ficha usa lat/lng de la DB)
-  const geo = await geocodeProperty({
+  // La ubicación del mapa manda; si no hay, se geocodifica la dirección
+  const geo = ubicacionElegida(formData) ?? await geocodeProperty({
     direccion: formData.get("direccion") as string,
     barrio,
     ciudad: formData.get("ciudad") as string,
@@ -160,16 +189,25 @@ export async function updateProperty(id: string, formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  const nuevasFotos = await uploadFotos(supabase, user.id, formData.getAll("fotos_nuevas") as File[]);
+  const subidas = await subirEnOrden(supabase, user.id, formData.getAll("fotos_nuevas") as File[]);
   const fotosExistentes = formData.getAll("fotos_existentes") as string[];
-  const fotoUrls = [...fotosExistentes, ...nuevasFotos];
+  // `fotos_orden` trae el orden final mezclando guardadas ("e:<url>") y
+  // nuevas ("n:<índice>"), así cualquier foto puede ser la portada. Sin
+  // él (formulario viejo en caché), las nuevas van al final.
+  const orden = formData.getAll("fotos_orden") as string[];
+  const fotoUrls = orden.length
+    ? orden
+        .map(t => (t.startsWith("n:") ? subidas[Number(t.slice(2))] ?? null : t.startsWith("e:") ? t.slice(2) : null))
+        .filter((u): u is string => !!u)
+    : [...fotosExistentes, ...subidas.filter((u): u is string => !!u)];
 
   const operacion = formData.get("operacion") as string;
   const tipo = formData.get("tipo") as string;
   const barrio = formData.get("barrio") as string;
 
-  // Re-geocodificar al editar (la dirección puede haber cambiado)
-  const geo = await geocodeProperty({
+  // La ubicación del mapa manda (el formulario manda la guardada si nadie
+  // la tocó); si no hay, se geocodifica la dirección
+  const geo = ubicacionElegida(formData) ?? await geocodeProperty({
     direccion: formData.get("direccion") as string,
     barrio,
     ciudad: formData.get("ciudad") as string,
@@ -224,7 +262,10 @@ export async function updateProperty(id: string, formData: FormData) {
   revalidatePath("/panel");
   const publicPath = buildPropertyUrl(data);
   revalidatePath(publicPath);
-  return { ok: true, publicPath };
+  // Las fotos como quedaron guardadas: el formulario las toma para que las
+  // recién subidas dejen de figurar como nuevas (si no, un segundo
+  // "Guardar" las volvía a subir duplicadas)
+  return { ok: true, publicPath, fotos: fotoUrls };
 }
 
 export async function deleteProperty(id: string) {

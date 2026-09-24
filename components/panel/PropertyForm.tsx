@@ -10,20 +10,24 @@ import type { CamposDescripcion } from "@/lib/ai/descripcion";
 import { compressImage } from "@/lib/utils/compressImage";
 import type { Property } from "@/lib/types";
 import { ZONAS, UBICACIONES, type Zona } from "@/lib/ubicaciones";
-import MapFormPreview from "@/components/map/MapFormPreview";
+import UbicacionEnMapa from "@/components/panel/UbicacionEnMapa";
+import "./fotos-form.css";
 
 interface Props {
   mode: "crear" | "editar";
   property?: Property;
 }
 
+/** Foto en el formulario: guardada (solo url) o nueva (url de vista previa + archivo). */
+type FotoForm = { url: string; file?: File };
+
 export default function PropertyForm({ mode, property }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [fotosExistentes, setFotosExistentes] = useState<string[]>(property?.fotos || []);
-  const [nuevasFiles, setNuevasFiles] = useState<File[]>([]);
-  const [nuevasPreviews, setNuevasPreviews] = useState<string[]>([]);
+  // Una sola lista en el orden final: guardadas (url) y nuevas (url de
+  // vista previa + archivo). La primera es la portada, sea guardada o nueva.
+  const [fotos, setFotos] = useState<FotoForm[]>(() => (property?.fotos || []).map(url => ({ url })));
   const [optimizando, setOptimizando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -162,7 +166,7 @@ export default function PropertyForm({ mode, property }: Props) {
     e.target.value = "";
     if (!added.length) return;
 
-    const lugar = MAX_FOTOS - (fotosExistentes.length + nuevasFiles.length);
+    const lugar = MAX_FOTOS - fotos.length;
     if (lugar <= 0) {
       setError(`Máximo ${MAX_FOTOS} fotos por publicación.`);
       return;
@@ -172,8 +176,7 @@ export default function PropertyForm({ mode, property }: Props) {
     setOptimizando(true);
     try {
       const comprimidas = await Promise.all(added.slice(0, lugar).map(compressImage));
-      setNuevasFiles(prev => [...prev, ...comprimidas]);
-      setNuevasPreviews(prev => [...prev, ...comprimidas.map(f => URL.createObjectURL(f))]);
+      setFotos(prev => [...prev, ...comprimidas.map(file => ({ url: URL.createObjectURL(file), file }))]);
       if (added.length > lugar) {
         setError(`Solo se agregaron ${lugar} fotos: el máximo es ${MAX_FOTOS} por publicación.`);
       }
@@ -182,34 +185,18 @@ export default function PropertyForm({ mode, property }: Props) {
     }
   }
 
-  function removeFotoExistente(idx: number) {
-    setFotosExistentes(prev => prev.filter((_, i) => i !== idx));
+  function quitarFoto(idx: number) {
+    setFotos(prev => {
+      const quitada = prev[idx];
+      if (quitada?.file) URL.revokeObjectURL(quitada.url);
+      return prev.filter((_, i) => i !== idx);
+    });
   }
 
-  function removeNuevaFoto(idx: number) {
-    setNuevasFiles(prev => prev.filter((_, i) => i !== idx));
-    setNuevasPreviews(prev => prev.filter((_, i) => i !== idx));
-  }
-
-  function setPortadaExistente(idx: number) {
+  /** Lleva la foto al primer lugar: la portada de la publicación. */
+  function hacerPortada(idx: number) {
     if (idx === 0) return;
-    setFotosExistentes(prev => {
-      const next = [...prev];
-      const [item] = next.splice(idx, 1);
-      next.unshift(item);
-      return next;
-    });
-  }
-
-  function setPortadaNueva(idx: number) {
-    if (idx === 0 && fotosExistentes.length > 0) return; // no-op: existing always precede new
-    setNuevasFiles(prev => {
-      const next = [...prev];
-      const [item] = next.splice(idx, 1);
-      next.unshift(item);
-      return next;
-    });
-    setNuevasPreviews(prev => {
+    setFotos(prev => {
       const next = [...prev];
       const [item] = next.splice(idx, 1);
       next.unshift(item);
@@ -222,11 +209,20 @@ export default function PropertyForm({ mode, property }: Props) {
     setError(null);
     setSuccess(null);
     const formData = new FormData(e.currentTarget);
-    // Fotos existentes en orden (portada = [0])
-    fotosExistentes.forEach((url) => formData.append("fotos_existentes", url));
-    // Fotos nuevas en orden (portada entre nuevas = [0]), usando el array de estado (no el input)
-    nuevasFiles.forEach((file) => {
-      formData.append(mode === "crear" ? "fotos" : "fotos_nuevas", file);
+    // Fotos en el orden elegido (portada = [0]). Al editar, `fotos_orden`
+    // le dice al servidor dónde va cada una: "e:<url>" para las guardadas
+    // y "n:<índice>" para las nuevas, así cualquiera puede ser la portada.
+    let nuevas = 0;
+    fotos.forEach(f => {
+      if (mode === "crear") {
+        if (f.file) formData.append("fotos", f.file);
+      } else if (f.file) {
+        formData.append("fotos_nuevas", f.file);
+        formData.append("fotos_orden", `n:${nuevas++}`);
+      } else {
+        formData.append("fotos_existentes", f.url);
+        formData.append("fotos_orden", `e:${f.url}`);
+      }
     });
     // Plano: archivo nuevo o URL existente (vacío = se quita)
     if (planoFile) formData.append("plano", planoFile);
@@ -239,7 +235,15 @@ export default function PropertyForm({ mode, property }: Props) {
       } else {
         const result = await updateProperty(property!.id, formData);
         if (result?.error) setError(result.error);
-        else setSuccess("Cambios guardados correctamente.");
+        else {
+          setSuccess("Cambios guardados correctamente.");
+          // Las recién subidas pasan a ser guardadas: un segundo "Guardar"
+          // ya no las vuelve a subir
+          if (result && "fotos" in result && result.fotos) {
+            fotos.forEach(f => f.file && URL.revokeObjectURL(f.url));
+            setFotos(result.fotos.map(url => ({ url })));
+          }
+        }
       }
     });
   }
@@ -375,12 +379,16 @@ export default function PropertyForm({ mode, property }: Props) {
             onChange={e => setDireccion(e.target.value)} />
         </div>
 
-        {/* Preview del mapa */}
-        <MapFormPreview
+        {/* Ubicación: sigue a la dirección o se marca a mano en el mapa */}
+        <UbicacionEnMapa
           direccion={direccion}
           barrio={barrio}
-          ciudad={zona}
-          provincia={zona}
+          zona={zona}
+          inicial={
+            property?.lat != null && property?.lng != null
+              ? { lat: property.lat, lng: property.lng, aproximada: !!property.geo_aproximada }
+              : null
+          }
         />
       </section>
 
@@ -517,100 +525,53 @@ export default function PropertyForm({ mode, property }: Props) {
 
       {/* Fotos */}
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-        <div className="flex items-center justify-between">
+        <div>
           <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Fotos</h2>
-          {(fotosExistentes.length + nuevasPreviews.length) > 1 && (
-            <span className="text-xs text-gray-400">Hacé clic en ★ para elegir la portada</span>
+          {fotos.length > 1 && (
+            <p className="ff-ayuda">
+              La primera es la <strong>portada</strong>: la que se ve en los listados y al
+              compartir la publicación. Tocá <Star size={11} strokeWidth={2.2} className="ff-estrella-txt" /> en
+              otra foto para que pase a ser la portada; podés cambiarla cuando quieras.
+            </p>
           )}
         </div>
 
-        {(fotosExistentes.length > 0 || nuevasPreviews.length > 0) && (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-            {/* Fotos existentes */}
-            {fotosExistentes.map((url, idx) => {
-              const isPortada = idx === 0;
+        {fotos.length > 0 && (
+          <div className="ff-grilla">
+            {fotos.map((f, idx) => {
+              const esPortada = idx === 0;
               return (
-                <div key={url} className="relative group aspect-square">
-                  <Image src={url} alt="Foto" fill className="object-cover rounded-lg" sizes="150px" />
+                <div key={f.url} className={`ff-foto${esPortada ? " ff-foto-portada" : ""}`}>
+                  <Image src={f.url} alt={esPortada ? "Portada" : `Foto ${idx + 1}`} fill className="object-cover" sizes="160px" />
 
-                  {/* Overlay oscuro al hover */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 rounded-lg transition-all" />
-
-                  {/* Badge portada */}
-                  {isPortada && (
-                    <span className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-[#B99F66] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
-                      <Star size={9} fill="white" strokeWidth={0} /> Portada
+                  {esPortada ? (
+                    <span className="ff-marca-portada">
+                      <Star size={10} fill="currentColor" strokeWidth={0} /> Portada
                     </span>
-                  )}
-
-                  {/* Botón hacer portada (aparece al hover si no es portada) */}
-                  {!isPortada && (
+                  ) : (
+                    // Siempre visible: en celular no hay "pasar el mouse"
                     <button
                       type="button"
-                      onClick={() => setPortadaExistente(idx)}
-                      title="Hacer portada"
-                      className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/60 hover:bg-[#B99F66] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                      onClick={() => hacerPortada(idx)}
+                      className="ff-hacer-portada"
+                      aria-label={`Usar la foto ${idx + 1} como portada`}
+                      title="Usar como portada"
                     >
-                      <Star size={9} strokeWidth={2} /> Portada
+                      <Star size={12} strokeWidth={2} />
                     </button>
                   )}
 
-                  {/* Botón eliminar */}
                   <button
                     type="button"
-                    onClick={() => removeFotoExistente(idx)}
-                    title="Eliminar foto"
-                    className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold leading-none"
+                    onClick={() => quitarFoto(idx)}
+                    className="ff-quitar"
+                    aria-label={`Quitar la foto ${idx + 1}`}
+                    title="Quitar foto"
                   >
                     ×
                   </button>
-                </div>
-              );
-            })}
 
-            {/* Fotos nuevas (pendientes de subir) */}
-            {nuevasPreviews.map((previewUrl, idx) => {
-              const globalIsPortada = fotosExistentes.length === 0 && idx === 0;
-              return (
-                <div key={previewUrl} className="relative group aspect-square">
-                  <Image src={previewUrl} alt="Foto nueva" fill className="object-cover rounded-lg" sizes="150px" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 rounded-lg transition-all" />
-
-                  {/* Badge nueva */}
-                  {!globalIsPortada && (
-                    <span className="absolute bottom-1.5 left-1.5 text-[10px] bg-black/50 text-white px-1.5 py-0.5 rounded-full">
-                      Nueva
-                    </span>
-                  )}
-
-                  {/* Badge portada (solo si no hay existentes y es la primera nueva) */}
-                  {globalIsPortada && (
-                    <span className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-[#B99F66] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
-                      <Star size={9} fill="white" strokeWidth={0} /> Portada
-                    </span>
-                  )}
-
-                  {/* Hacer portada entre nuevas (solo si no hay existentes) */}
-                  {!globalIsPortada && fotosExistentes.length === 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setPortadaNueva(idx)}
-                      title="Hacer portada"
-                      className="absolute top-1.5 left-1.5 flex items-center gap-1 bg-black/60 hover:bg-[#B99F66] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-all"
-                    >
-                      <Star size={9} strokeWidth={2} /> Portada
-                    </button>
-                  )}
-
-                  {/* Botón eliminar */}
-                  <button
-                    type="button"
-                    onClick={() => removeNuevaFoto(idx)}
-                    title="Eliminar foto"
-                    className="absolute top-1.5 right-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity font-bold leading-none"
-                  >
-                    ×
-                  </button>
+                  {f.file && <span className="ff-nueva">Sin guardar</span>}
                 </div>
               );
             })}

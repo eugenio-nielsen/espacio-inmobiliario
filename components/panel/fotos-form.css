@@ -1,0 +1,99 @@
+/* Fotos del formulario de publicación (prefijo .ff-).
+   Fuera de globals.css porque el cache de Tailwind no ve sus cambios
+   en Windows; un CSS plano sí recarga.
+
+   Los controles (portada y quitar) están siempre a la vista: antes
+   aparecían solo al pasar el mouse y en el celular no había forma de
+   elegir la portada ni de borrar una foto. */
+
+.ff-ayuda {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-500);
+}
+.ff-ayuda strong { color: var(--navy-800); font-weight: 600; }
+.ff-estrella-txt { display: inline; vertical-align: -1px; color: var(--gold-600); }
+
+.ff-grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 10px;
+}
+.ff-foto {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--fill-100);
+  box-shadow: 0 0 0 1px var(--line-200);
+}
+/* La portada se distingue con un marco dorado y va primera */
+.ff-foto-portada {
+  grid-column: span 2;
+  grid-row: span 2;
+  box-shadow: 0 0 0 2px var(--gold-500);
+}
+
+.ff-marca-portada {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--gold-500);
+  color: var(--navy-950);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(7,24,44,.25);
+}
+
+.ff-hacer-portada,
+.ff-quitar {
+  position: absolute;
+  top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(7,24,44,.3);
+  transition: background .2s, transform .2s;
+}
+.ff-hacer-portada {
+  left: 6px;
+  background: rgba(7,24,44,.62);
+  color: #fff;
+}
+.ff-hacer-portada:hover { background: var(--gold-500); color: var(--navy-950); transform: scale(1.06); }
+.ff-quitar {
+  right: 6px;
+  background: rgba(255,255,255,.94);
+  color: var(--danger);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+}
+.ff-quitar:hover { background: #fff; transform: scale(1.06); }
+.ff-hacer-portada:focus-visible,
+.ff-quitar:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+.ff-nueva {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 3px 7px;
+  border-radius: var(--radius-pill);
+  background: rgba(7,24,44,.62);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+}
