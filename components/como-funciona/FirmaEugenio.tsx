@@ -2,15 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import SelloEN from "@/components/SelloEN";
+import FirmaTrazo from "@/components/FirmaTrazo";
 
 /**
  * El sello y la firma de Eugenio Nielsen.
  *
- * La firma se dibuja sola al entrar en pantalla. El truco para que el
- * trazo calce exacto es `pathLength={1400}`: normaliza el largo real de
- * la curva a 1400 unidades, que es el mismo valor del stroke-dasharray
- * en globals.css. Sin eso habría que medir el path a mano y el dibujo
- * terminaría antes o después de tiempo.
+ * La firma se dibuja sola al entrar en pantalla: acá se decide cuándo
+ * (.is-in); el trazo en sí vive en components/FirmaTrazo.tsx porque
+ * también firma el documento de Respaldo en la home.
  */
 export default function FirmaEugenio() {
   const ref = useRef<HTMLDivElement>(null);
@@ -50,17 +49,7 @@ export default function FirmaEugenio() {
       </h2>
 
       <div className={`cf-firma${visible ? " is-in" : ""}`} style={{ margin: "0 auto", maxWidth: 380 }}>
-        <svg viewBox="0 0 520 84" width="100%" height="62" aria-hidden="true" style={{ overflow: "visible" }}>
-          <path
-            pathLength={1400}
-            d="M12 60 C 78 26, 168 18, 246 34 C 300 45, 348 58, 396 49 C 436 41, 454 24, 441 14 C 430 5, 412 15, 419 31 C 427 49, 460 54, 508 39"
-            fill="none"
-            stroke="var(--gold-500)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <FirmaTrazo />
       </div>
 
       <p style={{

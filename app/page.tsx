@@ -204,12 +204,9 @@ export default async function HomePage() {
       {/* ── Respaldo ──────────────────────────────────────────────
           Ocupa el lugar del viejo bloque "¿Sos dueño y querés vender?",
           que repetía palabra por palabra el camino "Quiero vender" de
-          más arriba. Su CTA de publicar se conservó acá dentro. */}
-      <section className="hm-sect" style={{ background: "var(--cream)", borderTop: "1px solid var(--gold-200)", borderBottom: "1px solid var(--gold-200)" }}>
-        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
-          <Respaldo />
-        </div>
-      </section>
+          más arriba. Su CTA de publicar se conservó acá dentro. Trae
+          su propia <section>: el fondo y la cinta van a todo el ancho. */}
+      <Respaldo />
 
       {/* ── Ecosistema de servicios ───────────────────────────── */}
       <ServiciosEcosistema isLoggedIn={!!user} />

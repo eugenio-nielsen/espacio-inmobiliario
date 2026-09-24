@@ -1215,20 +1215,8 @@ select:focus, input:focus, textarea:focus {
   margin: clamp(20px, 3vw, 30px) auto 0;
 }
 
-/* ── Respaldo ──────────────────────────────────────────────── */
-.hm-respaldo {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: clamp(20px, 4vw, 48px);
-  align-items: center;
-  max-width: 880px;
-  margin: 0 auto;
-}
-@media (max-width: 680px) {
-  .hm-respaldo { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 18px; }
-  .hm-sello { --sello-size: 96px; }
-  .hm-pruebas { justify-content: center; }
-}
+/* Título de sección de peso medio. Nació en el viejo bloque de
+   Respaldo y hoy lo usa /comprar; el Respaldo nuevo usa .rs-t. */
 .hm-respaldo-t {
   font-family: var(--font-display);
   font-weight: 600;
@@ -1239,53 +1227,6 @@ select:focus, input:focus, textarea:focus {
   margin: 0 0 12px;
   text-wrap: balance;
 }
-.hm-respaldo-p {
-  font-family: var(--font-sans);
-  font-weight: 300;
-  font-size: clamp(14px, 1.6vw, 16px);
-  line-height: 1.68;
-  color: var(--ink-600);
-  margin: 0 0 18px;
-  max-width: 56ch;
-}
-.hm-pruebas { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.hm-prueba {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--navy-800);
-  background: var(--paper);
-  border: 1px solid var(--line-200);
-  padding: 8px 14px;
-  border-radius: var(--radius-pill);
-}
-.hm-prueba svg { color: var(--success); flex-shrink: 0; }
-.hm-respaldo-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 13.5px;
-  color: var(--navy-800);
-  border: 1px solid var(--gold-400);
-  padding: 12px 24px;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
-  transition: background .3s var(--ease-out), border-color .3s var(--ease-out);
-}
-.hm-respaldo-cta:hover { background: var(--gold-50); border-color: var(--gold-500); }
-.hm-respaldo-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
-@media (max-width: 680px) { .hm-respaldo-ctas { justify-content: center; } }
-.hm-cta-primario {
-  background: var(--navy-800);
-  border-color: var(--navy-800);
-  color: #fff;
-}
-.hm-cta-primario:hover { background: var(--navy-700); border-color: var(--navy-700); }
 
 /* ── Bloque conceptual ─────────────────────────────────────── */
 .hm-concepto {
