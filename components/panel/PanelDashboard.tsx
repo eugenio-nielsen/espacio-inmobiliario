@@ -128,7 +128,7 @@ export default function PanelDashboard({
             display: "block", fontFamily: "var(--font-sans)", fontWeight: 700,
             fontSize: 15, color: "var(--navy-800)",
           }}>
-            Mi perfil y validaciones
+            Mis datos y validaciones
           </span>
           <span style={{
             display: "block", fontFamily: "var(--font-sans)", fontSize: 12.5,

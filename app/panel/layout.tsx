@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { signOut } from "@/lib/actions/auth";
 import Logo from "@/components/Logo";
 import Footer from "@/components/Footer";
-import { LogOut } from "lucide-react";
+import MenuCuenta from "@/components/MenuCuenta";
+import { opcionesCuenta } from "@/lib/menu";
 
 const panelNavLink: React.CSSProperties = {
   fontFamily: "var(--font-sans)", fontSize: 14, fontWeight: 600,
@@ -23,7 +23,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     .single();
 
   const isAdmin = profile?.email === "eugenio@espacioinmobiliario.com.ar";
-  const inicial = (profile?.nombre || profile?.email || "U").trim()[0]?.toUpperCase();
+  // Pestañas: las secciones de la cuenta, de la misma lista que el menú del nombre
+  const pestanas = opcionesCuenta(isAdmin).filter(o => o.tipo === "seccion");
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "var(--cream)" }}>
@@ -33,29 +34,15 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <div className="flex items-center" style={{ gap: 22 }}>
             <Link href="/" className="flex items-center"><Logo className="h-9 w-auto" /></Link>
             <nav className="hidden sm:flex items-center" style={{ gap: 18 }}>
-              <Link href="/panel" style={panelNavLink}>Mis propiedades</Link>
-              <Link href="/panel/perfil" style={panelNavLink}>Mi perfil</Link>
-              {isAdmin && <Link href="/panel/admin" style={panelNavLink}>Superadmin</Link>}
+              {pestanas.map(o => <Link key={o.href} href={o.href} style={panelNavLink}>{o.label}</Link>)}
             </nav>
           </div>
 
-          <div className="flex items-center" style={{ gap: 12 }}>
-            <div className="flex items-center" style={{ gap: 9 }}>
-              <span style={{ width: 32, height: 32, borderRadius: 999, background: "var(--navy-800)", color: "var(--gold-400)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14 }}>{inicial}</span>
-              <span className="hidden sm:block" style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, fontWeight: 600, color: "var(--ink-700)" }}>{profile?.nombre || profile?.email}</span>
-            </div>
-            <form action={signOut} style={{ margin: 0 }}>
-              <button type="submit" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, color: "var(--ink-600)", border: "1px solid var(--line-200)", background: "#fff", borderRadius: "var(--radius-sm)", padding: "8px 14px", cursor: "pointer" }}>
-                <LogOut size={15} strokeWidth={1.75} /> Salir
-              </button>
-            </form>
-          </div>
+          <MenuCuenta nombre={profile?.nombre} email={profile?.email} esAdmin={isAdmin} />
         </div>
         {/* Nav mobile (debajo del logo) */}
         <nav className="sm:hidden flex items-center" style={{ gap: 18, padding: "0 16px 10px" }}>
-          <Link href="/panel" style={panelNavLink}>Mis propiedades</Link>
-          <Link href="/panel/perfil" style={panelNavLink}>Mi perfil</Link>
-          {isAdmin && <Link href="/panel/admin" style={panelNavLink}>Superadmin</Link>}
+          {pestanas.map(o => <Link key={o.href} href={o.href} style={panelNavLink}>{o.label}</Link>)}
         </nav>
       </header>
 

@@ -1,15 +1,18 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { UserRound, Plus, LayoutDashboard, LogOut } from "lucide-react";
+import { UserRound, Plus } from "lucide-react";
 import { getCurrentUser, getCurrentProfile } from "@/lib/auth/user";
-import { signOut } from "@/lib/actions/auth";
 import MobileMenu from "@/components/MobileMenu";
 import NavHerramientas from "@/components/NavHerramientas";
+import MenuCuenta from "@/components/MenuCuenta";
+
+const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 export default async function Navbar() {
   // Cacheados por request: si la página también los pide, no se repite la consulta
   const user = await getCurrentUser();
   const profile = await getCurrentProfile();
+  const esAdmin = user?.email === ADMIN_EMAIL;
 
   return (
     <header style={{
@@ -26,48 +29,23 @@ export default async function Navbar() {
           <Logo className="h-12 w-auto" />
         </Link>
 
-        <MobileMenu loggedIn={!!user} nombre={profile?.nombre} />
+        <MobileMenu loggedIn={!!user} nombre={profile?.nombre} email={user?.email} esAdmin={esAdmin} />
 
         <nav className="nav-links-desktop">
           <Link href="/propiedades" className="nav-hide-mobile" style={{
             ...navLink, color: "var(--navy-800)", fontWeight: 700,
             background: "rgba(185,159,102,.16)", padding: "8px 16px", borderRadius: 999,
           }}>Propiedades</Link>
+          {/* Comprar, Vender y Blog viven adentro de Herramientas (lib/menu.ts) */}
           <div className="nav-hide-mobile">
             <NavHerramientas style={navLink} />
           </div>
-          <Link href="/vender" style={navLink} className="nav-hide-mobile">Vender</Link>
-          <Link href="/comprar" style={navLink} className="nav-hide-mobile">Comprar</Link>
-          <Link href="/blog" style={navLink} className="nav-hide-mobile">Blog</Link>
           <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
           <Link href="/contacto" style={navLink} className="nav-hide-mobile">Contacto</Link>
 
           {user ? (
-            // — Usuario logueado —
-            <>
-              <Link
-                href="/panel"
-                style={{ ...navLink, display: "inline-flex", alignItems: "center", gap: 6 }}
-              >
-                <LayoutDashboard size={16} strokeWidth={1.75} />
-                {profile?.nombre ? profile.nombre.split(" ")[0] : "Mi panel"}
-              </Link>
-              <form action={signOut} style={{ margin: 0 }}>
-                <button
-                  type="submit"
-                  style={{
-                    ...navLink,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    background: "none", border: "1.5px solid var(--line-200)",
-                    borderRadius: "var(--radius-sm)", padding: "8px 14px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <LogOut size={15} strokeWidth={1.75} />
-                  Salir
-                </button>
-              </form>
-            </>
+            // — Usuario logueado: su cuenta, separada del menú del sitio —
+            <MenuCuenta nombre={profile?.nombre} email={user.email} esAdmin={esAdmin} />
           ) : (
             // — Usuario no logueado —
             <>

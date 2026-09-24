@@ -8,7 +8,7 @@ import ValidacionDominio, { type PropiedadValidable } from "@/components/panel/V
 import { TOPE_SIN_VALIDAR, type EstadoValidacion } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Mi perfil",
+  title: "Mis datos",
   robots: { index: false },
 };
 
@@ -43,7 +43,7 @@ export default async function PerfilPage() {
           fontSize: "clamp(22px,3.4vw,30px)", letterSpacing: "-.02em",
           color: "var(--navy-800)", margin: "0 0 4px",
         }}>
-          Mi perfil
+          Mis datos
         </h1>
         <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", margin: 0 }}>
           Tus datos de contacto y las validaciones que dan confianza a quien te consulta.

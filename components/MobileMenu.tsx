@@ -2,20 +2,29 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, FileText, HelpCircle, LayoutDashboard, LogOut, UserRound, Plus, Tag, MessageCircle, Search } from "lucide-react";
-import { HERRAMIENTAS } from "@/lib/herramientas";
+import { Menu, X, Building2, HelpCircle, LogOut, UserRound, Plus, MessageCircle } from "lucide-react";
+import { GRUPOS_HERRAMIENTAS, opcionesCuenta } from "@/lib/menu";
 import { signOut } from "@/lib/actions/auth";
+import "./menu-cuenta.css";
 
+// Comprar, Vender y Blog viven en los grupos de Herramientas (lib/menu.ts)
 const LINKS = [
   { href: "/propiedades", label: "Propiedades", icon: Building2, highlight: true },
-  { href: "/vender", label: "Vender", icon: Tag },
-  { href: "/comprar", label: "Comprar", icon: Search },
-  { href: "/blog", label: "Blog", icon: FileText },
   { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
   { href: "/contacto", label: "Contacto", icon: MessageCircle },
 ];
 
-export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; nombre?: string | null }) {
+export default function MobileMenu({
+  loggedIn,
+  nombre,
+  email,
+  esAdmin = false,
+}: {
+  loggedIn: boolean;
+  nombre?: string | null;
+  email?: string | null;
+  esAdmin?: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   // Bloquear scroll del body con el menú abierto
@@ -36,7 +45,7 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
           <nav className="mobile-menu-panel">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, color: "var(--navy-800)" }}>
-                {loggedIn && nombre ? `Hola, ${nombre.split(" ")[0]}` : "Menú"}
+                Menú
               </span>
               <button aria-label="Cerrar menú" onClick={() => setOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ink-500)", padding: 4 }}>
                 <X size={22} />
@@ -55,32 +64,50 @@ export default function MobileMenu({ loggedIn, nombre }: { loggedIn: boolean; no
               </Link>
             ))}
 
-            <p style={{
-              fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 10.5,
-              textTransform: "uppercase", letterSpacing: ".08em",
-              color: "var(--ink-400)", margin: "16px 0 2px",
-            }}>
-              Herramientas
-            </p>
-            {HERRAMIENTAS.map(({ href, label, icon: Icon }) => (
-              <Link key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}>
-                <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
-                {label}
-              </Link>
+            {GRUPOS_HERRAMIENTAS.map(g => (
+              <div key={g.titulo}>
+                <p style={{
+                  fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 10.5,
+                  textTransform: "uppercase", letterSpacing: ".08em",
+                  color: "var(--ink-400)", margin: "16px 0 2px",
+                }}>
+                  {g.titulo}
+                </p>
+                {g.items.map(({ href, label, icon: Icon }) => (
+                  <Link key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}>
+                    <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
+                    {label}
+                  </Link>
+                ))}
+              </div>
             ))}
 
             <div style={{ marginTop: "auto", paddingTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
               {loggedIn ? (
-                <>
-                  <Link href="/panel" onClick={() => setOpen(false)} style={btnPrimary}>
-                    <LayoutDashboard size={17} strokeWidth={1.75} /> Mi panel
-                  </Link>
-                  <form action={signOut} style={{ margin: 0 }}>
-                    <button type="submit" style={{ ...btnGhost, width: "100%", cursor: "pointer" }}>
-                      <LogOut size={16} strokeWidth={1.75} /> Salir
+                // La cuenta en un bloque propio, para no confundirla con el menú del sitio
+                <div className="mm-cuenta">
+                  <div className="mm-cuenta-cabeza">
+                    <span className="mc-avatar mc-avatar-g" aria-hidden="true">
+                      {(nombre?.trim() || email || "U")[0].toUpperCase()}
+                    </span>
+                    <span style={{ minWidth: 0 }}>
+                      <span className="mc-rotulo">Tu cuenta</span>
+                      <span className="mc-cabeza-nombre">{nombre?.trim() || email || "Mi cuenta"}</span>
+                    </span>
+                  </div>
+                  {opcionesCuenta(esAdmin).map(({ href, label, icon: Icon }) => (
+                    <Link key={href} href={href} className="mc-item" onClick={() => setOpen(false)}>
+                      <Icon size={17} strokeWidth={1.7} />
+                      {label}
+                    </Link>
+                  ))}
+                  <form action={signOut} className="mc-pie">
+                    <button type="submit" className="mc-item mc-salir">
+                      <LogOut size={17} strokeWidth={1.7} />
+                      Salir
                     </button>
                   </form>
-                </>
+                </div>
               ) : (
                 <>
                   <Link href="/auth/registro" onClick={() => setOpen(false)} style={btnPrimary}>

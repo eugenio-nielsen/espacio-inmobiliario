@@ -1,0 +1,171 @@
+/* Estilos de la cuenta del usuario: MenuCuenta (escritorio, prefijo
+   .mc-) y el bloque "Tu cuenta" del menú móvil (prefijo .mm-cuenta).
+   Fuera de globals.css porque el cache de Tailwind no ve sus cambios
+   en Windows; un CSS plano sí recarga. */
+
+/* ── Escritorio ────────────────────────────────────────────── */
+/* El filete vertical la separa del menú del sitio */
+.mc {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: clamp(12px, 1.6vw, 22px);
+  border-left: 1px solid var(--line-200);
+}
+.mc-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 12px 4px 4px;
+  background: var(--cream);
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: border-color .3s var(--ease-out), background .3s var(--ease-out);
+}
+.mc-boton:hover,
+.mc-boton[aria-expanded="true"] { border-color: var(--gold-400); background: var(--gold-50); }
+.mc-boton:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+.mc-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--navy-800);
+  color: var(--gold-300);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+}
+.mc-avatar-g { width: 40px; height: 40px; font-size: 17px; box-shadow: 0 0 0 3px #fff, 0 0 0 4px var(--gold-300); }
+.mc-nombre {
+  font-family: var(--font-sans);
+  font-size: 13.5px !important;
+  font-weight: 600;
+  color: var(--navy-800);
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-chevron { color: var(--ink-500); transition: transform .25s var(--ease-out); }
+.mc-chevron[data-abierto="true"] { transform: rotate(180deg); }
+
+.mc-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 30;
+  width: 292px;
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  animation: mc-abre .22s var(--ease-out);
+}
+@keyframes mc-abre { from { opacity: 0; transform: translateY(-4px); } }
+
+.mc-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 11px 13px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line-100);
+}
+.mc-rotulo {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.mc-cabeza-nombre {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--navy-800);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-cabeza-email {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--ink-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mc-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 10px 11px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 13.5px !important;
+  font-weight: 500;
+  color: var(--navy-800);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.mc-item svg { color: var(--gold-600); flex-shrink: 0; }
+.mc-item:hover { background: var(--cream); }
+/* Página actual: filete dorado al margen */
+.mc-item[aria-current="page"] { font-weight: 600; }
+.mc-item[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--gold-500);
+}
+.mc-pie { margin: 4px 0 0; padding-top: 4px; border-top: 1px solid var(--line-100); }
+.mc-salir { color: var(--ink-600); }
+.mc-salir svg { color: var(--ink-400); }
+
+/* ── Móvil: bloque "Tu cuenta" al pie del menú ─────────────── */
+.mm-cuenta {
+  background: var(--cream);
+  border: 1px solid var(--gold-200);
+  border-radius: var(--radius-md);
+  padding: 6px;
+}
+.mm-cuenta-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px 12px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--gold-200);
+}
+.mm-cuenta .mc-item { font-size: 15px !important; padding: 12px 10px; }
+.mm-cuenta .mc-item:hover { background: var(--gold-50); }
+.mm-cuenta .mc-pie { border-top-color: var(--gold-200); }
+
+/* Con el bloque de cuenta el menú móvil puede pasar el alto de la
+   pantalla: el panel scrollea solo, sin arrastrar la página de atrás */
+.mobile-menu-panel { overflow-y: auto; overscroll-behavior: contain; }

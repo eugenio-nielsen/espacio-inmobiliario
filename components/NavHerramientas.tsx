@@ -3,10 +3,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { HERRAMIENTAS } from "@/lib/herramientas";
+import { GRUPOS_HERRAMIENTAS } from "@/lib/menu";
 
-
-/** Desplegable "Herramientas" del menú de escritorio. */
+/**
+ * Desplegable "Herramientas" del menú de escritorio. Trae tres grupos
+ * con rótulo (lib/menu.ts): la operación (comprar, vender), las
+ * herramientas gratuitas y el blog.
+ */
 export default function NavHerramientas({ style }: { style?: React.CSSProperties }) {
   const [abierto, setAbierto] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
@@ -56,40 +59,54 @@ export default function NavHerramientas({ style }: { style?: React.CSSProperties
             boxShadow: "var(--shadow-lg)", padding: 6,
           }}
         >
-          {HERRAMIENTAS.map(({ href, label, detalle, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setAbierto(false)}
-              className="nav-herramienta"
-              style={{
-                display: "flex", alignItems: "flex-start", gap: 10,
-                padding: "10px 11px", borderRadius: "var(--radius-sm)",
-                textDecoration: "none",
-              }}
+          {GRUPOS_HERRAMIENTAS.map((g, gi) => (
+            <div
+              key={g.titulo}
+              style={gi ? { borderTop: "1px solid var(--line-100)", marginTop: 4, paddingTop: 4 } : undefined}
             >
-              <span style={{
-                width: 32, height: 32, borderRadius: "var(--radius-xs)", flexShrink: 0,
-                background: "var(--navy-50)", color: "var(--navy-700)",
-                display: "flex", alignItems: "center", justifyContent: "center",
+              <p style={{
+                fontFamily: "var(--font-sans)", fontSize: 10, fontWeight: 600,
+                letterSpacing: ".2em", textTransform: "uppercase",
+                color: "var(--gold-700)", margin: 0, padding: "9px 11px 3px",
               }}>
-                <Icon size={16} strokeWidth={1.9} />
-              </span>
-              <span style={{ minWidth: 0 }}>
-                <span style={{
-                  display: "block", fontFamily: "var(--font-sans)", fontWeight: 600,
-                  fontSize: 13.5, color: "var(--navy-800)", lineHeight: 1.3,
-                }}>
-                  {label}
-                </span>
-                <span style={{
-                  display: "block", fontFamily: "var(--font-sans)",
-                  fontSize: 12, color: "var(--ink-500)", marginTop: 2, lineHeight: 1.35,
-                }}>
-                  {detalle}
-                </span>
-              </span>
-            </Link>
+                {g.titulo}
+              </p>
+              {g.items.map(({ href, label, detalle, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setAbierto(false)}
+                  className="nav-herramienta"
+                  style={{
+                    display: "flex", alignItems: "flex-start", gap: 10,
+                    padding: "10px 11px", borderRadius: "var(--radius-sm)",
+                    textDecoration: "none",
+                  }}
+                >
+                  <span style={{
+                    width: 32, height: 32, borderRadius: "var(--radius-xs)", flexShrink: 0,
+                    background: "var(--navy-50)", color: "var(--navy-700)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <Icon size={16} strokeWidth={1.9} />
+                  </span>
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{
+                      display: "block", fontFamily: "var(--font-sans)", fontWeight: 600,
+                      fontSize: 13.5, color: "var(--navy-800)", lineHeight: 1.3,
+                    }}>
+                      {label}
+                    </span>
+                    <span style={{
+                      display: "block", fontFamily: "var(--font-sans)",
+                      fontSize: 12, color: "var(--ink-500)", marginTop: 2, lineHeight: 1.35,
+                    }}>
+                      {detalle}
+                    </span>
+                  </span>
+                </Link>
+              ))}
+            </div>
           ))}
         </div>
       )}
