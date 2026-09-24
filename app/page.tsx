@@ -146,19 +146,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Concepto + las cuatro puertas ─────────────────────── */}
+      {/* ── Las cuatro puertas ─────────────────────────────────── */}
       <section className="hm-sect" style={{ background: "var(--cream)", borderBottom: "1px solid var(--gold-200)" }}>
         <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
-          <FadeIn direction="up">
-            <div className="hm-concepto" style={{ marginBottom: "clamp(28px,4vw,44px)" }}>
-              <h2>Una propiedad es mucho más que <span className="hm-i">una publicación</span>.</h2>
-              <p>
-                Comprar, vender o invertir implica decisiones importantes. No queremos
-                que solo encuentres una propiedad: queremos que entiendas la operación
-                y tengas acompañamiento profesional durante todo el proceso.
-              </p>
-            </div>
-          </FadeIn>
           <Caminos />
         </div>
       </section>
