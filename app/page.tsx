@@ -79,7 +79,9 @@ export default async function HomePage() {
             src="/hero-bg.png"
             alt=""
             fill
-            priority
+            // `priority` está deprecado en Next 16 y ya no hacía nada
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
             style={{ objectFit: "cover", objectPosition: "center" }}
           />
