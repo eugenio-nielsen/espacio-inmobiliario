@@ -2,52 +2,42 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  UserRound, Camera, MessageSquare, Handshake,
-  Search, Phone, BadgeCheck, ArrowRight, MoveRight,
-} from "lucide-react";
-import TarjetaViva from "@/components/ui/TarjetaViva";
+import { ArrowRight } from "lucide-react";
+import Secuencia from "@/components/ui/Secuencia";
 
-type Paso = { icon: React.ElementType; titulo: string; texto: string };
+type Paso = { t: string; d: string };
 
 const DUENO: Paso[] = [
   {
-    icon: UserRound,
-    titulo: "Creá tu cuenta",
-    texto: "Menos de dos minutos. Nombre, email y teléfono. Sin cargos, sin datos de tarjeta, sin letra chica.",
+    t: "Creá tu cuenta",
+    d: "Menos de dos minutos. Nombre, email y teléfono. Sin cargos, sin datos de tarjeta, sin letra chica.",
   },
   {
-    icon: Camera,
-    titulo: "Publicá tu propiedad",
-    texto: "Fotos, descripción, precio y ubicación. Queda visible al instante para los interesados activos en Buenos Aires.",
+    t: "Publicá tu propiedad",
+    d: "Fotos, descripción, precio y ubicación. Queda visible al instante para los interesados activos en Buenos Aires.",
   },
   {
-    icon: MessageSquare,
-    titulo: "Recibí consultas",
-    texto: "Los interesados te escriben a vos. Cada consulta llega a tu email y a tu panel en tiempo real.",
+    t: "Recibí consultas",
+    d: "Los interesados te escriben a vos. Cada consulta llega a tu email y a tu panel en tiempo real.",
   },
   {
-    icon: Handshake,
-    titulo: "Cerrá acompañado",
-    texto: "Eugenio Nielsen te acompaña durante todo el proceso. No estás solo: hay alguien con nombre y apellido detrás.",
+    t: "Cerrá acompañado",
+    d: "Eugenio Nielsen te acompaña durante todo el proceso. No estás solo: hay alguien con nombre y apellido detrás.",
   },
 ];
 
 const COMPRADOR: Paso[] = [
   {
-    icon: Search,
-    titulo: "Explorá el catálogo",
-    texto: "Propiedades publicadas por sus dueños. Lo que ves es el precio que pide el propietario, sin recargo de agencia.",
+    t: "Explorá el catálogo",
+    d: "Propiedades publicadas por sus dueños. Lo que ves es el precio que pide el propietario, sin recargo de agencia.",
   },
   {
-    icon: Phone,
-    titulo: "Contactá al dueño",
-    texto: "Cada ficha tiene un formulario que llega directo al propietario, sin filtros ni demoras en el medio.",
+    t: "Contactá al dueño",
+    d: "Cada ficha tiene un formulario que llega directo al propietario, sin filtros ni demoras en el medio.",
   },
   {
-    icon: BadgeCheck,
-    titulo: "Negociá a precio real",
-    texto: "Sin comisiones implícitas, accedés a valores de mercado. Y si necesitás orientación, Eugenio está disponible.",
+    t: "Negociá a precio real",
+    d: "Sin comisiones implícitas, accedés a valores de mercado. Y si necesitás orientación, Eugenio está disponible.",
   },
 ];
 
@@ -100,50 +90,12 @@ export default function Metodo() {
       </div>
 
       {/* ── Pasos ──────────────────────────────────────────── */}
-      {/* key fuerza el remontaje para que la entrada se reproduzca en cada cambio */}
+      {/* key fuerza el remontaje: la Secuencia vuelve a trazar su riel en
+          cada cambio de recorrido */}
       <div key={lado.id} className="cf-panel">
-        <div className={lado.pasos.length === 3 ? "cf-steps-3" : "cf-steps"}>
-          {lado.pasos.map((p, n) => {
-            const Icon = p.icon;
-            return (
-              <TarjetaViva key={p.titulo} sheenDelay={n * 900}>
-                <div style={{
-                  display: "flex", alignItems: "flex-start",
-                  justifyContent: "space-between", gap: 12, marginBottom: 22,
-                }}>
-                  <span className="cf-card-icon" style={{ ["--sheen" as string]: `${n * 900}ms` }}>
-                    <Icon size={19} strokeWidth={1.5} />
-                  </span>
-                  <span className="cf-card-num" aria-hidden="true">
-                    {String(n + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 style={{
-                  fontFamily: "var(--font-display)", fontWeight: 600,
-                  fontSize: "clamp(19px,2.2vw,23px)", lineHeight: 1.2,
-                  letterSpacing: "-.02em", color: "#fff", margin: "0 0 10px",
-                }}>
-                  {p.titulo}
-                </h3>
-                <p style={{
-                  fontFamily: "var(--font-sans)", fontWeight: 300,
-                  fontSize: 14.5, lineHeight: 1.7,
-                  color: "rgba(255,255,255,.6)", margin: 0,
-                }}>
-                  {p.texto}
-                </p>
-              </TarjetaViva>
-            );
-          })}
-        </div>
+        <Secuencia pasos={lado.pasos} tono="oscuro" />
 
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, flexWrap: "wrap", marginTop: "clamp(26px,4vw,40px)",
-        }}>
-          <span className="cf-swipe-hint" style={{ color: "var(--gold-400)" }}>
-            Deslizá <MoveRight size={14} strokeWidth={1.6} />
-          </span>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "clamp(34px,4.5vw,52px)" }}>
           <Link
             href={lado.cta.href}
             style={{

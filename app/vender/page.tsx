@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FadeIn from "@/components/ui/FadeIn";
-import TarjetaViva from "@/components/ui/TarjetaViva";
+import Indice, { type ItemIndice } from "@/components/ui/Indice";
 import Motas from "@/components/como-funciona/Motas";
 import Escalera from "@/components/vender/Escalera";
 import ComparadorComision from "@/components/precios/ComparadorComision";
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 };
 
 /* Lo que suma el acompañamiento profesional */
-const INCLUYE = [
+const INCLUYE: ItemIndice[] = [
   { icon: BadgeCheck, t: "Un responsable con nombre y apellido", d: "Alguien a cargo de tu operación de principio a fin. No un call center ni un formulario que nadie lee." },
   { icon: MessageSquare, t: "Gestión diaria de consultas", d: "Respondemos y filtramos las consultas por vos, para que solo te llegue lo que vale la pena." },
   { icon: CalendarClock, t: "Coordinación de visitas", d: "Organizamos y acompañamos las visitas a tu propiedad, sin que tengas que estar pendiente." },
@@ -148,33 +148,7 @@ export default function VenderPage() {
               </h2>
             </header>
           </FadeIn>
-          <FadeIn direction="up" delay={110}>
-            <div className="cf-steps-3">
-              {INCLUYE.map((item, i) => {
-                const Icon = item.icon;
-                return (
-                  <TarjetaViva key={item.t} sheenDelay={i * 700}>
-                    <span className="cf-card-icon" style={{ ["--sheen" as string]: `${i * 700}ms`, marginBottom: 16 }}>
-                      <Icon size={18} strokeWidth={1.5} />
-                    </span>
-                    <h3 style={{
-                      fontFamily: "var(--font-display)", fontWeight: 600,
-                      fontSize: "clamp(16px,1.9vw,19px)", lineHeight: 1.25,
-                      letterSpacing: "-.015em", color: "#fff", margin: "0 0 8px",
-                    }}>
-                      {item.t}
-                    </h3>
-                    <p style={{
-                      fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 13.5,
-                      lineHeight: 1.65, color: "rgba(255,255,255,.6)", margin: 0,
-                    }}>
-                      {item.d}
-                    </p>
-                  </TarjetaViva>
-                );
-              })}
-            </div>
-          </FadeIn>
+          <Indice items={INCLUYE} tono="oscuro" columnas={3} />
         </div>
       </section>
 

@@ -1,0 +1,154 @@
+/* Estilos de components/ui/Indice.tsx (prefijo .ix-).
+   Fuera de globals.css porque el cache de Tailwind no ve sus cambios
+   en Windows; un CSS plano sí recarga.
+
+   Coreografía al entrar (.is-in): sobre cada celda se traza un filete
+   dorado, una detrás de otra como créditos, y el contenido aparece
+   debajo. Al pasar: el filete toma cuerpo, sube un velo de luz y la
+   flecha avanza. */
+
+.ix {
+  --curva: cubic-bezier(.16, 1, .3, 1);
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  border-bottom: 1px solid var(--ix-hilo);
+}
+.ix-claro {
+  --ix-hilo: var(--gold-200);
+  --ix-filete: rgba(185,159,102,.55);
+  --ix-titulo: var(--navy-800);
+  --ix-texto: var(--ink-600);
+  --ix-icono: var(--gold-600);
+  --ix-cta: var(--gold-700);
+  --ix-velo: rgba(185,159,102,.10);
+}
+.ix-oscuro {
+  --ix-hilo: rgba(185,159,102,.2);
+  --ix-filete: rgba(185,159,102,.5);
+  --ix-titulo: #fff;
+  --ix-texto: rgba(255,255,255,.6);
+  --ix-icono: var(--gold-400);
+  --ix-cta: var(--gold-300);
+  --ix-velo: rgba(185,159,102,.09);
+}
+
+.ix-celda {
+  --entra: calc(var(--i) * 140ms);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(26px, 2.8vw, 36px) clamp(18px, 2.2vw, 30px) clamp(24px, 2.6vw, 32px);
+  border-top: 1px solid var(--ix-hilo);
+  border-left: 1px solid var(--ix-hilo);
+}
+.ix-c4 .ix-celda:nth-child(4n+1),
+.ix-c3 .ix-celda:nth-child(3n+1) { border-left: 0; }
+
+/* Filete dorado que se traza sobre la celda */
+.ix-celda::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: var(--ix-filete);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: background .45s var(--ease-out), box-shadow .45s var(--ease-out);
+}
+.ix.is-in .ix-celda::before {
+  animation: ix-filete 1.2s cubic-bezier(.65, 0, .35, 1) forwards;
+  animation-delay: var(--entra);
+}
+@keyframes ix-filete { to { transform: scaleX(1); } }
+
+/* Velo de luz que sube al pasar */
+.ix-celda::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, var(--ix-velo), transparent 75%);
+  opacity: 0;
+  transition: opacity .6s var(--ease-out);
+}
+.ix-celda:hover::after { opacity: 1; }
+.ix-celda:hover::before {
+  background: var(--gold-500);
+  box-shadow: 0 0 14px rgba(185,159,102,.45);
+}
+
+.ix-icono { color: var(--ix-icono); margin-bottom: 18px; flex-shrink: 0; }
+.ix-t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(18px, 1.7vw, 21px);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  color: var(--ix-titulo);
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+.ix-d {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--ix-texto);
+  margin: 0 0 18px;
+  flex: 1;
+}
+.ix-d:last-child { margin-bottom: 0; }
+.ix-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ix-cta);
+  text-decoration: none;
+}
+.ix-cta svg { transition: transform .45s var(--ease-out); }
+.ix-celda:hover .ix-cta svg { transform: translateX(5px); }
+/* La celda completa es el enlace */
+.ix-cta::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+.ix-cta:focus-visible { outline: none; }
+.ix-celda:has(.ix-cta:focus-visible) { outline: 1px solid var(--gold-500); outline-offset: -1px; }
+
+/* El contenido entra detrás de su filete */
+.ix-icono, .ix-t, .ix-d, .ix-cta { opacity: 0; transform: translateY(10px); }
+.ix.is-in .ix-icono,
+.ix.is-in .ix-t { animation: ix-aparece 1s var(--curva) forwards; animation-delay: calc(var(--entra) + .25s); }
+.ix.is-in .ix-d { animation: ix-aparece 1s var(--curva) forwards; animation-delay: calc(var(--entra) + .38s); }
+.ix.is-in .ix-cta { animation: ix-aparece 1s var(--curva) forwards; animation-delay: calc(var(--entra) + .5s); }
+@keyframes ix-aparece { to { opacity: 1; transform: none; } }
+
+/* ── Tablet: dos columnas ──────────────────────────────────── */
+@media (max-width: 1000px) {
+  .ix { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ix .ix-celda:nth-child(n) { border-left: 1px solid var(--ix-hilo); }
+  .ix .ix-celda:nth-child(2n+1) { border-left: 0; }
+}
+
+/* ── Móvil: filas, icono al margen ─────────────────────────── */
+@media (max-width: 640px) {
+  .ix { grid-template-columns: minmax(0, 1fr); }
+  .ix .ix-celda:nth-child(n) { border-left: 0; }
+  .ix-celda { padding: 20px 4px 20px 40px; }
+  .ix-icono { position: absolute; left: 6px; top: 22px; margin: 0; }
+  .ix-t { font-size: 17px; margin-bottom: 5px; }
+  .ix-d { font-size: 13px; line-height: 1.55; margin-bottom: 10px; }
+  .ix-cta { font-size: 10.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-celda::before { transform: none; animation: none !important; }
+  .ix-icono, .ix-t, .ix-d, .ix-cta { opacity: 1; transform: none; animation: none !important; }
+}

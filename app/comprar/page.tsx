@@ -3,16 +3,14 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FadeIn from "@/components/ui/FadeIn";
-import TarjetaViva from "@/components/ui/TarjetaViva";
+import Indice, { type ItemIndice } from "@/components/ui/Indice";
+import Secuencia from "@/components/ui/Secuencia";
 import Motas from "@/components/como-funciona/Motas";
 import PropertyListCard from "@/components/properties/PropertyListCard";
 import AsesoriaContacto from "@/components/precios/AsesoriaContacto";
 import { createClient } from "@/lib/supabase/server";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
-import {
-  Scale, BadgeCheck, FileText, Wallet,
-  Search, MessagesSquare, Handshake, ArrowRight, Send,
-} from "lucide-react";
+import { Scale, BadgeCheck, FileText, Wallet, ArrowRight, Send } from "lucide-react";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
@@ -31,53 +29,41 @@ export const metadata: Metadata = {
 
 /* Las cuatro dudas que aparecen al comprar sin inmobiliaria. Cada una
    enlaza a algo que ya existe y la responde, no a una promesa. */
-const DUDAS = [
+const DUDAS: ItemIndice[] = [
   {
     icon: Scale,
-    duda: "¿El precio es razonable?",
-    resp: "Estimá el valor de mercado de un departamento en CABA con el mismo modelo que usamos para tasar, y compará contra lo que te están pidiendo.",
+    t: "¿El precio es razonable?",
+    d: "Estimá el valor de mercado de un departamento en CABA con el mismo modelo que usamos para tasar, y compará contra lo que te están pidiendo.",
     cta: "Usar el tasador",
     href: "/estimador",
   },
   {
     icon: BadgeCheck,
-    duda: "¿Quién me está vendiendo?",
-    resp: "Verificamos la identidad del titular contra su documento y la escritura de cada propiedad. Cuando una ficha muestra los sellos, ya pasó ese control.",
+    t: "¿Quién me está vendiendo?",
+    d: "Verificamos la identidad del titular contra su documento y la escritura de cada propiedad. Cuando una ficha muestra los sellos, ya pasó ese control.",
     cta: "Cómo verificamos",
     href: "/como-funciona",
   },
   {
     icon: Wallet,
-    duda: "¿Qué pago además del precio?",
-    resp: "Escritura, sellos y aranceles del Registro suman bastante más de lo que la mayoría calcula. Tenemos una calculadora con los valores vigentes.",
+    t: "¿Qué pago además del precio?",
+    d: "Escritura, sellos y aranceles del Registro suman bastante más de lo que la mayoría calcula. Tenemos una calculadora con los valores vigentes.",
     cta: "Calcular aranceles",
     href: "/blog/calculadora-aranceles-rpi-registro-de-la-propiedad-inmueble",
   },
   {
     icon: FileText,
-    duda: "¿Y si algo no cierra?",
-    resp: "Antes de firmar hay documentación para revisar y preguntas que conviene hacer. Si algo no te cierra, consultanos: para eso estamos.",
+    t: "¿Y si algo no cierra?",
+    d: "Antes de firmar hay documentación para revisar y preguntas que conviene hacer. Si algo no te cierra, consultanos: para eso estamos.",
     cta: "Hacer una consulta",
     href: "/contacto?motivo=comprar",
   },
 ];
 
 const PASOS = [
-  {
-    icon: Search,
-    t: "Mirás",
-    d: "Explorás el catálogo, o nos contás qué buscás si todavía no está publicado.",
-  },
-  {
-    icon: MessagesSquare,
-    t: "Consultás",
-    d: "Escribís al dueño directo desde la ficha, y a nosotros si querés una opinión antes.",
-  },
-  {
-    icon: Handshake,
-    t: "Decidís acompañado",
-    d: "Analizamos la propiedad, la operación y los costos con vos hasta el cierre.",
-  },
+  { t: "Mirás", d: "Explorás el catálogo, o nos contás qué buscás si todavía no está publicado." },
+  { t: "Consultás", d: "Escribís al dueño directo desde la ficha, y a nosotros si querés una opinión antes." },
+  { t: "Decidís acompañado", d: "Analizamos la propiedad, la operación y los costos con vos hasta el cierre." },
 ];
 
 export default async function ComprarPage() {
@@ -158,26 +144,7 @@ export default async function ComprarPage() {
             </div>
           </FadeIn>
 
-          <div className="hm-caminos">
-            {DUDAS.map((d, i) => {
-              const Icon = d.icon;
-              return (
-                <FadeIn key={d.duda} delay={i * 90} direction="up">
-                  <TarjetaViva tono="claro" sheenDelay={i * 750} className="hm-camino">
-                    <span className="cf-card-icon" style={{ ["--sheen" as string]: `${i * 750}ms`, marginBottom: 16 }}>
-                      <Icon size={18} strokeWidth={1.6} />
-                    </span>
-                    <h3 className="hm-camino-t">{d.duda}</h3>
-                    <p className="hm-camino-p">{d.resp}</p>
-                    <Link href={d.href} className="hm-camino-cta">
-                      {d.cta}
-                      <ArrowRight size={13} strokeWidth={2} />
-                    </Link>
-                  </TarjetaViva>
-                </FadeIn>
-              );
-            })}
-          </div>
+          <Indice items={DUDAS} tono="claro" />
         </div>
       </section>
 
@@ -199,41 +166,7 @@ export default async function ComprarPage() {
               </h2>
             </header>
           </FadeIn>
-          <FadeIn direction="up" delay={110}>
-            <div className="cf-steps-3">
-              {PASOS.map((p, i) => {
-                const Icon = p.icon;
-                return (
-                  <TarjetaViva key={p.t} sheenDelay={i * 800}>
-                    <div style={{
-                      display: "flex", alignItems: "flex-start",
-                      justifyContent: "space-between", gap: 12, marginBottom: 20,
-                    }}>
-                      <span className="cf-card-icon" style={{ ["--sheen" as string]: `${i * 800}ms` }}>
-                        <Icon size={19} strokeWidth={1.5} />
-                      </span>
-                      <span className="cf-card-num" aria-hidden="true">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                    <h3 style={{
-                      fontFamily: "var(--font-display)", fontWeight: 600,
-                      fontSize: "clamp(18px,2.1vw,22px)", lineHeight: 1.2,
-                      letterSpacing: "-.02em", color: "#fff", margin: "0 0 9px",
-                    }}>
-                      {p.t}
-                    </h3>
-                    <p style={{
-                      fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 14,
-                      lineHeight: 1.68, color: "rgba(255,255,255,.6)", margin: 0,
-                    }}>
-                      {p.d}
-                    </p>
-                  </TarjetaViva>
-                );
-              })}
-            </div>
-          </FadeIn>
+          <Secuencia pasos={PASOS} tono="oscuro" />
         </div>
       </section>
 
