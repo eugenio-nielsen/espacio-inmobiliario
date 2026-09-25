@@ -1,18 +1,33 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import PostCard from "@/components/blog/PostCard";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import PortadaNota from "@/components/blog/PortadaNota";
 import FadeIn from "@/components/ui/FadeIn";
-import type { Post } from "@/lib/blog/types";
+
+/** Lo que el índice necesita de cada nota (sin el contenido completo). */
+export type NotaIndice = {
+  id: string;
+  slug: string;
+  titulo: string;
+  resumen: string | null;
+  categoria: string | null;
+  fecha: string;
+  minutos: number;
+};
 
 /**
- * Listado del blog con filtro por sección.
+ * Índice completo del blog, filtrable por sección.
  *
- * Las categorías salen de las notas publicadas, no de la lista fija:
- * así una sección aparece recién cuando tiene contenido, y desaparece
- * sola si se despublica todo lo que tenía.
+ * Filas en vez de tarjetas: portada chica, sección, título, resumen y
+ * fecha, separadas por filetes. Se lee de arriba abajo como el índice de
+ * una revista y entra el doble de notas por pantalla.
+ *
+ * Las secciones salen de las notas publicadas, no de la lista fija: una
+ * sección aparece recién cuando tiene contenido.
  */
-export default function ListadoPosts({ posts }: { posts: Post[] }) {
+export default function ListadoPosts({ posts }: { posts: NotaIndice[] }) {
   const [seccion, setSeccion] = useState<string>("todas");
 
   const secciones = useMemo(() => {
@@ -30,45 +45,36 @@ export default function ListadoPosts({ posts }: { posts: Post[] }) {
   return (
     <>
       {secciones.length > 1 && (
-        <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 26 }}>
-          <Chip activo={seccion === "todas"} onClick={() => setSeccion("todas")} label={`Todas (${posts.length})`} />
+        <div className="bl-pestanas" role="group" aria-label="Filtrar por sección">
+          <button type="button" className="bl-pestana" aria-pressed={seccion === "todas"} onClick={() => setSeccion("todas")}>
+            Todas<span>{posts.length}</span>
+          </button>
           {secciones.map(([nombre, n]) => (
-            <Chip
-              key={nombre}
-              activo={seccion === nombre}
-              onClick={() => setSeccion(nombre)}
-              label={`${nombre} (${n})`}
-            />
+            <button key={nombre} type="button" className="bl-pestana" aria-pressed={seccion === nombre} onClick={() => setSeccion(nombre)}>
+              {nombre}<span>{n}</span>
+            </button>
           ))}
         </div>
       )}
 
-      <div className="grid-properties">
+      <ul className="bl-filas">
         {visibles.map((p, i) => (
-          <FadeIn key={p.id} delay={(i % 3) * 90} direction="up">
-            <PostCard post={p} />
-          </FadeIn>
+          <li key={p.id} className="bl-fila">
+            <FadeIn delay={Math.min(i, 6) * 60} direction="up">
+              <Link href={`/blog/${p.slug}`}>
+                <span className="bl-fila-portada"><PortadaNota post={p} tamano="fila" /></span>
+                <span>
+                  {p.categoria && <span className="bl-fila-seccion">{p.categoria}</span>}
+                  <span className="bl-fila-titulo">{p.titulo}</span>
+                  {p.resumen && <span className="bl-fila-resumen">{p.resumen}</span>}
+                  <span className="bl-fila-meta">{p.fecha} · {p.minutos} min de lectura</span>
+                </span>
+                <ArrowRight className="bl-fila-flecha" size={18} strokeWidth={1.6} />
+              </Link>
+            </FadeIn>
+          </li>
         ))}
-      </div>
+      </ul>
     </>
-  );
-}
-
-function Chip({ activo, onClick, label }: { activo: boolean; onClick: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 600,
-        padding: "8px 15px", borderRadius: 999, cursor: "pointer",
-        border: `1px solid ${activo ? "var(--navy-800)" : "var(--line-200)"}`,
-        background: activo ? "var(--navy-800)" : "#fff",
-        color: activo ? "#fff" : "var(--ink-600)",
-        transition: "all var(--dur) var(--ease-out)",
-      }}
-    >
-      {label}
-    </button>
   );
 }

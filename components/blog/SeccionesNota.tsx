@@ -8,10 +8,14 @@ const RE_H2 = /<h2 id="([^"]*)">([\s\S]*?)<\/h2>/g;
 type Seccion = { id: string; tituloHtml: string; cuerpoHtml: string };
 
 /**
- * Cuerpo de la nota con cada sección (h2) plegable.
+ * Cuerpo de la nota, partido en secciones (una por h2).
  *
- * El contenido siempre se renderiza y solo se oculta con CSS: así sigue
- * estando en el HTML para los buscadores, y el usuario decide qué abrir.
+ * La primera mitad se lee de corrido, como un artículo: plegar desde el
+ * arranque cortaba la lectura. De la mitad en adelante, cada sección se
+ * puede plegar para saltar a lo que interesa, pero arranca abierta.
+ *
+ * El contenido siempre se renderiza y solo se oculta con `hidden`: así
+ * sigue en el HTML para los buscadores.
  */
 export default function SeccionesNota({ html }: { html: string }) {
   const { intro, secciones } = useMemo(() => partir(html), [html]);
@@ -26,58 +30,41 @@ export default function SeccionesNota({ html }: { html: string }) {
     });
 
   if (!secciones.length) {
-    return <div className="blog-prose" dangerouslySetInnerHTML={{ __html: html }} />;
+    return <div className="nt-prosa" dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
-  const todasCerradas = cerradas.size === secciones.length;
+  const mitad = Math.ceil(secciones.length / 2);
 
   return (
     <>
-      {intro.trim() && (
-        <div className="blog-prose" dangerouslySetInnerHTML={{ __html: intro }} />
-      )}
+      {intro.trim() && <div className="nt-prosa nt-intro" dangerouslySetInnerHTML={{ __html: intro }} />}
 
-      <div style={{ display: "flex", justifyContent: "flex-end", margin: "4px 0 -8px" }}>
-        <button
-          type="button"
-          onClick={() => setCerradas(todasCerradas ? new Set() : new Set(secciones.map(s => s.id)))}
-          style={{
-            fontFamily: "var(--font-sans)", fontSize: 12, fontWeight: 600,
-            color: "var(--ink-500)", background: "none", border: "none",
-            cursor: "pointer", padding: "4px 2px",
-          }}
-        >
-          {todasCerradas ? "Abrir todas las secciones" : "Cerrar todas las secciones"}
-        </button>
-      </div>
-
-      {secciones.map(s => {
+      {secciones.map((s, i) => {
+        if (i < mitad) {
+          return (
+            <section key={s.id} className="nt-prosa nt-seccion">
+              <h2 id={s.id} dangerouslySetInnerHTML={{ __html: s.tituloHtml }} />
+              <div dangerouslySetInnerHTML={{ __html: s.cuerpoHtml }} />
+            </section>
+          );
+        }
         const abierta = !cerradas.has(s.id);
         return (
-          <div key={s.id} className="blog-prose nota-seccion">
+          <section key={s.id} className="nt-prosa nt-seccion nt-plegable">
             <h2 id={s.id}>
               <button
                 type="button"
-                className="nota-toggle"
+                className="nt-toggle"
                 onClick={() => alternar(s.id)}
                 aria-expanded={abierta}
                 aria-controls={`cuerpo-${s.id}`}
               >
                 <span dangerouslySetInnerHTML={{ __html: s.tituloHtml }} />
-                <ChevronDown
-                  size={20}
-                  className="nota-chevron"
-                  style={{ transform: abierta ? "rotate(180deg)" : "none" }}
-                />
+                <ChevronDown size={20} className="nt-chevron" data-abierta={abierta} />
               </button>
             </h2>
-            <div
-              id={`cuerpo-${s.id}`}
-              className="nota-cuerpo"
-              hidden={!abierta}
-              dangerouslySetInnerHTML={{ __html: s.cuerpoHtml }}
-            />
-          </div>
+            <div id={`cuerpo-${s.id}`} hidden={!abierta} dangerouslySetInnerHTML={{ __html: s.cuerpoHtml }} />
+          </section>
         );
       })}
     </>

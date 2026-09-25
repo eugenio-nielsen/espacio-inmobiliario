@@ -1,0 +1,487 @@
+/* Blog · la nota (prefijo .nt-).
+   Fuera de globals.css porque el cache de Tailwind no ve sus cambios
+   en Windows; un CSS plano sí recarga. La vista previa del editor del
+   blog (BlogAdmin) usa estas mismas clases: lo que se ve al escribir es
+   lo que se publica. */
+
+.nt { background: var(--cream); }
+
+/* ── Progreso de lectura ───────────────────────────────────── */
+.nt-progreso {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 60;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-600), var(--gold-300));
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+/* ── Apertura ──────────────────────────────────────────────── */
+.nt-apertura {
+  position: relative;
+  overflow: clip;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(440px, 70vh, 620px);
+  background: var(--navy-950);
+  color: #fff;
+}
+.nt-apertura-fondo { position: absolute; inset: 0; animation: nt-acercar 26s ease-out both; }
+@keyframes nt-acercar { from { transform: scale(1.06); } to { transform: scale(1); } }
+.nt-velo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(4,14,28,.9) 0%, rgba(4,14,28,.7) 45%, rgba(4,14,28,.1) 85%),
+    linear-gradient(0deg, rgba(4,14,28,.75) 0%, transparent 50%);
+  pointer-events: none;
+}
+.nt-apertura-in {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 36px 24px clamp(44px, 6vw, 68px);
+}
+.nt-migas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: clamp(40px, 8vh, 84px);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.nt-migas a { color: rgba(255,255,255,.62); text-decoration: none; transition: color .3s; }
+.nt-migas a:hover { color: var(--gold-300); }
+.nt-migas i { font-style: normal; color: var(--gold-500); }
+.nt-seccion-rotulo {
+  display: block;
+  margin-bottom: 14px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+}
+.nt-titulo {
+  /* Ancho acotado: a la derecha vive el medallón de la portada */
+  max-width: 660px;
+  margin: 0 0 18px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(32px, 4.9vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+}
+.nt-bajada {
+  max-width: 50ch;
+  margin: 0 0 28px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(17px, 1.8vw, 21px);
+  line-height: 1.55;
+  color: rgba(255,255,255,.76);
+}
+.nt-firma-linea { display: flex; align-items: center; gap: 14px; }
+.nt-firma-linea p { margin: 0; font-family: var(--font-sans); font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.62); }
+.nt-firma-linea strong { display: block; font-weight: 600; font-size: 14px; color: #fff; }
+
+/* ── Cuerpo: índice al costado + columna de lectura ────────── */
+.nt-cuerpo {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 680px);
+  justify-content: center;
+  gap: clamp(40px, 5vw, 84px);
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: clamp(44px, 6vw, 76px) 24px 0;
+}
+.nt-riel-in { position: sticky; top: 112px; display: flex; flex-direction: column; gap: 36px; }
+.nt-texto { min-width: 0; counter-reset: sec; }
+
+/* ── Prosa ─────────────────────────────────────────────────── */
+.nt-prosa {
+  font-family: var(--font-sans);
+  font-size: 17.5px;
+  line-height: 1.8;
+  color: var(--ink-700);
+}
+.nt-prosa > *:first-child { margin-top: 0; }
+.nt-prosa p { margin: 0 0 1.25em; }
+
+/* El primer párrafo abre la nota: serif, más grande, con capitular */
+.nt-intro > p:first-of-type {
+  font-family: var(--font-display);
+  font-size: clamp(19px, 1.9vw, 22px);
+  line-height: 1.6;
+  color: var(--navy-800);
+}
+.nt-intro > p:first-of-type::first-letter {
+  float: left;
+  padding: 7px 12px 0 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 4.2em;
+  line-height: .78;
+  color: var(--gold-600);
+}
+
+.nt-seccion { margin-top: 2.6em; }
+.nt-prosa h2 {
+  counter-increment: sec;
+  margin: 2.2em 0 .8em;
+  scroll-margin-top: 104px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(24px, 2.6vw, 31px);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+}
+.nt-seccion > h2 { margin-top: 0; }
+/* Número romano de la sección, como las cláusulas de la marca */
+.nt-prosa h2::before {
+  content: counter(sec, upper-roman);
+  display: block;
+  margin-bottom: 8px;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: .02em;
+  color: var(--gold-600);
+}
+.nt-prosa h3 {
+  margin: 1.8em 0 .6em;
+  scroll-margin-top: 104px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(19px, 2vw, 22px);
+  color: var(--navy-800);
+}
+.nt-prosa h4 { margin: 1.5em 0 .4em; font-weight: 700; font-size: 16px; color: var(--navy-800); }
+.nt-prosa a { color: var(--gold-700); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; transition: color .25s; }
+.nt-prosa a:hover { color: var(--navy-800); }
+.nt-prosa strong { font-weight: 600; color: var(--ink-900); }
+.nt-prosa ul, .nt-prosa ol { margin: 0 0 1.3em; padding-left: 1.3em; }
+.nt-prosa li { margin: 0 0 .55em; padding-left: .2em; }
+.nt-prosa li::marker { color: var(--gold-500); }
+.nt-prosa img { max-width: 100%; height: auto; }
+.nt-prosa hr {
+  height: 1px;
+  margin: 3em 0;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--gold-400), transparent);
+}
+.nt-prosa code { font-family: ui-monospace, monospace; font-size: .88em; background: var(--navy-50); padding: 2px 6px; border-radius: 4px; }
+.nt-prosa pre { overflow-x: auto; margin: 1.6em 0; padding: 16px 18px; border-radius: 3px; background: var(--navy-900); color: #fff; font-size: 14px; }
+.nt-prosa pre code { background: none; padding: 0; color: inherit; }
+
+/* Cita destacada */
+.nt-prosa blockquote {
+  margin: 2.2em 0;
+  padding: 4px 0 4px 26px;
+  border-left: 1px solid var(--gold-500);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(20px, 2.1vw, 25px);
+  line-height: 1.5;
+  color: var(--navy-800);
+}
+.nt-prosa blockquote p:last-child { margin-bottom: 0; }
+
+/* Tablas: filetes, rótulos en versalitas y cifras alineadas */
+.nt-tabla {
+  overflow-x: auto;
+  margin: 2.2em 0;
+  border-top: 1px solid var(--navy-800);
+  border-bottom: 1px solid var(--line-200);
+}
+.nt-tabla table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.nt-tabla th {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line-200);
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  white-space: nowrap;
+}
+.nt-tabla td { padding: 12px 14px; border-bottom: 1px solid var(--line-100); vertical-align: top; }
+.nt-tabla tr:last-child td { border-bottom: 0; }
+.nt-tabla td:first-child { font-weight: 500; color: var(--navy-800); }
+.nt-tabla tbody tr { transition: background .25s; }
+.nt-tabla tbody tr:hover { background: rgba(185,159,102,.07); }
+
+/* ── Bloques editoriales (:::) ─────────────────────────────── */
+.nt-en-corto {
+  margin: 0 0 2.4em;
+  padding: 22px 26px 10px;
+  border: 1px solid var(--gold-200);
+  border-top: 2px solid var(--gold-500);
+  border-radius: 3px;
+  background: #fff;
+  font-size: 16px;
+}
+.nt-rotulo {
+  margin: 0 0 12px !important;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.nt-en-corto ul { list-style: none; padding: 0; }
+.nt-en-corto li { position: relative; padding-left: 20px; }
+.nt-en-corto li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: .72em;
+  width: 6px;
+  height: 6px;
+  background: var(--gold-500);
+  transform: rotate(45deg);
+}
+
+.nt-dato {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 28px;
+  align-items: center;
+  margin: 2.6em 0;
+  padding: 28px 0;
+  border-top: 1px solid var(--gold-300);
+  border-bottom: 1px solid var(--gold-300);
+}
+.nt-dato-v {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(46px, 6.2vw, 76px);
+  line-height: 1;
+  letter-spacing: -.035em;
+  color: var(--navy-800);
+  font-variant-numeric: lining-nums tabular-nums;
+  white-space: nowrap;
+}
+.nt-dato-l { font-size: 15.5px; line-height: 1.55; color: var(--ink-600); max-width: 32ch; }
+
+.nt-figura { margin: 2.4em 0; }
+.nt-figura img { display: block; width: 100%; height: auto; border-radius: 3px; }
+.nt-figura figcaption,
+.nt-video figcaption {
+  margin-top: 12px;
+  padding-left: 14px;
+  border-left: 1px solid var(--gold-400);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-500);
+}
+
+.nt-video { display: grid; margin: 2.4em 0; }
+/* Área 16:9 siempre presente (Vimeo no trae miniatura) */
+.nt-video::before { content: ""; grid-area: 1 / 1; aspect-ratio: 16 / 9; border-radius: 3px; background: var(--navy-950); }
+.nt-video > img,
+.nt-video > iframe { grid-area: 1 / 1; width: 100%; aspect-ratio: 16 / 9; height: auto; border: 0; border-radius: 3px; object-fit: cover; }
+.nt-video > img { opacity: .82; transition: opacity .4s; }
+.nt-video:hover > img { opacity: 1; }
+.nt-video-play {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: center;
+  position: relative;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.7);
+  background: rgba(7,24,44,.62);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: transform .35s var(--ease-out), background .35s;
+}
+.nt-video-play::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -11px 0 0 -6px;
+  border-style: solid;
+  border-width: 11px 0 11px 18px;
+  border-color: transparent transparent transparent #fff;
+}
+.nt-video-play:hover { transform: scale(1.06); background: var(--gold-500); }
+.nt-video figcaption { grid-row: 2; }
+
+/* Imagen a todo el ancho del texto y un poco más */
+.nt-ancha { margin: 2.6em -56px; }
+.nt-ancha .nt-figura { margin: 0; }
+
+/* ── Entradas al scroll (las pone MovimientoNota) ──────────── */
+.nt-revelar {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1);
+}
+.nt-revelar.is-in { opacity: 1; transform: none; }
+
+/* ── Secciones plegables (segunda mitad de la nota) ────────── */
+.nt-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+.nt-toggle > span { flex: 1; min-width: 0; }
+.nt-toggle:hover { color: var(--gold-700); }
+.nt-chevron { flex-shrink: 0; color: var(--gold-600); transition: transform .3s var(--ease-out); }
+.nt-chevron[data-abierta="true"] { transform: rotate(180deg); }
+
+/* ── Índice lateral (escritorio) ───────────────────────────── */
+.nt-indice-t {
+  margin: 0 0 14px;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.nt-indice ol { list-style: none; margin: 0; padding: 0; }
+.nt-indice a {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  padding: 8px 0 8px 14px;
+  border-left: 1px solid var(--line-200);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-500);
+  text-decoration: none;
+  transition: color .3s, border-color .3s;
+}
+.nt-indice a:hover { color: var(--navy-800); }
+.nt-indice a[aria-current="true"] { color: var(--navy-800); font-weight: 600; border-left-color: var(--gold-500); }
+.nt-indice-n { font-family: var(--font-display); font-style: italic; font-weight: 500; color: var(--gold-600); }
+
+/* Índice plegable (pantallas angostas) */
+.nt-toc { display: none; margin: 0 0 34px; border: 1px solid var(--line-200); border-radius: 3px; background: #fff; }
+.nt-toc-boton { display: flex; align-items: center; gap: 12px; width: 100%; padding: 15px 18px; border: 0; background: none; cursor: pointer; text-align: left; }
+.nt-toc-t { flex: 1; font-family: var(--font-sans); font-size: 11px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-700); }
+.nt-toc-n { font-family: var(--font-sans); font-size: 12px; color: var(--ink-500); }
+.nt-toc-lista { list-style: none; margin: 0; padding: 0 18px 14px; }
+.nt-toc-lista a { display: grid; grid-template-columns: 30px minmax(0, 1fr); padding: 9px 0; border-top: 1px solid var(--line-100); font-family: var(--font-sans); font-size: 14px; line-height: 1.45; color: var(--navy-800); text-decoration: none; }
+
+/* ── Compartir ─────────────────────────────────────────────── */
+.nt-compartir { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.nt-compartir-t { width: 100%; margin-bottom: 4px; font-family: var(--font-sans); font-size: 10.5px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--gold-700); }
+.nt-compartir a,
+.nt-compartir button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-200);
+  background: transparent;
+  color: var(--navy-800);
+  cursor: pointer;
+  transition: background .3s, color .3s, border-color .3s;
+}
+.nt-compartir a:hover { background: var(--c); border-color: var(--c); color: #fff; }
+.nt-compartir button:hover { border-color: var(--gold-400); }
+.nt-compartir button[data-copiado="true"] { background: var(--success); border-color: var(--success); color: #fff; }
+
+/* ── Firma del autor ───────────────────────────────────────── */
+.nt-autor {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  margin: 3.4em 0 0;
+  padding: 30px 0;
+  border-top: 1px solid var(--gold-300);
+  border-bottom: 1px solid var(--line-200);
+}
+.nt-autor-firma { width: 170px; margin: 0 0 -4px -4px; }
+/* La firma se dibuja cuando entra el bloque (Reveal le pone .is-in) */
+.nt-autor.is-in .nt-autor-firma path { animation: cf-draw 2.4s cubic-bezier(.5,0,.2,1) .4s forwards; }
+.nt-autor-nombre { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 19px; color: var(--navy-800); }
+.nt-autor-rol { margin: 4px 0 8px; font-family: var(--font-sans); font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-700); }
+.nt-autor-bio { margin: 0; font-family: var(--font-sans); font-weight: 300; font-size: 14.5px; line-height: 1.6; color: var(--ink-600); }
+.nt-compartir-pie { margin-top: 26px; }
+.nt-compartir-pie .nt-compartir-t { width: auto; margin: 0 8px 0 0; }
+
+/* ── Llamado según la sección ──────────────────────────────── */
+.nt-cta { max-width: 1040px; margin: clamp(56px, 7vw, 88px) auto 0; padding: 0 24px; }
+.nt-cta-in {
+  position: relative;
+  overflow: clip;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px 40px;
+  align-items: center;
+  padding: clamp(30px, 4vw, 48px);
+  border-radius: 4px;
+  background: var(--navy-900);
+  color: #fff;
+}
+.nt-cta-gq { width: 460px; height: 460px; right: -140px; top: 50%; margin-top: -230px; color: var(--gold-400); opacity: .16; }
+.nt-cta-in > *:not(.gq) { position: relative; z-index: 1; }
+.nt-cta-t { margin: 0 0 8px; font-family: var(--font-display); font-weight: 600; font-size: clamp(22px, 2.4vw, 30px); line-height: 1.15; letter-spacing: -.02em; }
+.nt-cta-t em { font-style: italic; font-weight: 500; color: var(--gold-300); }
+.nt-cta-p { margin: 0; font-family: var(--font-sans); font-weight: 300; font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.7); }
+
+/* ── Seguí leyendo ─────────────────────────────────────────── */
+.nt-mas { max-width: 1040px; margin: clamp(56px, 7vw, 88px) auto 0; padding: 0 24px clamp(72px, 9vw, 110px); }
+.nt-mas-grilla { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 36px); }
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1099px) {
+  .nt-cuerpo { grid-template-columns: minmax(0, 680px); }
+  .nt-riel { display: none; }
+  .nt-toc { display: block; }
+  .nt-ancha { margin-inline: 0; }
+}
+@media (max-width: 860px) {
+  .nt-mas-grilla { grid-template-columns: minmax(0, 1fr); }
+  .nt-cta-in { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .nt-apertura { min-height: 540px; }
+  .nt-velo { background: linear-gradient(0deg, rgba(4,14,28,.95) 0%, rgba(4,14,28,.8) 55%, rgba(4,14,28,.25) 100%); }
+  .nt-migas { margin-bottom: 170px; }
+  .nt-apertura-in { padding: 24px 18px 40px; }
+  .nt-cuerpo { padding: 36px 18px 0; }
+  .nt-prosa { font-size: 17px; line-height: 1.75; }
+  .nt-dato { grid-template-columns: minmax(0, 1fr); }
+  .nt-ancha { margin-inline: -18px; }
+  .nt-ancha .nt-figura img { border-radius: 0; }
+  .nt-autor { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .nt-cta, .nt-mas { padding-left: 18px; padding-right: 18px; }
+  .nt-cta .bl-leer { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nt-apertura-fondo { animation: none; }
+  .nt-revelar { opacity: 1; transform: none; transition: none; }
+}

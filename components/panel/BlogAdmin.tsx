@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useTransition } from "react";
-import { marked } from "marked";
+import { renderPost } from "@/lib/blog/markdown";
+import "@/components/blog/nota.css";
 import { Plus, Save, Check, Trash2, Edit2, ArrowLeft, Image as ImageIcon, Eye, Loader2, ExternalLink } from "lucide-react";
 import { savePost, deletePost, uploadBlogImage, type PostInput } from "@/lib/actions/blog";
 import { CATEGORIAS_BLOG, type Post } from "@/lib/blog/types";
@@ -277,8 +278,10 @@ function PostEditor({ post, onClose, onSaved, onDeleted }: {
           </div>
         </div>
         {preview ? (
-          <div className="blog-prose" style={{ border: "1px solid var(--line-200)", borderRadius: "var(--radius-sm)", padding: 18, minHeight: 240, background: "#fff" }}
-            dangerouslySetInnerHTML={{ __html: marked.parse(form.contenido || "_Nada para previsualizar._", { async: false }) as string }} />
+          // Mismo render y mismas clases que la nota publicada: se ven los
+          // bloques :::en-corto, :::dato, :::video, etc. tal como van a salir
+          <div className="nt-texto nt-prosa nt-intro" style={{ border: "1px solid var(--line-200)", borderRadius: "var(--radius-sm)", padding: 18, minHeight: 240, background: "#fff" }}
+            dangerouslySetInnerHTML={{ __html: renderPost(form.contenido || "_Nada para previsualizar._").html }} />
         ) : (
           <textarea ref={contentRef} style={{ ...inp, resize: "vertical", minHeight: 320, fontFamily: "ui-monospace, monospace", fontSize: 13.5, lineHeight: 1.6 }}
             value={form.contenido} onChange={e => up("contenido", e.target.value)}

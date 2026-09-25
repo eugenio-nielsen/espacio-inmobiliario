@@ -27,18 +27,19 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
     } catch { /* noop */ }
   }
 
+  // Monocromos, en la línea de la marca; cada red toma su color recién al
+  // pasar el puntero (el color viaja en --c). Estilos en nota.css.
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-      <span style={{ fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, color: "var(--ink-500)" }}>Compartir</span>
+    <div className="nt-compartir">
+      <span className="nt-compartir-t">Compartir</span>
       {links.map(l => (
         <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" aria-label={`Compartir en ${l.label}`} title={l.label}
-          style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 38, height: 38, borderRadius: 999, background: l.color, color: "#fff", textDecoration: "none" }}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">{l.icon}</svg>
+          style={{ ["--c" as string]: l.color }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">{l.icon}</svg>
         </a>
       ))}
-      <button onClick={copy} aria-label="Copiar link" title="Copiar link"
-        style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 38, height: 38, borderRadius: 999, background: copied ? "#15803D" : "var(--navy-50)", color: copied ? "#fff" : "var(--navy-800)", border: "1px solid var(--line-200)", cursor: "pointer" }}>
-        {copied ? <Check size={16} /> : <Link2 size={16} />}
+      <button onClick={copy} aria-label="Copiar link" title="Copiar link" data-copiado={copied}>
+        {copied ? <Check size={15} /> : <Link2 size={15} />}
       </button>
     </div>
   );
