@@ -63,7 +63,9 @@ export default function SelloEN({
               fontFamily: "var(--font-sans)",
               fontSize: 11,
               fontWeight: 500,
-              letterSpacing: "3.4px",
+              // Con 2.8px el texto mide lo mismo que el círculo (2π·74 ≈ 465):
+              // con más, el final se montaba sobre el principio del anillo
+              letterSpacing: "2.8px",
               textTransform: "uppercase",
             }}
           >
