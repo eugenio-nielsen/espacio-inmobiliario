@@ -6,7 +6,6 @@ import Guilloche from "@/components/ui/Guilloche";
 import Reveal from "@/components/como-funciona/Reveal";
 import { BARRIO_PAGES } from "@/lib/barrios";
 import { HERRAMIENTAS } from "@/lib/herramientas";
-import { PROTOCOLO } from "@/lib/protocolo";
 import "./footer.css";
 
 const WHATSAPP = "5491164519421";
@@ -51,13 +50,21 @@ function IconoWhatsapp({ size = 15 }: { size?: number }) {
  *
  * Cuatro bandas:
  *   1. Cierre      · invitación a hablar, con sello, firma y contacto.
- *   2. Protocolo   · los cuatro controles (lib/protocolo.ts), en corto.
+ *   2. Ayuda       · cómo podemos ayudarte: compraventa, asesoramiento
+ *                    e inversiones, cada una con su puerta de entrada.
  *   3. Directorio  · contacto directo + navegación del sitio.
  *   4. Legales     · y la marca grabada a todo el ancho, cortada al pie.
  *
  * Estilos en footer.css (prefijo .pie-), fuera de globals.css por el
  * cache de Tailwind que no ve los cambios en Windows.
  */
+/** Lo que hacemos, en una línea cada uno, con la página que lo cuenta. */
+const AYUDA = [
+  { n: "I", t: "Compraventa", d: "Comprar o vender, hasta la escritura", href: "/como-funciona" },
+  { n: "II", t: "Asesoramiento", d: "Entender la operación antes de decidir", href: "/contacto" },
+  { n: "III", t: "Inversiones", d: "Cuándo conviene comprar o vender", href: "/contacto?motivo=invertir" },
+] as const;
+
 export default function Footer() {
   const anio = new Date().getFullYear();
 
@@ -112,22 +119,24 @@ export default function Footer() {
         </div>
       </section>
 
-      {/* ══ 2 · Protocolo ═════════════════════════════════════
-          La promesa de la home, en todas las páginas y en una línea
-          por punto. Misma fuente que el documento de Respaldo. */}
-      <section className="pie-protocolo" aria-label="Protocolo de respaldo">
-        <div className="pie-protocolo-in">
-          <p className="pie-protocolo-t">
-            Protocolo <em>de respaldo</em>
+      {/* ══ 2 · Ayuda ═════════════════════════════════════════
+          En todas las páginas: qué hacemos, en una línea por punto,
+          y cada punto lleva a donde se cuenta. */}
+      <section className="pie-ayuda" aria-labelledby="pie-ayuda-t">
+        <div className="pie-ayuda-in">
+          <p id="pie-ayuda-t" className="pie-ayuda-t">
+            Cómo podemos <em>ayudarte</em>
           </p>
           <ol className="pie-clausulas">
-            {PROTOCOLO.map(c => (
-              <li key={c.n} className="pie-clausula">
-                <span className="pie-num" aria-hidden="true">{c.n}</span>
-                <span>
-                  <strong>{c.clave}</strong>
-                  {c.corto}
-                </span>
+            {AYUDA.map(c => (
+              <li key={c.n}>
+                <Link href={c.href} className="pie-clausula">
+                  <span className="pie-num" aria-hidden="true">{c.n}</span>
+                  <span>
+                    <strong>{c.t}</strong>
+                    {c.d}
+                  </span>
+                </Link>
               </li>
             ))}
           </ol>
