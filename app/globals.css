@@ -295,29 +295,6 @@ select:focus, input:focus, textarea:focus {
   .grid-stats > * { flex: 0 0 44%; scroll-snap-align: start; }
 }
 
-/* Hero animate-in */
-@keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: none; }
-}
-.hero-animate {
-  animation: heroFadeUp 0.8s ease both;
-}
-.hero-animate-delay-1 { animation-delay: 0.15s; }
-.hero-animate-delay-2 { animation-delay: 0.30s; }
-.hero-animate-delay-3 { animation-delay: 0.50s; }
-
-/* Hero Ken Burns — zoom lento e infinito de la imagen de fondo */
-@keyframes kenburns {
-  0%   { transform: scale(1)    translateY(0); }
-  50%  { transform: scale(1.12) translateY(-1.5%); }
-  100% { transform: scale(1)    translateY(0); }
-}
-.hero-kenburns {
-  animation: kenburns 28s ease-in-out infinite;
-  transform-origin: center;
-}
-
 /* Banda de estadísticas: 4col → 2col → 2col */
 .grid-stats-band {
   display: grid;
@@ -784,8 +761,6 @@ select:focus, input:focus, textarea:focus {
 
 /* Respeta usuarios con reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .hero-kenburns { animation: none; }
-  .hero-animate  { animation: none; opacity: 1; transform: none; }
   .skeleton-shimmer { animation: none; }
 }
 
@@ -1562,33 +1537,6 @@ select:focus, input:focus, textarea:focus {
   .property-sticky-detalle { animation: none; }
 }
 
-/* Search bar: horizontal → vertical on mobile */
-.home-search-bar {
-  max-width: 720px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: var(--radius-md);
-  padding: 10px;
-  display: flex;
-  gap: 8px;
-  box-shadow: var(--shadow-lg);
-}
-@media (max-width: 639px) {
-  .home-search-bar { flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--radius-md); }
-  .home-search-field-operacion { display: none !important; } /* hide Venta fixed field on mobile */
-  /* cada campo se vuelve una caja clara y tappable */
-  .home-search-bar .search-field {
-    border-left: none !important;
-    border: 1px solid var(--line-200) !important;
-    border-radius: var(--radius-sm);
-    background: var(--cream);
-    padding: 10px 14px !important;
-  }
-  .home-search-bar .search-field select,
-  .home-search-bar .search-field input { font-size: 16px !important; } /* evita zoom iOS */
-  .home-search-bar > button { width: 100%; justify-content: center; padding: 14px !important; }
-}
-
 /* Galería principal.
    La galería va a todo el ancho del contenedor (~1080px en escritorio),
    arriba de la ficha y la sidebar. Con los 420px que tenía, la foto
@@ -1662,31 +1610,6 @@ select:focus, input:focus, textarea:focus {
 .section-pad { padding: 64px 24px; }
 @media (max-width: 639px) {
   .section-pad { padding: 40px 20px; }
-}
-
-/* Hero responsive text */
-.hero-subtitle {
-  font-family: var(--font-sans);
-  font-size: 19px;
-  line-height: 1.6;
-  color: var(--navy-300);
-  max-width: 540px;
-  margin: 0 0 36px;
-}
-@media (max-width: 639px) {
-  .hero-subtitle { font-size: 15px; margin: 0 0 24px; }
-}
-
-/* Trust strip: wrap on mobile */
-.trust-strip {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  margin-top: 34px;
-  flex-wrap: wrap;
-}
-@media (max-width: 639px) {
-  .trust-strip { gap: 16px; margin-top: 24px; }
 }
 
 /* Section heading responsive */

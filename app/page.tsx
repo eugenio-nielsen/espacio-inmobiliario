@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/user";
@@ -6,17 +5,16 @@ import type { Metadata } from "next";
 import { PROPERTY_CARD_COLS, TOPE_HOME, type PropertyCardData } from "@/lib/types";
 import PropiedadesHome from "@/components/home/PropiedadesHome";
 import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
-import HomeSearch from "@/components/HomeSearch";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { BadgeCheck, Handshake, MapPin, Plus, ArrowRight, Building2, Eye, Map as MapIcon, Percent } from "lucide-react";
+import { Plus, ArrowRight, Building2, Eye, Map as MapIcon, Percent } from "lucide-react";
 import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
 import Counter from "@/components/ui/Counter";
 import FadeIn from "@/components/ui/FadeIn";
-import SkylineVivo from "@/components/ui/SkylineVivo";
 import Caminos from "@/components/home/Caminos";
 import ComoTrabajamos from "@/components/home/ComoTrabajamos";
 import Respaldo from "@/components/home/Respaldo";
+import Apertura from "@/components/home/Apertura";
 import { BARRIOS_CABA, PARTIDOS_PBA } from "@/lib/ubicaciones";
 
 export const revalidate = 60;
@@ -69,65 +67,8 @@ export default async function HomePage() {
     <div>
       <Navbar />
 
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <section style={{ background: "var(--navy-800)", color: "#fff", position: "relative", overflow: "hidden", padding: "clamp(48px,8vw,84px) 20px clamp(56px,9vw,96px)" }}>
-        {/* Imagen de fondo con Ken Burns (zoom lento infinito).
-            Va por next/image (no background-image) para que se sirva
-            optimizada en AVIF/WebP y en el tamaño que corresponde. */}
-        <div className="hero-kenburns" style={{ position: "absolute", inset: 0, opacity: 0.22, pointerEvents: "none" }}>
-          <Image
-            src="/hero-bg.png"
-            alt=""
-            fill
-            // `priority` está deprecado en Next 16 y ya no hacía nada
-            loading="eager"
-            fetchPriority="high"
-            sizes="100vw"
-            style={{ objectFit: "cover", objectPosition: "center" }}
-          />
-        </div>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% -10%, rgba(185,159,102,.16), transparent 55%)", pointerEvents: "none" }} />
-        {/* Skyline vivo: ventanas, nubes y pins en movimiento continuo */}
-        <SkylineVivo />
-        <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <div className="es-eyebrow es-eyebrow-light hero-animate" style={{ marginBottom: 14 }}>
-            Propiedades directas de dueños
-          </div>
-          <h1 className="hero-animate hero-animate-delay-1" style={{
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: "clamp(28px, 5vw, 52px)", lineHeight: 1.16,
-            letterSpacing: "-.02em", margin: "0 0 20px", maxWidth: 760,
-          }}>
-            Dueños Directos.{" "}
-            <span style={{ fontStyle: "italic", color: "var(--gold-300)" }}>Publicá tu propiedad Gratis</span>
-          </h1>
-          <p className="hero-subtitle hero-animate hero-animate-delay-2">
-            Comprá o vendé tratando directamente con los dueños.
-            Sin comisiones en toda la Argentina.
-          </p>
-          <div className="hero-animate hero-animate-delay-2" style={{ width: "100%" }}>
-            <HomeSearch />
-          </div>
-          <div className="trust-strip hero-animate hero-animate-delay-3">
-            {([
-              [BadgeCheck, "Sin comisiones"],
-              [Handshake, "Trato directo con el dueño"],
-              [MapPin, "Todo Buenos Aires"],
-            ] as const).map(([Icon, text]) => (
-              <span key={text} style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                fontFamily: "var(--font-sans)", fontSize: 13.5, color: "rgba(255,255,255,.92)",
-                background: "rgba(7,24,44,.55)", backdropFilter: "blur(6px)",
-                border: "1px solid rgba(255,255,255,.14)",
-                borderRadius: 999, padding: "8px 16px",
-              }}>
-                <Icon size={17} strokeWidth={1.75} color="var(--gold-400)" />
-                {text}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── Apertura (hero) ─────────────────────────────────── */}
+      <Apertura logueado={!!user} />
 
       {/* ── Banda de estadísticas ─────────────────────────────── */}
       <section style={{ background: "var(--navy-900)", borderTop: "1px solid rgba(185,159,102,.25)", borderBottom: "1px solid rgba(185,159,102,.25)", position: "relative", overflow: "hidden" }}>

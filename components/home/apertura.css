@@ -1,0 +1,506 @@
+/* Estilos de components/home/Apertura.tsx y FichaHome.tsx.
+   Fuera de globals.css por el mismo motivo que respaldo.css: el
+   plugin de PostCSS cachea globals.css y en Windows no ve los cambios. */
+
+/* ═══════════════════════════════════════════════════════════════
+   Apertura de la home — prefijo .ap-
+   Una escena de cine en tres tiempos: la ciudad entra desde el negro,
+   el titular sube desde una línea de corte y el sello se estampa.
+   Después solo respira lo que tiene que respirar: la deriva de la
+   foto, la roseta del guilloché y el anillo de texto del sello.
+   ═══════════════════════════════════════════════════════════════ */
+.ap {
+  position: relative;
+  overflow: clip;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  background: var(--navy-950);
+  color: #fff;
+}
+@media (min-width: 901px) {
+  /* Una pantalla, descontada la barra; con tope para monitores altos */
+  .ap { min-height: min(calc(100svh - 77px), 860px); }
+}
+
+/* ── Fondo ────────────────────────────────────────────────────── */
+.ap-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  animation: ap-fondo-entra 2.8s var(--ease-out) .1s both;
+}
+.ap-deriva {
+  position: absolute;
+  inset: -3%;
+  animation: ap-deriva 40s ease-in-out 2.9s infinite alternate;
+}
+/* La foto viene virada a navy y muy oscura: se levanta para que la
+   ciudad se lea detrás del velo */
+.ap-foto { object-fit: cover; object-position: center 62%; filter: brightness(1.9) contrast(1.35) saturate(.85); }
+/* Legibilidad del texto a la izquierda y fundido hacia la banda de abajo */
+.ap-velo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(7,24,44,.92) 0%, rgba(7,24,44,.72) 34%, rgba(7,24,44,.25) 68%, rgba(7,24,44,.35) 100%),
+    linear-gradient(0deg, var(--navy-900) 0%, rgba(10,32,56,0) 30%),
+    linear-gradient(180deg, rgba(7,24,44,.75) 0%, rgba(7,24,44,0) 34%);
+}
+/* Un halo dorado detrás del sello que respira despacio */
+.ap-luz {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 34% 46% at 79% 46%, rgba(185,159,102,.2), transparent 70%);
+  animation: ap-respira 14s ease-in-out 2.6s infinite alternate both;
+}
+
+/* ── Composición ──────────────────────────────────────────────── */
+.ap-in {
+  flex: 1;
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: clamp(64px, 8vw, 108px) 24px clamp(48px, 6vw, 76px);
+  display: grid;
+  grid-template-columns: minmax(0, 660px) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+/* ── El texto ─────────────────────────────────────────────────── */
+.ap-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold-400);
+  animation: ap-aparece .9s ease .35s both;
+}
+.ap-eyebrow::before {
+  content: "";
+  width: 40px;
+  height: 1px;
+  background: var(--gold-500);
+  transform-origin: left;
+  animation: ap-traza 1.1s var(--ease-out) .45s both;
+}
+
+.ap-t {
+  margin: 22px 0 26px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(40px, 5.8vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -.034em;
+  color: #fff;
+}
+/* Cada renglón sube desde detrás de su propia línea de corte. El
+   padding deja lugar a los descendentes y a la inclinación de la
+   cursiva, que el overflow cortaría. */
+.ap-corte {
+  display: block;
+  overflow: hidden;
+  padding: 0 .12em .16em 0;
+  margin-bottom: -.16em;
+}
+.ap-corte > * {
+  display: block;
+  text-wrap: balance;
+  animation: ap-sube 1.25s cubic-bezier(.19, 1, .22, 1) .55s both;
+}
+.ap-corte + .ap-corte > * { animation-delay: .72s; }
+.ap-t em { font-style: italic; font-weight: 500; color: var(--gold-300); }
+
+.ap-lead {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(15.5px, 1.4vw, 17.5px);
+  line-height: 1.72;
+  color: rgba(255,255,255,.78);
+  animation: ap-entra 1s var(--ease-out) 1.05s both;
+}
+
+/* ── La ficha ─────────────────────────────────────────────────── */
+.ap-ficha {
+  max-width: 640px;
+  margin-top: clamp(30px, 3.6vw, 44px);
+  animation: ap-entra 1.1s var(--ease-out) 1.2s both;
+}
+.ap-pestanas {
+  position: relative;
+  display: flex;
+  gap: 30px;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+}
+.ap-pestana {
+  position: relative;
+  padding: 0 0 14px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255,255,255,.5);
+  transition: color .4s var(--ease-out);
+}
+.ap-pestana:hover { color: rgba(255,255,255,.82); }
+.ap-pestana[aria-selected="true"] { color: #fff; }
+/* El filete dorado de la pestaña activa se traza de izquierda a derecha */
+.ap-pestana::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold-400);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .55s var(--ease-out);
+}
+.ap-pestana[aria-selected="true"]::after { transform: scaleX(1); }
+.ap-pestana:focus-visible { outline: 1px solid var(--gold-400); outline-offset: 6px; }
+
+/* La hoja: papel con marco doble, como el documento de Respaldo */
+.ap-hoja {
+  position: relative;
+  display: grid;
+  margin-top: 18px;
+  background: #FFFDF9;
+  border-radius: 2px;
+  box-shadow: 0 42px 80px -34px rgba(0,0,0,.8), 0 0 0 1px rgba(185,159,102,.4);
+}
+.ap-hoja::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(185,159,102,.26);
+  pointer-events: none;
+}
+/* Los dos paneles comparten celda: la hoja no cambia de alto */
+.ap-panel {
+  grid-area: 1 / 1;
+  min-width: 0;
+  transition: opacity .45s var(--ease-out), transform .45s var(--ease-out), visibility .45s;
+}
+.ap-panel[data-activo="false"] { opacity: 0; transform: translateY(6px); visibility: hidden; }
+
+.ap-buscar {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.4fr) auto;
+  /* Si el panel de vender es más alto, la fila queda centrada en la
+     hoja en vez de estirar el botón */
+  align-content: center;
+  padding: 10px;
+}
+.ap-campo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 9px 18px;
+  cursor: text;
+  transition: background .3s;
+}
+.ap-campo-tipo { cursor: pointer; }
+.ap-campo + .ap-campo { border-left: 1px solid var(--line-200); }
+.ap-campo:focus-within { background: rgba(185,159,102,.08); }
+.ap-rotulo {
+  margin-bottom: 6px;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.ap-campo select,
+.ap-campo input {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--navy-800);
+}
+.ap-campo input::placeholder { color: var(--ink-400); font-weight: 400; }
+.ap-campo select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%23A4894E' stroke-width='1.4'%3E%3Cpath d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat right center;
+}
+
+.ap-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--navy-800);
+  transition: background .4s var(--ease-out);
+}
+.ap-boton:hover { background: var(--navy-950); }
+.ap-boton:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+.ap-vender {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 22px;
+  padding: 14px 10px 10px 22px;
+}
+.ap-vender-t {
+  flex: 1 1 100%;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-700);
+}
+.ap-vender-t a {
+  color: var(--navy-800);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--gold-500);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.ap-vender-t a:hover { color: var(--gold-700); }
+.ap-vender-acciones { display: flex; align-items: center; gap: 24px; }
+/* El segundo llamado es un enlace, no otra caja (como en Respaldo) */
+.ap-enlace {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  white-space: nowrap;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--navy-800);
+}
+.ap-enlace::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--gold-500);
+  transform-origin: left;
+  transition: transform .5s var(--ease-out);
+}
+.ap-enlace svg { transition: transform .4s var(--ease-out); }
+.ap-enlace:hover { color: var(--gold-700); }
+.ap-enlace:hover::after { transform: scaleX(.35); }
+.ap-enlace:hover svg { transform: translateX(4px); }
+
+/* ── El sello ─────────────────────────────────────────────────── */
+.ap-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(40px, 5vw, 64px);
+}
+.ap-emblema { position: relative; width: 236px; aspect-ratio: 1; }
+.ap-gq {
+  width: 680px;
+  height: 680px;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  color: var(--gold-400);
+  -webkit-mask-image: radial-gradient(circle, #000 46%, transparent 71%);
+  mask-image: radial-gradient(circle, #000 46%, transparent 71%);
+  animation: ap-guilloche 2.6s ease .5s both;
+}
+/* El sello se apoya en un disco oscuro para que la roseta no le cruce las letras */
+.ap-sello {
+  position: relative;
+  z-index: 1;
+  --sello-size: 236px;
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side, rgba(7,24,44,.96) 84%, rgba(7,24,44,0) 100%);
+  animation: ap-estampa 1.15s cubic-bezier(.3, 1.4, .5, 1) 1.15s both;
+}
+/* Una cartela cruzando la roseta, como el rótulo de un billete */
+.ap-marca-pie {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 9px 22px;
+  background: rgba(7,24,44,.92);
+  border-top: 1px solid rgba(185,159,102,.45);
+  border-bottom: 1px solid rgba(185,159,102,.45);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 19px;
+  color: rgba(255,255,255,.76);
+  text-align: center;
+  animation: ap-aparece 1.2s ease 1.9s both;
+}
+.ap-marca-pie em { color: var(--gold-300); }
+
+/* ── La cinta del pie ─────────────────────────────────────────── */
+.ap-cinta {
+  position: relative;
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 22px 24px 28px;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 10px;
+  animation: ap-aparece 1.2s ease 1.5s both;
+}
+.ap-cinta::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(185,159,102,.5) 20%, rgba(185,159,102,.5) 80%, transparent);
+  animation: ap-traza-centro 1.6s var(--ease-out) 1.4s both;
+}
+.ap-cinta li {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.62);
+}
+.ap-cinta li + li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin: 0 26px;
+  transform: rotate(45deg);
+  background: var(--gold-500);
+  opacity: .8;
+}
+
+/* ── Movimiento ───────────────────────────────────────────────── */
+@keyframes ap-fondo-entra { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: none; } }
+@keyframes ap-deriva { from { transform: scale(1) translate3d(0, 0, 0); } to { transform: scale(1.07) translate3d(-1.4%, -1%, 0); } }
+@keyframes ap-respira { from { opacity: .55; } to { opacity: 1; } }
+@keyframes ap-aparece { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ap-entra { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes ap-sube { from { transform: translateY(108%); } to { transform: none; } }
+@keyframes ap-traza { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes ap-traza-centro { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+@keyframes ap-guilloche { from { opacity: 0; } to { opacity: .34; } }
+/* Se apoya con un leve rebote, sin blur: el sello cae, no aparece */
+@keyframes ap-estampa {
+  from { opacity: 0; transform: scale(1.22); }
+  55% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-fondo, .ap-deriva, .ap-luz, .ap-eyebrow, .ap-eyebrow::before, .ap-corte > *,
+  .ap-lead, .ap-ficha, .ap-sello, .ap-marca-pie, .ap-cinta, .ap-cinta::before { animation: none; }
+  .ap-gq { animation: none; opacity: .34; }
+  .ap-panel { transition: none; }
+}
+
+/* ── Tablet y móvil ───────────────────────────────────────────── */
+/* Cuando la cinta ya no entra en una fila pasa a dos columnas, y cada
+   punto lleva su rombo: en fila corrida, los rombos quedaban sueltos
+   al principio de los renglones */
+@media (max-width: 1080px) {
+  .ap-cinta {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: center;
+    gap: 12px 56px;
+  }
+  .ap-cinta li { align-items: baseline; line-height: 1.6; }
+  .ap-cinta li::before,
+  .ap-cinta li + li::before {
+    content: "";
+    flex-shrink: 0;
+    width: 4px;
+    height: 4px;
+    margin: 0 12px 0 0;
+    transform: translateY(-2px) rotate(45deg);
+    background: var(--gold-500);
+  }
+}
+@media (max-width: 900px) {
+  .ap-in { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 40px; }
+  /* El sello sube al encabezado y su frase queda al lado, como un pie */
+  .ap-marca { order: -1; flex-direction: row; justify-content: flex-start; gap: 18px; margin-bottom: 30px; }
+  .ap-emblema { width: 92px; }
+  .ap-sello { --sello-size: 92px; }
+  .ap-gq { width: 300px; height: 300px; }
+  .ap-marca-pie { padding: 0; background: none; border: 0; font-size: 16px; text-align: left; max-width: 14ch; line-height: 1.35; }
+  .ap-velo {
+    background:
+      linear-gradient(180deg, rgba(7,24,44,.82) 0%, rgba(7,24,44,.7) 50%, rgba(7,24,44,.86) 100%),
+      linear-gradient(0deg, var(--navy-900) 0%, rgba(10,32,56,0) 24%);
+  }
+  .ap-luz { background: radial-gradient(ellipse 60% 30% at 18% 8%, rgba(185,159,102,.2), transparent 70%); }
+}
+@media (max-width: 640px) {
+  .ap-in { padding: 32px 20px 36px; }
+  .ap-t { margin: 18px 0 20px; }
+  .ap-pestanas { gap: 0; }
+  .ap-pestana { flex: 1; font-size: 10.5px; letter-spacing: .16em; }
+  .ap-buscar { grid-template-columns: minmax(0, 1fr); padding: 8px; }
+  .ap-campo { padding: 12px 12px; }
+  .ap-campo + .ap-campo { border-left: 0; border-top: 1px solid var(--line-200); }
+  /* 16px en los campos: iOS no hace zoom al enfocarlos */
+  .ap-campo select, .ap-campo input { font-size: 16px; }
+  .ap-buscar .ap-boton { margin-top: 6px; min-height: 52px; }
+  .ap-vender { padding: 18px 16px 16px; }
+  .ap-vender-acciones { width: 100%; justify-content: space-between; }
+  /* En una línea, el lugar partía el rótulo en dos renglones */
+  .ap-eyebrow-lugar { display: none; }
+  .ap-cinta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; padding: 20px 20px 26px; }
+  .ap-cinta::before { left: 20px; right: 20px; }
+  .ap-cinta li { font-size: 9.5px; letter-spacing: .16em; }
+}
