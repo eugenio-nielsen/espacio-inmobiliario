@@ -57,8 +57,8 @@ export default function Apertura({ logueado }: { logueado: boolean }) {
           </p>
 
           <h1 id="ap-titulo" className="ap-t">
-            <span className="ap-corte"><span>Encontrá propiedades</span></span>{" "}
-            <span className="ap-corte"><em>dueño directo.</em></span>
+            <span className="ap-corte"><span>Encontrá Propiedades</span></span>{" "}
+            <span className="ap-corte"><em>Dueño Directo.</em></span>
           </h1>
 
           <p className="ap-lead">
