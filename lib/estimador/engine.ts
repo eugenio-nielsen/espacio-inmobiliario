@@ -53,7 +53,11 @@ function roundMiles(n: number) {
   return Math.round(n / 1000) * 1000;
 }
 
-function calcularConfianza(input: EstimadorInput, tienePrecioBarrio: boolean): NivelConfianza {
+/**
+ * Exportada para que el tasador muestre la precisión mientras se completa:
+ * el cliente calcula lo mismo que va a devolver el servidor.
+ */
+export function calcularConfianza(input: EstimadorInput, tienePrecioBarrio: boolean): NivelConfianza {
   if (!tienePrecioBarrio) return "baja";
   // Completitud de datos clave (cuantos más completos, mayor confianza)
   let faltantes = 0;
