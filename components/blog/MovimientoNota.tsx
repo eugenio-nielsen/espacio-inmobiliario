@@ -88,7 +88,8 @@ type Partes = { antes: string; valor: number; decimales: number; despues: string
 /** "US$ 116.967" → { antes: "US$ ", valor: 116967, … }. Formato argentino. */
 function partir(texto: string): Partes | null {
   const m = texto.match(/^(.*?)(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?(.*)$/);
-  if (!m) return null;
+  // Un rango ("3–5%") no se cuenta: subir solo el primer número confunde
+  if (!m || /^\s*[–-]\s*\d/.test(m[4])) return null;
   const entero = Number(m[2].replace(/\./g, ""));
   const decimales = m[3]?.length ?? 0;
   const valor = entero + (decimales ? Number(`0.${m[3]}`) : 0);
