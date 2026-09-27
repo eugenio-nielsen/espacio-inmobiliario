@@ -1,4 +1,5 @@
 import CalculadoraAranceles from "@/components/blog/CalculadoraAranceles";
+import TasadorNota from "@/components/estimador/TasadorNota";
 import SeccionesNota from "@/components/blog/SeccionesNota";
 
 /**
@@ -13,6 +14,8 @@ import SeccionesNota from "@/components/blog/SeccionesNota";
  */
 const WIDGETS: Record<string, React.ReactNode> = {
   CALCULADORA_ARANCELES: <CalculadoraAranceles />,
+  // El tasador de /estimador, en su versión para la columna de lectura
+  TASADOR: <TasadorNota />,
 };
 
 // El markdown envuelve el marcador en un <p>, con o sin espacios alrededor
@@ -38,7 +41,8 @@ export default function ContenidoNota({ html }: { html: string }) {
       );
     }
     const widget = WIDGETS[m[1]];
-    if (widget) partes.push(<div key={`widget-${i}`}>{widget}</div>);
+    // .nt-widget: MovimientoNota no anima lo que hay adentro
+    if (widget) partes.push(<div key={`widget-${i}`} className="nt-widget">{widget}</div>);
     ultimo = m.index + m[0].length;
     i++;
   }

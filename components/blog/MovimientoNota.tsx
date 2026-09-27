@@ -42,11 +42,14 @@ export default function MovimientoNota({ idTexto }: { idTexto: string }) {
     if (quieto) return () => botones.forEach(b => b.removeEventListener("click", alTocar));
 
     // ── Entradas al scroll
+    // Lo que vive dentro de un componente intercalado (el tasador, la
+    // calculadora) tiene su propio movimiento: si se le agregara la
+    // entrada al scroll, un subtítulo que aparece después quedaría oculto
     const piezas = [
       ...raiz.querySelectorAll<HTMLElement>(
         "h2, blockquote, .nt-dato, .nt-figura, .nt-video, .nt-tabla, .nt-en-corto, .nt-ancha"
       ),
-    ];
+    ].filter(p => !p.closest(".nt-widget"));
     piezas.forEach(p => p.classList.add("nt-revelar"));
 
     const cifras = [...raiz.querySelectorAll<HTMLElement>(".nt-dato-v")];

@@ -10,7 +10,8 @@ import FirmaTrazo from "@/components/FirmaTrazo";
 import Guilloche from "@/components/ui/Guilloche";
 import FadeIn from "@/components/ui/FadeIn";
 import Reveal from "@/components/como-funciona/Reveal";
-import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/blog/data";
+import { getPublishedPostBySlug, getPublishedPosts, getPostParaVistaPrevia } from "@/lib/blog/data";
+import { getCurrentUser } from "@/lib/auth/user";
 import { renderPost, readingTime, stripMarkdown } from "@/lib/blog/markdown";
 import TableOfContents from "@/components/blog/TableOfContents";
 import IndiceLateral from "@/components/blog/IndiceLateral";
@@ -28,10 +29,28 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.co
 
 type Props = { params: Promise<{ slug: string }> };
 
+const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
+
+/**
+ * La nota publicada. Si no está publicada, el borrador para el admin (y
+ * para cualquiera en el servidor local de desarrollo): así se revisa en
+ * la página real antes de publicarlo. En producción, para cualquier otro
+ * un borrador no existe (404).
+ */
+async function notaPara(slug: string): Promise<{ post: Post | null; borrador: boolean }> {
+  const post = await getPublishedPostBySlug(slug);
+  if (post) return { post, borrador: false };
+  const local = process.env.NODE_ENV === "development";
+  if (!local && (await getCurrentUser())?.email !== ADMIN_EMAIL) return { post: null, borrador: false };
+  const previa = await getPostParaVistaPrevia(slug);
+  return { post: previa, borrador: !!previa };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPublishedPostBySlug(slug);
+  const { post, borrador } = await notaPara(slug);
   if (!post) return { title: "Nota no encontrada" };
+  if (borrador) return { title: `Borrador · ${post.titulo}`, robots: { index: false, follow: false } };
 
   const title = post.meta_title || post.titulo;
   const description = post.meta_description || post.resumen || stripMarkdown(post.contenido);
@@ -96,7 +115,7 @@ function paraSeguir(actual: Post, todas: Post[]) {
  */
 export default async function PostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getPublishedPostBySlug(slug);
+  const { post, borrador } = await notaPara(slug);
   if (!post) notFound();
 
   const { html, toc } = renderPost(post.contenido);
@@ -142,6 +161,11 @@ export default async function PostPage({ params }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <ProgresoLectura idArticulo="nota" />
       <Navbar />
+      {borrador && (
+        <p className="nt-borrador" role="status">
+          <strong>Borrador</strong> · Vista previa: no está publicado ni aparece en el blog.
+        </p>
+      )}
 
       <main style={{ flex: 1 }}>
         <article id="nota">

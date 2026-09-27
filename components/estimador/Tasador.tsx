@@ -105,7 +105,14 @@ const INICIAL: EstimadorInput = {
 
 const esperar = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-export default function Tasador({ barrios }: { barrios: string[] }) {
+export default function Tasador({
+  barrios,
+  embebido = false,
+}: {
+  barrios: string[];
+  /** Dentro de una nota del blog: sin la ficha lateral, con la precisión arriba. */
+  embebido?: boolean;
+}) {
   const [paso, setPaso] = useState(1);
   const [input, setInput] = useState<EstimadorInput>(INICIAL);
   const [contacto, setContacto] = useState({ nombre: "", telefono: "", email: "" });
@@ -114,13 +121,16 @@ export default function Tasador({ barrios }: { barrios: string[] }) {
   const [frase, setFrase] = useState(0);
   const [resultado, setResultado] = useState<(EstimadorResultado & { estimacionId?: string | null }) | null>(null);
   const mesa = useRef<HTMLDivElement>(null);
+  const montado = useRef(false);
 
   function set<K extends keyof EstimadorInput>(k: K, v: EstimadorInput[K]) {
     setInput(p => ({ ...p, [k]: v }));
   }
 
-  // Al cambiar de escena, la mesa vuelve a quedar a la vista
+  // Al cambiar de escena, la mesa vuelve a quedar a la vista. Al montar
+  // no: en una nota, el tasador está lejos y la página saltaría hasta él
   useEffect(() => {
+    if (!montado.current) { montado.current = true; return; }
     const el = mesa.current;
     if (!el) return;
     const top = el.getBoundingClientRect().top;
@@ -196,14 +206,16 @@ export default function Tasador({ barrios }: { barrios: string[] }) {
 
   if (resultado) {
     return (
-      <div ref={mesa} className="ts-mesa ts-mesa-informe">
+      <div ref={mesa} className={`ts-mesa ts-mesa-informe${embebido ? " ts-mesa-nota" : ""}`}>
         <Informe input={input} resultado={resultado} nombre={contacto.nombre.trim()} onOtra={otra} />
       </div>
     );
   }
 
   return (
-    <div ref={mesa} className="ts-mesa">
+    <div ref={mesa} className={`ts-mesa${embebido ? " ts-mesa-nota" : ""}`}>
+      {embebido && <PrecisionCorta confianza={confianza} />}
+
       {/* ── La escena ─────────────────────────────────────────── */}
       <form className="ts-hoja" onSubmit={avanzar} noValidate>
         <Riel paso={paso} onIr={n => n < paso && ir(n)} />
@@ -428,7 +440,23 @@ export default function Tasador({ barrios }: { barrios: string[] }) {
       </form>
 
       {/* ── La ficha, que se escribe con cada respuesta ───────── */}
-      <Ficha input={input} paso={paso} confianza={confianza} nombre={contacto.nombre.trim()} emitiendo={emitiendo} />
+      {!embebido && (
+        <Ficha input={input} paso={paso} confianza={confianza} nombre={contacto.nombre.trim()} emitiendo={emitiendo} />
+      )}
+    </div>
+  );
+}
+
+const PRECISION = { baja: 1, media: 2, alta: 3 } as const;
+
+/** La precisión en una línea, para cuando la ficha no entra (en una nota). */
+function PrecisionCorta({ confianza }: { confianza: ReturnType<typeof calcularConfianza> | null }) {
+  const n = confianza ? PRECISION[confianza] : 0;
+  return (
+    <div className="ts-precision-corta" data-nivel={n}>
+      <span>Precisión de la estimación</span>
+      <strong>{confianza ? confianza.charAt(0).toUpperCase() + confianza.slice(1) : "—"}</strong>
+      <span className="ts-precision-riel" aria-hidden="true"><span /><span /><span /></span>
     </div>
   );
 }

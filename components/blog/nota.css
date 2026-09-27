@@ -95,6 +95,25 @@
 .nt-firma-linea p { margin: 0; font-family: var(--font-sans); font-size: 13px; line-height: 1.5; color: rgba(255,255,255,.62); }
 .nt-firma-linea strong { display: block; font-weight: 600; font-size: 14px; color: #fff; }
 
+/* Vista previa de un borrador (solo el admin la ve) */
+.nt-borrador {
+  position: sticky;
+  top: 77px;
+  z-index: 19;
+  margin: 0;
+  padding: 10px 24px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--navy-800);
+  background: var(--gold-100);
+  border-bottom: 1px solid var(--gold-300);
+}
+.nt-borrador strong { font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: 11px; color: var(--gold-700); }
+
+/* Los componentes intercalados en la nota ([[MARCADOR]]) */
+.nt-widget { margin: 2.6em 0; }
+
 /* ── Cuerpo: índice al costado + columna de lectura ────────── */
 .nt-cuerpo {
   display: grid;
