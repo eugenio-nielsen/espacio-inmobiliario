@@ -1,4 +1,4 @@
-import { Search, Tag, BookOpen, Building2, Plus, UserRound, ShieldCheck, type LucideIcon } from "lucide-react";
+import { Search, Tag, BookOpen, HelpCircle, Building2, Plus, UserRound, ShieldCheck, type LucideIcon } from "lucide-react";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 
 export type ItemMenu = {
@@ -9,30 +9,56 @@ export type ItemMenu = {
   icon: LucideIcon;
 };
 
+export type GrupoMenu = {
+  /** Rótulo del grupo. Sin rótulo, el grupo va primero y sin encabezado. */
+  titulo?: string;
+  items: ItemMenu[];
+};
+
+export type Desplegable = { titulo: string; grupos: GrupoMenu[] };
+
 /**
- * Desplegable "Herramientas" del menú principal, en grupos.
+ * Desplegables del menú principal:
  *
- * Absorbió los links sueltos de Vender, Comprar y Blog: la barra queda
- * con menos entradas y cada grupo lleva su rótulo para que no sea una
- * bolsa de links mezclados. Lo consumen el menú de escritorio
- * (NavHerramientas) y el móvil (MobileMenu).
+ *   · "Servicios": la operación de quien entra, comprar o vender.
+ *   · "Sobre nosotros": cómo trabajamos, las herramientas gratuitas y
+ *     el blog. Antes se llamaba "Herramientas" y "Cómo funciona" era un
+ *     link suelto en la barra.
+ *
+ * Cada grupo lleva su rótulo para que no sea una bolsa de links
+ * mezclados. Los consumen el menú de escritorio (NavDesplegables) y el
+ * móvil (MobileMenu).
  *
  * Las herramientas en sí siguen en lib/herramientas.ts, porque el
  * footer las lista solas.
  */
-export const GRUPOS_HERRAMIENTAS: { titulo: string; items: ItemMenu[] }[] = [
+export const DESPLEGABLES: Desplegable[] = [
   {
-    titulo: "Tu operación",
-    items: [
-      { href: "/comprar", label: "Quiero comprar", detalle: "Decidí con respaldo antes de firmar", icon: Search },
-      { href: "/vender", label: "Quiero vender", detalle: "Publicá gratis o delegá la venta", icon: Tag },
+    titulo: "Servicios",
+    grupos: [
+      {
+        items: [
+          { href: "/comprar", label: "Quiero comprar", detalle: "Decidí con respaldo antes de firmar", icon: Search },
+          { href: "/vender", label: "Quiero vender", detalle: "Publicá gratis o delegá la venta", icon: Tag },
+        ],
+      },
     ],
   },
-  { titulo: "Herramientas gratuitas", items: HERRAMIENTAS },
   {
-    titulo: "Para leer",
-    items: [
-      { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
+    titulo: "Sobre nosotros",
+    grupos: [
+      {
+        items: [
+          { href: "/como-funciona", label: "Cómo funciona", detalle: "El proceso paso a paso, para vender y para comprar", icon: HelpCircle },
+        ],
+      },
+      { titulo: "Herramientas gratuitas", items: HERRAMIENTAS },
+      {
+        titulo: "Para leer",
+        items: [
+          { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
+        ],
+      },
     ],
   },
 ];

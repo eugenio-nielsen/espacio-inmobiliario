@@ -4,7 +4,7 @@ import { Calculator, LineChart } from "lucide-react";
  * Herramientas gratuitas del sitio. Fuente única: las consumen el
  * desplegable de escritorio, el menú móvil y el footer.
  *
- * Vive en lib/ y no dentro de NavHerramientas.tsx porque ese archivo es
+ * Vive en lib/ y no dentro de NavDesplegables.tsx porque ese archivo es
  * "use client": importar la lista desde ahí en un Server Component (el
  * footer) la convertiría en una referencia de cliente y no se podría
  * recorrer al renderizar en el servidor.

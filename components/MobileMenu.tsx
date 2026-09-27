@@ -2,17 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, HelpCircle, LogOut, UserRound, Plus, MessageCircle } from "lucide-react";
-import { GRUPOS_HERRAMIENTAS, opcionesCuenta } from "@/lib/menu";
+import { Menu, X, Building2, LogOut, UserRound, Plus, MessageCircle } from "lucide-react";
+import { DESPLEGABLES, opcionesCuenta } from "@/lib/menu";
 import { signOut } from "@/lib/actions/auth";
 import "./menu-cuenta.css";
 
-// Comprar, Vender y Blog viven en los grupos de Herramientas (lib/menu.ts)
-const LINKS = [
-  { href: "/propiedades", label: "Propiedades", icon: Building2, highlight: true },
-  { href: "/como-funciona", label: "Cómo funciona", icon: HelpCircle },
-  { href: "/contacto", label: "Contacto", icon: MessageCircle },
-];
+// El mismo orden que la barra de escritorio: Propiedades, los
+// desplegables de lib/menu.ts (Servicios, Sobre nosotros) y Contacto
 
 export default function MobileMenu({
   loggedIn,
@@ -52,28 +48,27 @@ export default function MobileMenu({
               </button>
             </div>
 
-            {LINKS.map(({ href, label, icon: Icon, highlight }) => (
-              <Link key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}
-                style={highlight ? {
-                  background: "rgba(185,159,102,.14)", borderRadius: "var(--radius-sm)",
-                  fontWeight: 700, color: "var(--navy-800)", borderBottom: "none",
-                  padding: "14px 12px", marginBottom: 4,
-                } : undefined}>
-                <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
-                {label}
-              </Link>
-            ))}
+            <Link href="/propiedades" className="mobile-menu-link" onClick={() => setOpen(false)}
+              style={{
+                background: "rgba(185,159,102,.14)", borderRadius: "var(--radius-sm)",
+                fontWeight: 700, color: "var(--navy-800)", borderBottom: "none",
+                padding: "14px 12px", marginBottom: 4,
+              }}>
+              <Building2 size={18} strokeWidth={1.75} color="var(--gold-600)" />
+              Propiedades
+            </Link>
 
-            {GRUPOS_HERRAMIENTAS.map(g => (
-              <div key={g.titulo}>
+            {/* Cada desplegable, con sus grupos en fila bajo un solo rótulo */}
+            {DESPLEGABLES.map(menu => (
+              <div key={menu.titulo}>
                 <p style={{
                   fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 10.5,
                   textTransform: "uppercase", letterSpacing: ".08em",
                   color: "var(--ink-400)", margin: "16px 0 2px",
                 }}>
-                  {g.titulo}
+                  {menu.titulo}
                 </p>
-                {g.items.map(({ href, label, icon: Icon }) => (
+                {menu.grupos.flatMap(g => g.items).map(({ href, label, icon: Icon }) => (
                   <Link key={href} href={href} className="mobile-menu-link" onClick={() => setOpen(false)}>
                     <Icon size={18} strokeWidth={1.75} color="var(--gold-600)" />
                     {label}
@@ -81,6 +76,11 @@ export default function MobileMenu({
                 ))}
               </div>
             ))}
+
+            <Link href="/contacto" className="mobile-menu-link" onClick={() => setOpen(false)} style={{ marginTop: 12 }}>
+              <MessageCircle size={18} strokeWidth={1.75} color="var(--gold-600)" />
+              Contacto
+            </Link>
 
             <div style={{ marginTop: "auto", paddingTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
               {loggedIn ? (

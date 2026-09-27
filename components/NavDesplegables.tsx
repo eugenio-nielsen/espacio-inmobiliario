@@ -3,14 +3,26 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { GRUPOS_HERRAMIENTAS } from "@/lib/menu";
+import { DESPLEGABLES, type Desplegable } from "@/lib/menu";
 
 /**
- * Desplegable "Herramientas" del menú de escritorio. Trae tres grupos
- * con rótulo (lib/menu.ts): la operación (comprar, vender), las
- * herramientas gratuitas y el blog.
+ * Los desplegables del menú de escritorio ("Servicios", "Sobre nosotros").
+ * Los grupos y sus rótulos vienen de lib/menu.ts; un grupo sin rótulo
+ * se muestra sin encabezado.
+ *
+ * La lista se importa acá y no llega como prop desde el Navbar: el
+ * Navbar es de servidor y los íconos (componentes) no se pueden pasar
+ * a un componente de cliente.
  */
-export default function NavHerramientas({ style }: { style?: React.CSSProperties }) {
+export default function NavDesplegables({ style }: { style?: React.CSSProperties }) {
+  return DESPLEGABLES.map(menu => (
+    <div key={menu.titulo} className="nav-hide-mobile">
+      <NavDesplegable menu={menu} style={style} />
+    </div>
+  ));
+}
+
+function NavDesplegable({ menu, style }: { menu: Desplegable; style?: React.CSSProperties }) {
   const [abierto, setAbierto] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
 
@@ -42,7 +54,7 @@ export default function NavHerramientas({ style }: { style?: React.CSSProperties
           background: "none", border: "none", padding: 0,
         }}
       >
-        Herramientas
+        {menu.titulo}
         <ChevronDown
           size={14}
           strokeWidth={2}
@@ -59,18 +71,18 @@ export default function NavHerramientas({ style }: { style?: React.CSSProperties
             boxShadow: "var(--shadow-lg)", padding: 6,
           }}
         >
-          {GRUPOS_HERRAMIENTAS.map((g, gi) => (
+          {menu.grupos.map((g, gi) => (
             <div
-              key={g.titulo}
+              key={g.titulo ?? gi}
               style={gi ? { borderTop: "1px solid var(--line-100)", marginTop: 4, paddingTop: 4 } : undefined}
             >
-              <p style={{
+              {g.titulo && <p style={{
                 fontFamily: "var(--font-sans)", fontSize: 10, fontWeight: 600,
                 letterSpacing: ".2em", textTransform: "uppercase",
                 color: "var(--gold-700)", margin: 0, padding: "9px 11px 3px",
               }}>
                 {g.titulo}
-              </p>
+              </p>}
               {g.items.map(({ href, label, detalle, icon: Icon }) => (
                 <Link
                   key={href}

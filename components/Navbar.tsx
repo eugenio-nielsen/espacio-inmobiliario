@@ -3,7 +3,7 @@ import Logo from "@/components/Logo";
 import { UserRound, Plus } from "lucide-react";
 import { getCurrentUser, getCurrentProfile } from "@/lib/auth/user";
 import MobileMenu from "@/components/MobileMenu";
-import NavHerramientas from "@/components/NavHerramientas";
+import NavDesplegables from "@/components/NavDesplegables";
 import MenuCuenta from "@/components/MenuCuenta";
 
 const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
@@ -36,11 +36,8 @@ export default async function Navbar() {
             ...navLink, color: "var(--navy-800)", fontWeight: 700,
             background: "rgba(185,159,102,.16)", padding: "8px 16px", borderRadius: 999,
           }}>Propiedades</Link>
-          {/* Comprar, Vender y Blog viven adentro de Herramientas (lib/menu.ts) */}
-          <div className="nav-hide-mobile">
-            <NavHerramientas style={navLink} />
-          </div>
-          <Link href="/como-funciona" style={navLink} className="nav-hide-mobile">Cómo funciona</Link>
+          {/* Servicios y Sobre nosotros: sus links viven en lib/menu.ts */}
+          <NavDesplegables style={navLink} />
           <Link href="/contacto" style={navLink} className="nav-hide-mobile">Contacto</Link>
 
           {user ? (
