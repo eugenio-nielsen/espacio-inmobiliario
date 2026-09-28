@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import PropertyForm from "@/components/panel/PropertyForm";
+import EventoGA from "@/components/analytics/EventoGA";
 import type { Property } from "@/lib/types";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 
@@ -10,6 +11,12 @@ export const metadata: Metadata = {
   title: "Editar propiedad",
   robots: { index: false },
 };
+
+/** La página donde se creó la cuenta (la guarda signUp en los metadatos). */
+function paginaOrigen(meta: Record<string, unknown> | undefined, porDefecto: string): string {
+  const origen = meta?.origen as { pagina?: string } | undefined;
+  return origen?.pagina || porDefecto;
+}
 
 export default async function EditarPage({
   params,
@@ -33,8 +40,29 @@ export default async function EditarPage({
 
   if (!property) notFound();
 
+  // Si viene de publicarla: cuántas tiene el dueño (la primera es la
+  // conversión que buscan las páginas para propietarios)
+  let cantidad = 0;
+  if (creada) {
+    const { count } = await supabase
+      .from("properties").select("id", { count: "exact", head: true }).eq("owner_id", user.id);
+    cantidad = count ?? 0;
+  }
+
   return (
     <div className="max-w-3xl mx-auto">
+      {/* Conversión: la propiedad se acaba de publicar */}
+      {creada && (
+        <EventoGA
+          nombre="publicar_propiedad"
+          params={{
+            tipo_propiedad: property.tipo,
+            primera_propiedad: cantidad === 1 ? "si" : "no",
+            pagina_origen: paginaOrigen(user.user_metadata, "desconocida"),
+          }}
+          limpiar={["creada"]}
+        />
+      )}
       <div className="mb-6">
         <Link href="/panel" className="text-sm text-gray-500 hover:text-blue-700">
           ← Volver al panel
