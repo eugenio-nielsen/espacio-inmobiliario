@@ -5,6 +5,35 @@ import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
 
+/** Parámetros de campaña que se guardan con la cuenta, si llegaron. */
+const CAMPOS_ORIGEN = ["pagina", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
+
+/**
+ * De dónde vino la cuenta: la página de alta y los utm de la campaña.
+ * Queda en los metadatos del usuario para medir qué página o anuncio
+ * trae dueños. Solo texto corto: lo manda el navegador.
+ */
+function leerOrigen(formData: FormData): Record<string, string> | null {
+  const origen: Record<string, string> = {};
+  for (const k of CAMPOS_ORIGEN) {
+    const v = ((formData.get(k) as string) || "").trim().slice(0, 120);
+    if (v) origen[k] = v;
+  }
+  return Object.keys(origen).length ? origen : null;
+}
+
+/**
+ * A dónde va la cuenta recién creada. "publicar" (las páginas para
+ * propietarios) lleva directo a cargar la propiedad; si no, al panel.
+ * Es una lista cerrada a propósito: nada que llegue del formulario se
+ * usa como URL.
+ */
+function destinoTrasRegistro(formData: FormData): string {
+  return formData.get("destino") === "publicar"
+    ? "/panel/propiedades/nueva?bienvenida=1"
+    : "/panel?nuevo=1";
+}
+
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
   const nombre = ((formData.get("nombre") as string) || "").trim();
@@ -19,11 +48,13 @@ export async function signUp(formData: FormData) {
   const tel = normalizarTelefono(formData.get("telefono") as string);
   if (!tel.ok) return { error: tel.error };
 
+  const origen = leerOrigen(formData);
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    // El trigger handle_new_user copia estos datos al perfil
-    options: { data: { nombre, telefono: tel.valor } },
+    // El trigger handle_new_user copia nombre y teléfono al perfil;
+    // el origen queda solo en los metadatos del usuario
+    options: { data: { nombre, telefono: tel.valor, ...(origen ? { origen } : {}) } },
   });
 
   if (error) return { error: error.message };
@@ -36,7 +67,7 @@ export async function signUp(formData: FormData) {
       .eq("id", data.user.id);
   }
 
-  redirect("/panel?nuevo=1");
+  redirect(destinoTrasRegistro(formData));
 }
 
 export async function signIn(formData: FormData) {

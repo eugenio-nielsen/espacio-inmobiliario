@@ -7,9 +7,30 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function NuevaPage() {
+export default async function NuevaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bienvenida?: string }>;
+}) {
+  // Llega con ?bienvenida=1 desde el alta en /propietarios: la cuenta
+  // se acaba de crear y el paso siguiente es este
+  const { bienvenida } = await searchParams;
+
   return (
     <div className="max-w-3xl mx-auto">
+      {bienvenida && (
+        <div
+          role="status"
+          style={{
+            marginBottom: 20, padding: "14px 18px", borderRadius: 2,
+            background: "var(--gold-50)", border: "1px solid var(--gold-300)",
+            fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--navy-800)",
+          }}
+        >
+          <strong style={{ fontWeight: 600 }}>Tu cuenta está lista.</strong>{" "}
+          Ahora cargá tu propiedad: fotos, datos y ubicación. Antes de salir al portal, la revisamos.
+        </div>
+      )}
       <div className="mb-6">
         <Link href="/panel" className="text-sm text-gray-500 hover:text-blue-700">
           ← Volver al panel
