@@ -17,6 +17,7 @@ import PropertyGallery from "@/components/properties/PropertyGallery";
 import ContactoPropiedad from "@/components/properties/ContactoPropiedad";
 import { SelloPropietario, SelloDominio } from "@/components/properties/SellosVerificacion";
 import CostosCompra from "@/components/properties/CostosCompra";
+import { getCostosConfig } from "@/lib/catedra/data";
 import DescripcionExpandible from "@/components/properties/DescripcionExpandible";
 import ShareButtons from "@/components/blog/ShareButtons";
 import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
@@ -99,6 +100,8 @@ export default async function PropiedadPage({ params }: PageProps) {
   });
 
   const p = property;
+  // Los parámetros de costos son los mismos de la calculadora de la Cátedra
+  const costosConfig = await getCostosConfig();
 
   const fmtNum = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n));
   const precio = `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(p.precio)}`;
@@ -347,7 +350,7 @@ export default async function PropiedadPage({ params }: PageProps) {
               </div>
 
               {/* Costos estimados de compra */}
-              <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} />
+              <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} config={costosConfig} />
 
               {/* Mapa */}
               {geoResult && (
