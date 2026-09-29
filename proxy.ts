@@ -39,7 +39,11 @@ export async function proxy(request: NextRequest) {
   // Si ya está logueado y va a auth pages, redirigir al panel
   // (excepto /auth/callback, que debe intercambiar el código del email)
   if (pathname.startsWith("/auth") && !pathname.startsWith("/auth/callback") && user) {
-    return NextResponse.redirect(new URL("/panel", request.url));
+    // Si la página de ingreso traía a dónde volver (p. ej. un tema del
+    // foro), va ahí. Solo rutas internas.
+    const volver = request.nextUrl.searchParams.get("volver") || "";
+    const destino = volver.startsWith("/") && !volver.startsWith("//") && !volver.startsWith("/\\") ? volver : "/panel";
+    return NextResponse.redirect(new URL(destino, request.url));
   }
 
   return supabaseResponse;

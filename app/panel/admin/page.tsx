@@ -8,6 +8,7 @@ import SuperadminDashboard, { type OwnerData, type EstimacionRow } from "@/compo
 import type { Pendiente } from "@/components/panel/ValidacionesAdmin";
 import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
 import type { Post } from "@/lib/blog/types";
+import { datosAdminForo } from "@/lib/foro/data";
 
 export const metadata: Metadata = {
   title: "Superadmin",
@@ -16,7 +17,10 @@ export const metadata: Metadata = {
 
 const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
-export default async function SuperadminPage() {
+type Props = { searchParams: Promise<{ tab?: string }> };
+
+export default async function SuperadminPage({ searchParams }: Props) {
+  const { tab } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
@@ -33,6 +37,7 @@ export default async function SuperadminPage() {
     getPreciosBarrios(),
     getEstimadorConfig(),
   ]);
+  const foro = await datosAdminForo();
 
   const preciosArray = Object.entries(precios)
     .map(([barrio, precio]) => ({ barrio, precio }))
@@ -132,6 +137,8 @@ export default async function SuperadminPage() {
         config={config}
         posts={posts}
         validaciones={validaciones}
+        foro={foro}
+        tabInicial={tab}
       />
     </div>
   );

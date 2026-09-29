@@ -27,6 +27,7 @@ const ESPACIO: [string, string][] = [
   ["Vender mi propiedad", "/vender"],
   ["Comprar con respaldo", "/comprar"],
   ["Blog", "/blog"],
+  ["Tertulia Inmobiliaria (foro)", "/foro"],
   ["Publicar gratis", "/auth/registro"],
   ["Ingresar", "/auth/login"],
 ];

@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, LogOut, UserRound, Plus, MessageCircle } from "lucide-react";
+import { Menu, X, Building2, LogOut, UserRound, Plus, MessageCircle, MessagesSquare } from "lucide-react";
 import { DESPLEGABLES, opcionesCuenta } from "@/lib/menu";
 import { signOut } from "@/lib/actions/auth";
 import "./menu-cuenta.css";
 
 // El mismo orden que la barra de escritorio: Propiedades, los
-// desplegables de lib/menu.ts (Servicios, Sobre nosotros) y Contacto
+// desplegables de lib/menu.ts (Servicios, Sobre nosotros), Foro y Contacto
 
 export default function MobileMenu({
   loggedIn,
@@ -77,7 +77,11 @@ export default function MobileMenu({
               </div>
             ))}
 
-            <Link href="/contacto" className="mobile-menu-link" onClick={() => setOpen(false)} style={{ marginTop: 12 }}>
+            <Link href="/foro" className="mobile-menu-link" onClick={() => setOpen(false)} style={{ marginTop: 12 }}>
+              <MessagesSquare size={18} strokeWidth={1.75} color="var(--gold-600)" />
+              Foro · Tertulia Inmobiliaria
+            </Link>
+            <Link href="/contacto" className="mobile-menu-link" onClick={() => setOpen(false)}>
               <MessageCircle size={18} strokeWidth={1.75} color="var(--gold-600)" />
               Contacto
             </Link>

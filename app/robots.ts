@@ -8,7 +8,11 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/", "/propiedades/"],
-        disallow: ["/panel/", "/auth/", "/api/"],
+        disallow: [
+          "/panel/", "/auth/", "/api/",
+          "/foro/nuevo", "/foro/editar/", "/foro/perfil", "/foro/unirse",
+          "/foro/bienvenida", "/foro/avisos",
+        ],
       },
     ],
     sitemap: `${SITE}/sitemap.xml`,

@@ -6,9 +6,11 @@ import { signIn, signUp } from "@/lib/actions/auth";
 
 interface Props {
   mode: "login" | "registro";
+  /** Ruta interna a la que volver después de ingresar (la valida el servidor). */
+  volver?: string;
 }
 
-export default function AuthForm({ mode }: Props) {
+export default function AuthForm({ mode, volver }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -26,6 +28,7 @@ export default function AuthForm({ mode }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {volver && <input type="hidden" name="volver" value={volver} />}
       {mode === "registro" && (
         <>
           <div>

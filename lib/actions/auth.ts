@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
+import { volverSeguro } from "@/lib/foro/texto";
 
 /** Parámetros de campaña que se guardan con la cuenta, si llegaron. */
 const CAMPOS_ORIGEN = ["pagina", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
@@ -79,7 +80,10 @@ export async function signIn(formData: FormData) {
 
   if (error) return { error: error.message };
 
-  redirect("/panel");
+  // Si llegó desde una página que pidió ingresar (p. ej. responder en la
+  // Tertulia), vuelve ahí. Solo rutas internas.
+  const volver = formData.get("volver");
+  redirect(volver ? volverSeguro(volver, "/panel") : "/panel");
 }
 
 export async function signOut() {

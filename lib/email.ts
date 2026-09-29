@@ -637,3 +637,64 @@ export async function sendValidacionResuelta(data: {
     html: baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`),
   });
 }
+
+// ── Tertulia Inmobiliaria (foro) ──────────────────────────────
+// Todo lo que escribe la gente se escapa: un alias o una respuesta con
+// HTML no puede alterar el email.
+
+const escHtml = (t: string) =>
+  t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/** Pie de los avisos del foro: por qué te llega y cómo dejar de recibirlo. */
+function pieAvisos(bajaUrl: string) {
+  return `<p style="margin:22px 0 0;color:#A39C8F;font-size:12px;line-height:1.6;">
+    Te llega porque participás en la Tertulia Inmobiliaria.
+    <a href="${bajaUrl}" style="color:#8C7641;">No quiero recibir más avisos</a>.
+  </p>`;
+}
+
+async function enviarForo(para: string, asunto: string, contenido: string) {
+  const resend = getResend(); if (!resend) return;
+  await resend.emails.send({
+    from: FROM,
+    to: para,
+    subject: asunto,
+    html: baseLayout(`<div style="${styles.body_p}">${contenido}</div>`),
+  });
+}
+
+/** Aviso a un miembro: nueva respuesta, comentario o solución elegida */
+export async function sendForoAviso(data: {
+  para: string;
+  alias: string;
+  asunto: string;
+  titulo: string;
+  lead: string;
+  cita?: string | null;
+  url: string;
+  cta: string;
+  bajaUrl: string;
+}) {
+  if (!process.env.RESEND_API_KEY) return;
+  await enviarForo(data.para, data.asunto, `
+    <h1 style="${styles.h1}">${escHtml(data.titulo)}</h1>
+    <p style="${styles.lead}">Hola ${escHtml(data.alias)}, ${escHtml(data.lead)}</p>
+    ${data.cita ? `<p style="${styles.message}">"${escHtml(data.cita)}"</p>` : ""}
+    <a href="${data.url}" style="${styles.btn}">${escHtml(data.cta)} &rarr;</a>
+    ${pieAvisos(data.bajaUrl)}
+  `);
+}
+
+/** Aviso al admin: tema nuevo, reporte o pedido de verificación */
+export async function sendForoAdmin(data: { asunto: string; titulo: string; lineas: [string, string][]; url: string; cta: string }) {
+  if (!process.env.RESEND_API_KEY) return;
+  await enviarForo(ADMIN, data.asunto, `
+    <h1 style="${styles.h1}">${escHtml(data.titulo)}</h1>
+    <div style="${styles.card}">
+      ${data.lineas.map(([k, v]) => `
+        <p style="${styles.label}">${escHtml(k)}</p>
+        <p style="${styles.value}">${escHtml(v)}</p>`).join("")}
+    </div>
+    <a href="${data.url}" style="${styles.btn}">${escHtml(data.cta)} &rarr;</a>
+  `);
+}

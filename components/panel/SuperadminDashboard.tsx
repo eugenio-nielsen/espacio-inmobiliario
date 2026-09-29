@@ -3,10 +3,12 @@
 import { useState, useMemo } from "react";
 import TablaUsuarios from "@/components/panel/TablaUsuarios";
 import ValidacionesAdmin, { type Pendiente } from "@/components/panel/ValidacionesAdmin";
-import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, Phone, Mail, Calculator, Sliders, FileText, ShieldCheck } from "lucide-react";
+import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, Phone, Mail, Calculator, Sliders, FileText, ShieldCheck, MessagesSquare } from "lucide-react";
 import type { Property, Inquiry } from "@/lib/types";
 import EstimadorAdmin from "@/components/panel/EstimadorAdmin";
 import BlogAdmin from "@/components/panel/BlogAdmin";
+import ForoAdmin from "@/components/panel/ForoAdmin";
+import type { MiembroAdmin, ReporteAdmin, TemaAdmin } from "@/lib/foro/data";
 import type { EstimadorConfig } from "@/lib/estimador/types";
 import type { Post } from "@/lib/blog/types";
 
@@ -45,9 +47,10 @@ const INQ_STATUS: Record<string, { label: string; bg: string; color: string }> =
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 const fmtPrecio = (p: number, m: string) => `${m === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p))}`;
 
-type HubTab = "usuarios" | "validaciones" | "estimaciones" | "config" | "blog";
+type HubTab = "usuarios" | "validaciones" | "estimaciones" | "config" | "blog" | "foro";
+const TABS: HubTab[] = ["usuarios", "validaciones", "estimaciones", "config", "blog", "foro"];
 
-export default function SuperadminDashboard({ owners, totals, estimaciones, precios, config, posts, validaciones }: {
+export default function SuperadminDashboard({ owners, totals, estimaciones, precios, config, posts, validaciones, foro, tabInicial }: {
   owners: OwnerData[];
   totals: { usuarios: number; propiedades: number; consultas: number; vistas: number };
   estimaciones: EstimacionRow[];
@@ -55,9 +58,13 @@ export default function SuperadminDashboard({ owners, totals, estimaciones, prec
   config: EstimadorConfig;
   posts: Post[];
   validaciones: Pendiente[];
+  foro: { reportes: ReporteAdmin[]; temas: TemaAdmin[]; miembros: MiembroAdmin[] };
+  /** ?tab= de la URL: los emails del foro llevan directo a su pestaña. */
+  tabInicial?: string;
 }) {
   const validacionesEnEspera = validaciones.filter(v => v.estado === "pendiente").length;
-  const [tab, setTab] = useState<HubTab>("usuarios");
+  const [tab, setTab] = useState<HubTab>(TABS.includes(tabInicial as HubTab) ? (tabInicial as HubTab) : "usuarios");
+  const foroPendiente = foro.reportes.length + foro.miembros.filter(m => m.verificacion_estado === "pendiente").length;
 
   const tabs: [HubTab, string, typeof Users][] = [
     ["usuarios", `Usuarios (${owners.length})`, Users],
@@ -65,6 +72,7 @@ export default function SuperadminDashboard({ owners, totals, estimaciones, prec
     ["estimaciones", `Estimaciones (${estimaciones.length})`, Calculator],
     ["config", "Config Estimador", Sliders],
     ["blog", `Blog (${posts.length})`, FileText],
+    ["foro", `Foro${foroPendiente ? ` (${foroPendiente})` : ""}`, MessagesSquare],
   ];
 
   return (
@@ -90,6 +98,7 @@ export default function SuperadminDashboard({ owners, totals, estimaciones, prec
       {tab === "estimaciones" && <EstimadorTab estimaciones={estimaciones} />}
       {tab === "config" && <EstimadorAdmin initialPrecios={precios} initialConfig={config} />}
       {tab === "blog" && <BlogAdmin initialPosts={posts} />}
+      {tab === "foro" && <ForoAdmin reportes={foro.reportes} temas={foro.temas} miembros={foro.miembros} />}
     </div>
   );
 }

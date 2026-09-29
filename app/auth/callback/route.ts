@@ -21,5 +21,11 @@ export async function GET(request: Request) {
     }
   }
 
+  // El alta de la Tertulia vuelve por acá. Si el enlace se abrió en otro
+  // dispositivo no hay sesión que intercambiar, pero Supabase ya confirmó
+  // el email: se lo manda a ingresar y volver al tema.
+  if (next.startsWith("/foro")) {
+    return NextResponse.redirect(`${origin}/auth/login?volver=${encodeURIComponent(next)}`);
+  }
   return NextResponse.redirect(`${origin}/auth/recuperar?error=enlace`);
 }

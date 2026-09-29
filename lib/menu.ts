@@ -1,4 +1,4 @@
-import { Search, Tag, BookOpen, HelpCircle, Building2, Plus, UserRound, ShieldCheck, type LucideIcon } from "lucide-react";
+import { Search, Tag, BookOpen, HelpCircle, Building2, Plus, UserRound, ShieldCheck, MessagesSquare, type LucideIcon } from "lucide-react";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 
 export type ItemMenu = {
@@ -80,6 +80,7 @@ export const MENU_CUENTA: ItemCuenta[] = [
   { href: "/panel", label: "Mis propiedades", icon: Building2, tipo: "seccion" },
   { href: "/panel/propiedades/nueva", label: "Publicar una propiedad", icon: Plus, tipo: "accion" },
   { href: "/panel/perfil", label: "Mis datos", icon: UserRound, tipo: "seccion" },
+  { href: "/foro/perfil", label: "Mi perfil en la Tertulia", icon: MessagesSquare, tipo: "accion" },
   { href: "/panel/admin", label: "Superadmin", icon: ShieldCheck, tipo: "seccion", soloAdmin: true },
 ];
 

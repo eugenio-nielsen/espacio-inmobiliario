@@ -37,6 +37,33 @@ export async function checkRateLimit(
   }
 }
 
+/**
+ * Rate limit por una clave propia (p. ej. el id de un usuario), no por IP.
+ * Mismo criterio fail-open que checkRateLimit.
+ */
+export async function checkRateLimitClave(
+  clave: string,
+  max: number,
+  windowSeconds: number
+): Promise<boolean> {
+  try {
+    const admin = createAdminClient();
+    const { data, error } = await admin.rpc("check_rate_limit", {
+      p_key: clave,
+      p_max: max,
+      p_window_seconds: windowSeconds,
+    });
+    if (error) {
+      console.error("Rate limit RPC error:", error.message);
+      return true;
+    }
+    return data === true;
+  } catch (e) {
+    console.error("Rate limit error:", e);
+    return true;
+  }
+}
+
 /** Mensaje genérico para respuestas de rate limit. */
 export const RATE_LIMIT_MSG =
   "Recibimos demasiadas solicitudes desde tu conexión. Esperá unos minutos y volvé a intentar.";

@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import { BARRIO_PAGES } from "@/lib/barrios";
+import { CATEGORIAS } from "@/lib/foro/categorias";
+import { temasParaSitemap } from "@/lib/foro/data";
+import { urlTema } from "@/lib/foro/texto";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
 
@@ -18,6 +21,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/contacto`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.6 },
     { url: `${SITE}/estimador`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE}/foro`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE}/foro/normas`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    ...CATEGORIAS.map((c) => ({
+      url: `${SITE}/foro/${c.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.6,
+    })),
     // /auth/registro no va en el sitemap: robots.txt bloquea /auth/ y
     // anunciarla acá mandaba señales contradictorias a los buscadores.
     // Además es un formulario de alta, sin contenido que posicionar.
@@ -64,7 +75,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    return [...static_pages, ...property_pages, ...blog_pages];
+    // Temas de la Tertulia (sin sesión: solo lo publicado)
+    const foro_pages: MetadataRoute.Sitemap = (await temasParaSitemap()).map((t) => ({
+      url: `${SITE}${urlTema(t)}`,
+      lastModified: new Date(t.ultima_actividad_at),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }));
+
+    return [...static_pages, ...property_pages, ...blog_pages, ...foro_pages];
   } catch {
     return static_pages;
   }
