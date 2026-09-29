@@ -39,6 +39,7 @@ export default async function Navbar() {
           {/* Servicios y Sobre nosotros: sus links viven en lib/menu.ts */}
           <NavDesplegables style={navLink} />
           <Link href="/foro" style={navLink} className="nav-hide-mobile">Foro</Link>
+          <Link href="/catedra" style={navLink} className="nav-hide-mobile">Cátedra</Link>
           <Link href="/contacto" style={navLink} className="nav-hide-mobile">Contacto</Link>
 
           {user ? (

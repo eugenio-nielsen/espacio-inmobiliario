@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
           "/panel/", "/auth/", "/api/",
           "/foro/nuevo", "/foro/editar/", "/foro/perfil", "/foro/unirse",
           "/foro/bienvenida", "/foro/avisos",
+          "/catedra/unirse", "/catedra/profesionales/postular",
         ],
       },
     ],

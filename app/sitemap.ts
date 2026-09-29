@@ -23,6 +23,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE}/foro`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${SITE}/foro/normas`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE}/catedra`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${SITE}/catedra/calculadora`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     ...CATEGORIAS.map((c) => ({
       url: `${SITE}/foro/${c.slug}`,
       lastModified: new Date(),

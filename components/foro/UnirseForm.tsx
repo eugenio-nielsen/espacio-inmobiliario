@@ -12,7 +12,7 @@ import { ROLES } from "@/lib/foro/types";
  * misma cuenta que usa todo el sitio (si después quiere publicar una
  * propiedad, ya la tiene). No pide teléfono.
  */
-export default function UnirseForm({ volver }: { volver: string }) {
+export default function UnirseForm({ volver, boton = "Sumarme a la Tertulia" }: { volver: string; boton?: string }) {
   const [error, setError] = useState<string | null>(null);
   const [verClave, setVerClave] = useState(false);
   const [reinicio, setReinicio] = useState(0);
@@ -71,7 +71,7 @@ export default function UnirseForm({ volver }: { volver: string }) {
       </label>
 
       <fieldset className="fo-campo">
-        <legend>¿Qué te trae a la Tertulia?</legend>
+        <legend>¿Qué te trae?</legend>
         <div className="fo-fichas" role="radiogroup">
           {ROLES.map(r => (
             <label key={r.valor} className="fo-ficha">
@@ -86,7 +86,7 @@ export default function UnirseForm({ volver }: { volver: string }) {
       {error && <p className="fo-error" role="alert">{error}</p>}
 
       <button type="submit" className="fo-btn" disabled={enviando} style={{ width: "100%" }}>
-        {enviando ? "Creando tu cuenta…" : "Sumarme a la Tertulia"}
+        {enviando ? "Creando tu cuenta…" : boton}
         {!enviando && <ArrowRight size={15} strokeWidth={1.8} />}
       </button>
 

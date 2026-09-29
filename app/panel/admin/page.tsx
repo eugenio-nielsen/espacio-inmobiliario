@@ -9,6 +9,7 @@ import type { Pendiente } from "@/components/panel/ValidacionesAdmin";
 import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
 import type { Post } from "@/lib/blog/types";
 import { datosAdminForo } from "@/lib/foro/data";
+import { getCostosConfig, profesionalesAdmin } from "@/lib/catedra/data";
 
 export const metadata: Metadata = {
   title: "Superadmin",
@@ -37,7 +38,7 @@ export default async function SuperadminPage({ searchParams }: Props) {
     getPreciosBarrios(),
     getEstimadorConfig(),
   ]);
-  const foro = await datosAdminForo();
+  const [foro, costos, profesionales] = await Promise.all([datosAdminForo(), getCostosConfig(), profesionalesAdmin()]);
 
   const preciosArray = Object.entries(precios)
     .map(([barrio, precio]) => ({ barrio, precio }))
@@ -138,6 +139,7 @@ export default async function SuperadminPage({ searchParams }: Props) {
         posts={posts}
         validaciones={validaciones}
         foro={foro}
+        catedra={{ config: costos, profesionales }}
         tabInicial={tab}
       />
     </div>

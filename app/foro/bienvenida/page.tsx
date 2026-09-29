@@ -31,8 +31,8 @@ export default async function BienvenidaPage({ searchParams }: Props) {
         <p className="fo-papel-sub" style={{ display: "flex", gap: 12 }}>
           <MailCheck size={22} strokeWidth={1.5} color="var(--gold-600)" style={{ flexShrink: 0, marginTop: 2 }} />
           <span>
-            Te mandamos un email para confirmar tu cuenta. Tocá el enlace y volvés directo a la Tertulia,
-            con tu sesión iniciada, listo para escribir. Si no lo ves en unos minutos, revisá la carpeta de spam.
+            Te mandamos un email para confirmar tu cuenta. Tocá el enlace y volvés directo a donde
+            estabas, con tu sesión iniciada. Si no lo ves en unos minutos, revisá la carpeta de spam.
           </span>
         </p>
         <div className="fo-doble" />

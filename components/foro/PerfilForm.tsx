@@ -133,7 +133,7 @@ export default function PerfilForm({ miembro }: { miembro: MiembroPrivado }) {
         <section style={{ marginTop: 44, paddingTop: 28, borderTop: "1px solid var(--gold-200)" }}>
           <p className="fo-rotulo">Profesional verificado</p>
           {miembro.verificado ? (
-            <p className="fo-ok"><BadgeCheck size={16} style={{ verticalAlign: "-3px", marginRight: 6, color: "var(--gold-700)" }} />
+            <p className="fo-ok"><BadgeCheck size={16} style={{ display: "inline", verticalAlign: "-3px", marginRight: 6, color: "var(--gold-700)" }} />
               Tu matrícula está verificada: tus publicaciones muestran el distintivo.</p>
           ) : miembro.verificacion_estado === "pendiente" ? (
             <p className="fo-ok">Tu pedido está en revisión ({miembro.matricula}). Te avisamos por email.</p>
