@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, LogOut, UserRound, Plus, MessageCircle, MessagesSquare, GraduationCap } from "lucide-react";
+import { Menu, X, Building2, LogOut, UserRound, Plus, MessageCircle } from "lucide-react";
 import { DESPLEGABLES, opcionesCuenta } from "@/lib/menu";
 import { signOut } from "@/lib/actions/auth";
 import "./menu-cuenta.css";
 
 // El mismo orden que la barra de escritorio: Propiedades, los
-// desplegables de lib/menu.ts (Servicios, Sobre nosotros), Foro, Cátedra y Contacto
+// desplegables de lib/menu.ts (Sobre nosotros, Herramientas) y Contacto
 
 export default function MobileMenu({
   loggedIn,
@@ -77,15 +77,7 @@ export default function MobileMenu({
               </div>
             ))}
 
-            <Link href="/foro" className="mobile-menu-link" onClick={() => setOpen(false)} style={{ marginTop: 12 }}>
-              <MessagesSquare size={18} strokeWidth={1.75} color="var(--gold-600)" />
-              Foro · Tertulia Inmobiliaria
-            </Link>
-            <Link href="/catedra" className="mobile-menu-link" onClick={() => setOpen(false)}>
-              <GraduationCap size={18} strokeWidth={1.75} color="var(--gold-600)" />
-              Cátedra Inmobiliaria
-            </Link>
-            <Link href="/contacto" className="mobile-menu-link" onClick={() => setOpen(false)}>
+            <Link href="/contacto" className="mobile-menu-link" onClick={() => setOpen(false)} style={{ marginTop: 12 }}>
               <MessageCircle size={18} strokeWidth={1.75} color="var(--gold-600)" />
               Contacto
             </Link>

@@ -1,4 +1,4 @@
-import { Search, Tag, BookOpen, HelpCircle, Building2, Plus, UserRound, ShieldCheck, MessagesSquare, type LucideIcon } from "lucide-react";
+import { Search, Tag, BookOpen, HelpCircle, Building2, Plus, UserRound, ShieldCheck, MessagesSquare, GraduationCap, type LucideIcon } from "lucide-react";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 
 export type ItemMenu = {
@@ -10,7 +10,7 @@ export type ItemMenu = {
 };
 
 export type GrupoMenu = {
-  /** Rótulo del grupo. Sin rótulo, el grupo va primero y sin encabezado. */
+  /** Rótulo del grupo. Sin rótulo, el grupo va sin encabezado. */
   titulo?: string;
   items: ItemMenu[];
 };
@@ -18,45 +18,49 @@ export type GrupoMenu = {
 export type Desplegable = { titulo: string; grupos: GrupoMenu[] };
 
 /**
- * Desplegables del menú principal:
+ * Desplegables del menú principal. La barra queda en tres entradas:
+ * "Propiedades" (link directo) y estos dos.
  *
- *   · "Servicios": la operación de quien entra, comprar o vender.
- *   · "Sobre nosotros": cómo trabajamos, las herramientas gratuitas y
- *     el blog. Antes se llamaba "Herramientas" y "Cómo funciona" era un
- *     link suelto en la barra.
+ *   · "Sobre nosotros": qué hacemos (los servicios para comprar y para
+ *     vender), cómo trabajamos y el blog.
+ *   · "Herramientas": lo que se usa: el tasador, la calculadora del
+ *     Registro, el foro y la Cátedra. Foro y Cátedra eran links sueltos
+ *     en la barra, y "Servicios" un desplegable aparte.
  *
- * Cada grupo lleva su rótulo para que no sea una bolsa de links
- * mezclados. Los consumen el menú de escritorio (NavDesplegables) y el
- * móvil (MobileMenu).
+ * Un grupo con rótulo lo muestra como encabezado; sin rótulo va solo,
+ * separado por una línea. Los consumen el menú de escritorio
+ * (NavDesplegables) y el móvil (MobileMenu).
  *
- * Las herramientas en sí siguen en lib/herramientas.ts, porque el
- * footer las lista solas.
+ * El tasador y la calculadora siguen en lib/herramientas.ts, porque el
+ * footer los lista solos.
  */
 export const DESPLEGABLES: Desplegable[] = [
   {
-    titulo: "Servicios",
+    titulo: "Sobre nosotros",
     grupos: [
       {
+        titulo: "Servicios",
         items: [
           { href: "/comprar", label: "Quiero comprar", detalle: "Decidí con respaldo antes de firmar", icon: Search },
           { href: "/vender", label: "Quiero vender", detalle: "Publicá gratis o delegá la venta", icon: Tag },
         ],
       },
-    ],
-  },
-  {
-    titulo: "Sobre nosotros",
-    grupos: [
       {
         items: [
           { href: "/como-funciona", label: "Cómo funciona", detalle: "El proceso paso a paso, para vender y para comprar", icon: HelpCircle },
+          { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
         ],
       },
-      { titulo: "Herramientas gratuitas", items: HERRAMIENTAS },
+    ],
+  },
+  {
+    titulo: "Herramientas",
+    grupos: [
       {
-        titulo: "Para leer",
         items: [
-          { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
+          ...HERRAMIENTAS,
+          { href: "/foro", label: "Foro", detalle: "Tertulia Inmobiliaria: preguntá y debatí con otros", icon: MessagesSquare },
+          { href: "/catedra", label: "Cátedra Inmobiliaria", detalle: "Para estudiantes y recién matriculados", icon: GraduationCap },
         ],
       },
     ],

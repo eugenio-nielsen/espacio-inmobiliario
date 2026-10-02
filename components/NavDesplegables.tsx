@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { DESPLEGABLES, type Desplegable } from "@/lib/menu";
 
 /**
- * Los desplegables del menú de escritorio ("Servicios", "Sobre nosotros").
+ * Los desplegables del menú de escritorio ("Sobre nosotros", "Herramientas").
  * Los grupos y sus rótulos vienen de lib/menu.ts; un grupo sin rótulo
  * se muestra sin encabezado.
  *

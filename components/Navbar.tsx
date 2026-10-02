@@ -36,10 +36,8 @@ export default async function Navbar() {
             ...navLink, color: "var(--navy-800)", fontWeight: 700,
             background: "rgba(185,159,102,.16)", padding: "8px 16px", borderRadius: 999,
           }}>Propiedades</Link>
-          {/* Servicios y Sobre nosotros: sus links viven en lib/menu.ts */}
+          {/* Sobre nosotros y Herramientas: sus links viven en lib/menu.ts */}
           <NavDesplegables style={navLink} />
-          <Link href="/foro" style={navLink} className="nav-hide-mobile">Foro</Link>
-          <Link href="/catedra" style={navLink} className="nav-hide-mobile">Cátedra</Link>
           <Link href="/contacto" style={navLink} className="nav-hide-mobile">Contacto</Link>
 
           {user ? (
