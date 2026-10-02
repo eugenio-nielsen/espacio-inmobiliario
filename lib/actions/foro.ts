@@ -7,6 +7,7 @@ import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, checkRateLimitClave, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
+import { normalizarNombre } from "@/lib/utils/nombre";
 import { verificarTurnstile, TURNSTILE_MSG } from "@/lib/foro/turnstile";
 import { leerToken } from "@/lib/foro/firma";
 import { esCategoria } from "@/lib/foro/categorias";
@@ -566,7 +567,7 @@ const YA_EXISTE = "Ya existe una cuenta con ese email. Ingresá con tu contrase�
  * sesión iniciada.
  */
 export async function unirseALaTertulia(formData: FormData): Promise<Resultado> {
-  const nombre = linea(formData.get("nombre"));
+  const nombre = normalizarNombre(linea(formData.get("nombre")));
   const email = linea(formData.get("email")).toLowerCase();
   const password = (formData.get("password") as string) || "";
   const rol = formData.get("rol");

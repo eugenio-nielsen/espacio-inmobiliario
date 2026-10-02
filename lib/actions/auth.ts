@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
+import { normalizarNombre } from "@/lib/utils/nombre";
 import { volverSeguro } from "@/lib/foro/texto";
 
 /** Parámetros de campaña que se guardan con la cuenta, si llegaron. */
@@ -37,7 +38,7 @@ function destinoTrasRegistro(formData: FormData): string {
 
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
-  const nombre = ((formData.get("nombre") as string) || "").trim();
+  const nombre = normalizarNombre(formData.get("nombre") as string);
   const email = ((formData.get("email") as string) || "").trim();
   const password = (formData.get("password") as string) || "";
 

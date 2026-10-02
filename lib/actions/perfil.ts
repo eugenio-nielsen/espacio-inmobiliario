@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizarTelefono } from "@/lib/utils/telefono";
+import { normalizarNombre } from "@/lib/utils/nombre";
 
 /**
  * Actualiza los datos del propio usuario desde el panel.
@@ -13,7 +14,7 @@ export async function actualizarPerfil(formData: FormData): Promise<{ ok: boolea
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { ok: false, error: "No autenticado." };
 
-  const nombre = ((formData.get("nombre") as string) || "").trim();
+  const nombre = normalizarNombre(formData.get("nombre") as string);
   if (!nombre) return { ok: false, error: "Ingresá tu nombre." };
 
   // El teléfono es la vía de contacto que ven los interesados en la ficha
