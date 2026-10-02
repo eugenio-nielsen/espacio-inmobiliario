@@ -18,7 +18,19 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
 
+  // Orientación de cada foto, medida cuando carga (la miniatura o la foto
+  // misma). Las de celular suelen ser verticales y el recuadro es apaisado:
+  // recortadas para llenarlo se ve menos de la mitad. Una vertical se
+  // muestra entera, sobre la misma foto desenfocada.
+  const [verticales, setVerticales] = useState<Record<string, boolean>>({});
+  const medir = useCallback((url: string, img: HTMLImageElement) => {
+    if (!img.naturalWidth || !img.naturalHeight) return;
+    const vertical = img.naturalHeight > img.naturalWidth;
+    setVerticales(v => (v[url] === vertical ? v : { ...v, [url]: vertical }));
+  }, []);
+
   const enPlano = !!plano && current === planoIndex;
+  const enVertical = !enPlano && verticales[items[current]] === true;
   const mostrarChips = !!plano && fotos.length > 0;
 
   const prev = useCallback(() => setCurrent(c => (c - 1 + items.length) % items.length), [items.length]);
@@ -66,13 +78,32 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
           className="property-gallery-main"
           onClick={() => setLightbox(true)}
           title="Clic para ampliar"
-          style={enPlano ? { background: "#fff" } : undefined}
+          style={enPlano ? { background: "#fff" } : enVertical ? { background: "var(--navy-900)" } : undefined}
         >
+          {/* Fondo de una foto vertical: la misma foto, desenfocada. Usa el
+              tamaño de la miniatura, que ya está descargada. */}
+          {enVertical && (
+            <Image
+              key={items[current]}
+              src={items[current]}
+              alt=""
+              aria-hidden="true"
+              fill
+              sizes="104px"
+              style={{
+                objectFit: "cover",
+                filter: "blur(26px) brightness(.6)",
+                transform: "scale(1.2)",
+                animation: "fadeIn 220ms ease",
+              }}
+            />
+          )}
           <Image
             src={items[current]}
             alt={altActual}
             fill
-            className={enPlano ? "object-contain" : "object-cover"}
+            className={enPlano || enVertical ? "object-contain" : "object-cover"}
+            onLoad={e => medir(items[current], e.currentTarget)}
             sizes="(max-width: 1024px) 100vw, 66vw"
             // `priority` está deprecado en Next 16 y ya no hacía nada: la foto
             // principal es lo primero que se ve de la ficha, va con prioridad
@@ -183,6 +214,7 @@ export default function PropertyGallery({ fotos, titulo, plano }: Props) {
                     alt={esPlano ? "Miniatura del plano" : `Miniatura ${i + 1}`}
                     fill
                     className={esPlano ? "object-contain" : "object-cover"}
+                    onLoad={e => medir(url, e.currentTarget)}
                     sizes="104px"
                   />
                   {esPlano && (

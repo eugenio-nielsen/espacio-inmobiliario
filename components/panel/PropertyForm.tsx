@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition, useRef } from "react";
 import Image from "next/image";
-import { Star, Sparkles } from "lucide-react";
+import { Star, Sparkles, Info } from "lucide-react";
 import { createProperty, updateProperty } from "@/lib/actions/properties";
 import { generarDescripcionIA } from "@/lib/actions/descripcion";
 import type { CamposDescripcion } from "@/lib/ai/descripcion";
@@ -30,6 +30,12 @@ export default function PropertyForm({ mode, property }: Props) {
   const [fotos, setFotos] = useState<FotoForm[]>(() => (property?.fotos || []).map(url => ({ url })));
   const [optimizando, setOptimizando] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  // Orientación de cada foto (true = vertical), medida al cargar la vista
+  // previa. La portada se muestra apaisada en los listados: si es vertical
+  // sale recortada, y conviene avisarlo sin trabar la carga.
+  const [verticales, setVerticales] = useState<Record<string, boolean>>({});
+  const portadaVertical = fotos.length > 0 && verticales[fotos[0].url] === true;
+  const hayHorizontal = fotos.some(f => verticales[f.url] === false);
 
   // Descripción con IA
   const formRef = useRef<HTMLFormElement>(null);
@@ -552,7 +558,19 @@ export default function PropertyForm({ mode, property }: Props) {
               const esPortada = idx === 0;
               return (
                 <div key={f.url} className={`ff-foto${esPortada ? " ff-foto-portada" : ""}`}>
-                  <Image src={f.url} alt={esPortada ? "Portada" : `Foto ${idx + 1}`} fill className="object-cover" sizes="160px" />
+                  <Image
+                    src={f.url}
+                    alt={esPortada ? "Portada" : `Foto ${idx + 1}`}
+                    fill
+                    className="object-cover"
+                    sizes="160px"
+                    onLoad={e => {
+                      const { naturalWidth: ancho, naturalHeight: alto } = e.currentTarget;
+                      if (!ancho || !alto) return;
+                      const vertical = alto > ancho;
+                      setVerticales(prev => (prev[f.url] === vertical ? prev : { ...prev, [f.url]: vertical }));
+                    }}
+                  />
 
                   {esPortada ? (
                     <span className="ff-marca-portada">
@@ -586,6 +604,18 @@ export default function PropertyForm({ mode, property }: Props) {
               );
             })}
           </div>
+        )}
+
+        {portadaVertical && (
+          <p className="ff-aviso" role="status">
+            <Info size={13} strokeWidth={2} aria-hidden="true" />
+            <span>
+              La portada es una foto vertical: en los listados se va a ver recortada.{" "}
+              {hayHorizontal
+                ? <>Si querés, tocá <Star size={11} strokeWidth={2.2} className="ff-estrella-txt" /> en una horizontal para usarla de portada.</>
+                : "Si podés, sumá una sacada con el celular acostado."}
+            </span>
+          </p>
         )}
 
         <div
