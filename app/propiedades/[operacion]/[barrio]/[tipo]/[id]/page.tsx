@@ -26,13 +26,13 @@ import VolverAResultados from "@/components/properties/VolverAResultados";
 import Navbar from "@/components/Navbar";
 import { getPreciosBarrios } from "@/lib/estimador/data";
 import { leerConfig, proximosDias } from "@/lib/utils/agenda";
-import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, LayoutGrid, Compass, AlignCenter, BadgeCheck, Eye, CalendarDays, Layers, Sparkles, Banknote } from "lucide-react";
+import { MapPin, BedDouble, Bath, Ruler, Car, Home, Building2, Trees, Store, Briefcase, SquareParking, LayoutGrid, Compass, AlignCenter, BadgeCheck, Eye, CalendarDays, Layers, Sparkles, Banknote } from "lucide-react";
 
 export const revalidate = 60;
 
 const TIPO_LABEL: Record<string, string> = {
   casa: "Casa", departamento: "Departamento", terreno: "Terreno",
-  local: "Local", oficina: "Oficina",
+  local: "Local", oficina: "Oficina", cochera: "Cochera",
 };
 const TIPO_ICON: Record<string, React.ReactNode> = {
   casa:         <Home size={18} strokeWidth={1.75} />,
@@ -40,6 +40,7 @@ const TIPO_ICON: Record<string, React.ReactNode> = {
   terreno:      <Trees size={18} strokeWidth={1.75} />,
   local:        <Store size={18} strokeWidth={1.75} />,
   oficina:      <Briefcase size={18} strokeWidth={1.75} />,
+  cochera:      <SquareParking size={18} strokeWidth={1.75} />,
 };
 
 type PageProps = { params: Promise<{ operacion: string; barrio: string; tipo: string; id: string }> };
@@ -100,6 +101,9 @@ export default async function PropiedadPage({ params }: PageProps) {
   });
 
   const p = property;
+  // Una cochera no tiene ambientes, dormitorios ni baños, ni "incluye
+  // cochera": esos datos no se muestran aunque hayan quedado cargados.
+  const esCochera = p.tipo === "cochera";
   // Los parámetros de costos son los mismos de la calculadora de la Cátedra
   const costosConfig = await getCostosConfig();
 
@@ -189,7 +193,7 @@ export default async function PropiedadPage({ params }: PageProps) {
     offers: { "@type": "Offer", price: p.precio, priceCurrency: p.moneda, availability: "https://schema.org/InStock" },
     address: { "@type": "PostalAddress", streetAddress: p.direccion || "", addressLocality: p.barrio || p.ciudad, addressRegion: p.provincia, addressCountry: "AR" },
     ...(p.superficie_total && { floorSize: { "@type": "QuantitativeValue", value: p.superficie_total, unitCode: "MTK" } }),
-    ...(p.dormitorios && { numberOfRooms: p.dormitorios }),
+    ...(p.dormitorios && !esCochera && { numberOfRooms: p.dormitorios }),
   };
 
   const whatsappMsg = encodeURIComponent(`Hola, vi tu propiedad "${p.titulo}" en Espacio Inmobiliario y me interesa. ¿Podemos hablar?`);
@@ -202,9 +206,11 @@ export default async function PropiedadPage({ params }: PageProps) {
   // A · Lo principal: tipo, ambientes, dormitorios, baños, superficies
   const featsPrincipal: Feat[] = [
     [TIPO_ICON[p.tipo], TIPO_LABEL[p.tipo]],
-    ...(p.ambientes != null ? [[<LayoutGrid key="amb" size={18} strokeWidth={1.75} />, `${p.ambientes} ${p.ambientes === 1 ? "ambiente" : "ambientes"}`] as Feat] : []),
-    [<BedDouble key="bed" size={18} strokeWidth={1.75} />, `${p.dormitorios ?? "—"} ${p.dormitorios === 1 ? "dormitorio" : "dormitorios"}`],
-    [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`],
+    ...(p.ambientes != null && !esCochera ? [[<LayoutGrid key="amb" size={18} strokeWidth={1.75} />, `${p.ambientes} ${p.ambientes === 1 ? "ambiente" : "ambientes"}`] as Feat] : []),
+    ...(!esCochera ? [
+      [<BedDouble key="bed" size={18} strokeWidth={1.75} />, `${p.dormitorios ?? "—"} ${p.dormitorios === 1 ? "dormitorio" : "dormitorios"}`] as Feat,
+      [<Bath key="bath" size={18} strokeWidth={1.75} />, `${p.banos ?? "—"} ${p.banos === 1 ? "baño" : "baños"}`] as Feat,
+    ] : []),
     [<Ruler key="ruler" size={18} strokeWidth={1.75} />, p.superficie_total ? `${p.superficie_total} m² totales` : "— m²"],
     ...(p.superficie_cubierta ? [[<Ruler key="cub" size={18} strokeWidth={1.75} />, `${p.superficie_cubierta} m² cubiertos`] as Feat] : []),
     ...(p.superficie_balcon ? [[<Ruler key="bal" size={18} strokeWidth={1.75} />, `${p.superficie_balcon} m² de balcón`] as Feat] : []),
@@ -213,7 +219,7 @@ export default async function PropiedadPage({ params }: PageProps) {
 
   // B · Características del edificio/unidad
   const featsCaracteristicas: Feat[] = [
-    [<Car key="car" size={18} strokeWidth={1.75} />, p.cochera ? "Cochera incluida" : "Sin cochera"],
+    ...(!esCochera ? [[<Car key="car" size={18} strokeWidth={1.75} />, p.cochera ? "Cochera incluida" : "Sin cochera"] as Feat] : []),
     ...(p.piso ? [[<Layers key="piso" size={18} strokeWidth={1.75} />, `Piso ${p.piso}`] as Feat] : []),
     ...(p.antiguedad != null ? [[<CalendarDays key="ant" size={18} strokeWidth={1.75} />, p.antiguedad === 0 ? "A estrenar" : `${p.antiguedad} años de antigüedad`] as Feat] : []),
     ...(p.estado ? [[<Sparkles key="est" size={18} strokeWidth={1.75} />, `Estado: ${p.estado}`] as Feat] : []),
@@ -516,9 +522,9 @@ export default async function PropiedadPage({ params }: PageProps) {
           precioPorM2: precioPorM2
             ? `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(precioPorM2)}`
             : null,
-          ambientes: p.ambientes,
-          dormitorios: p.dormitorios,
-          banos: p.banos,
+          ambientes: esCochera ? null : p.ambientes,
+          dormitorios: esCochera ? null : p.dormitorios,
+          banos: esCochera ? null : p.banos,
           superficieTotal: p.superficie_total,
         }}
       />

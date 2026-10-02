@@ -160,6 +160,11 @@ export default function PropertyForm({ mode, property }: Props) {
   const [direccion, setDireccion] = useState(property?.direccion || "");
   const barrios = zona ? UBICACIONES[zona as Zona] : [];
 
+  // Una cochera no tiene ambientes, dormitorios ni baños, ni "incluye
+  // cochera": esos campos no se piden (y se guardan vacíos).
+  const [tipo, setTipo] = useState<string>(property?.tipo || "");
+  const esCochera = tipo === "cochera";
+
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const added = Array.from(e.target.files || []);
     // reset input so the same file can be re-added if needed
@@ -297,13 +302,14 @@ export default function PropertyForm({ mode, property }: Props) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de unidad *</label>
-            <select name="tipo" required defaultValue={v?.tipo || ""} className={sel}>
+            <select name="tipo" required value={tipo} onChange={e => setTipo(e.target.value)} className={sel}>
               <option value="" disabled>Seleccioná</option>
               <option value="casa">Casa</option>
               <option value="departamento">Departamento</option>
               <option value="terreno">Terreno</option>
               <option value="local">Local</option>
               <option value="oficina">Oficina</option>
+              <option value="cochera">Cochera</option>
             </select>
           </div>
           <div>
@@ -395,20 +401,22 @@ export default function PropertyForm({ mode, property }: Props) {
       {/* Características */}
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Lo principal</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ambientes</label>
-            <input name="ambientes" type="number" min={1} max={30} defaultValue={v?.ambientes ?? ""} className={inp} placeholder="Ej: 4" />
+        {!esCochera && (
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ambientes</label>
+              <input name="ambientes" type="number" min={1} max={30} defaultValue={v?.ambientes ?? ""} className={inp} placeholder="Ej: 4" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dormitorios</label>
+              <input name="dormitorios" type="number" min={0} max={20} defaultValue={v?.dormitorios ?? ""} className={inp} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Baños</label>
+              <input name="banos" type="number" min={0} max={10} defaultValue={v?.banos ?? ""} className={inp} />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Dormitorios</label>
-            <input name="dormitorios" type="number" min={0} max={20} defaultValue={v?.dormitorios ?? ""} className={inp} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Baños</label>
-            <input name="banos" type="number" min={0} max={10} defaultValue={v?.banos ?? ""} className={inp} />
-          </div>
-        </div>
+        )}
         {/* Superficies: el total se calcula solo */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
@@ -439,12 +447,14 @@ export default function PropertyForm({ mode, property }: Props) {
       {/* Características */}
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
         <h2 className="font-semibold text-[#0E2C50] text-sm uppercase tracking-wide">Características</h2>
-        <div className="flex items-center gap-3">
-          <input type="hidden" name="cochera" value="false" />
-          <input id="cochera" name="cochera" type="checkbox" value="true" defaultChecked={v?.cochera}
-            className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
-          <label htmlFor="cochera" className="text-sm text-gray-700">Tiene cochera / garage</label>
-        </div>
+        {!esCochera && (
+          <div className="flex items-center gap-3">
+            <input type="hidden" name="cochera" value="false" />
+            <input id="cochera" name="cochera" type="checkbox" value="true" defaultChecked={v?.cochera}
+              className="w-4 h-4 rounded border-gray-300" style={{ accentColor: "#0E2C50" }} />
+            <label htmlFor="cochera" className="text-sm text-gray-700">Tiene cochera / garage</label>
+          </div>
+        )}
         <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Piso</label>

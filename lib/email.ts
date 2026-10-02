@@ -282,6 +282,7 @@ export async function sendNewPropertyToAdmin(data: {
 
   const TIPO_LABEL: Record<string, string> = {
     casa: "Casa", departamento: "Departamento", terreno: "Terreno", local: "Local", oficina: "Oficina",
+    cochera: "Cochera",
   };
 
   const html = baseLayout(`

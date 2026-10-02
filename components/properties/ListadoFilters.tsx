@@ -51,6 +51,7 @@ export default function ListadoFilters({ current }: Props) {
           <option value="terreno">Terreno</option>
           <option value="local">Local</option>
           <option value="oficina">Oficina</option>
+          <option value="cochera">Cochera</option>
         </select>
         <Chevron />
       </div>

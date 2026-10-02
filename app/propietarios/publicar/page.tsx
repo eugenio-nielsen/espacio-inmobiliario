@@ -51,7 +51,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Qué propiedades puedo publicar?",
-    a: "Departamentos, casas, terrenos, locales y oficinas, en venta, en la Ciudad y la Provincia de Buenos Aires.",
+    a: "Departamentos, casas, terrenos, locales, oficinas y cocheras, en venta, en la Ciudad y la Provincia de Buenos Aires.",
   },
   {
     q: "¿Cómo me contactan los interesados?",

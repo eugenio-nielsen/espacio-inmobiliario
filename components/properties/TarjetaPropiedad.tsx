@@ -8,6 +8,7 @@ import "./tarjeta-propiedad.css";
 
 const TIPO: Record<string, string> = {
   casa: "Casa", departamento: "Departamento", terreno: "Terreno", local: "Local", oficina: "Oficina",
+  cochera: "Cochera",
 };
 
 const ESTADO: Record<string, string> = {
@@ -58,6 +59,8 @@ export default function TarjetaPropiedad({
 }) {
   const href = buildPropertyUrl(p);
   const esTerreno = p.tipo === "terreno";
+  // Una cochera no tiene ambientes ni baños, y el rótulo ya dice qué es
+  const esCochera = p.tipo === "cochera";
   const fotos = (p.fotos ?? []).slice(0, FOTOS_EN_TARJETA);
   const m2 = p.superficie_total && p.superficie_total > 0 ? p.superficie_total : null;
   const precioM2 = m2 ? Math.round(p.precio / m2) : null;
@@ -75,14 +78,16 @@ export default function TarjetaPropiedad({
   if (m2) datos.push({ v: `${num(m2)} m²`, l: cubierta || esTerreno ? "Totales" : "Superficie", c: "Tot." });
   if (cubierta) datos.push({ v: `${num(cubierta)} m²`, l: "Cubiertos", c: "Cub." });
   if (esTerreno && precioM2) datos.push({ v: `${signo(p.moneda)} ${num(precioM2)}`, l: "Por m²", c: "Por m²" });
-  if (p.ambientes) datos.push({ v: String(p.ambientes), l: p.ambientes === 1 ? "Ambiente" : "Ambientes", c: "Amb." });
-  else if (p.dormitorios) datos.push({ v: String(p.dormitorios), l: p.dormitorios === 1 ? "Dormitorio" : "Dormitorios", c: "Dorm." });
-  if (p.banos) datos.push({ v: String(p.banos), l: p.banos === 1 ? "Baño" : "Baños", c: p.banos === 1 ? "Baño" : "Baños" });
+  if (!esCochera) {
+    if (p.ambientes) datos.push({ v: String(p.ambientes), l: p.ambientes === 1 ? "Ambiente" : "Ambientes", c: "Amb." });
+    else if (p.dormitorios) datos.push({ v: String(p.dormitorios), l: p.dormitorios === 1 ? "Dormitorio" : "Dormitorios", c: "Dorm." });
+    if (p.banos) datos.push({ v: String(p.banos), l: p.banos === 1 ? "Baño" : "Baños", c: p.banos === 1 ? "Baño" : "Baños" });
+  }
   const abreviar = datos.length >= 4;
 
   const rasgos = [
     p.estado && ESTADO[p.estado],
-    p.cochera && "Cochera",
+    p.cochera && !esCochera && "Cochera",
     p.tipo === "departamento" && p.piso && `Piso ${p.piso}`,
     p.visitas_config?.activa && "Visitas con agenda",
   ].filter(Boolean) as string[];

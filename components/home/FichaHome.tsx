@@ -19,6 +19,7 @@ const TIPOS = [
   { v: "terreno", t: "Terreno" },
   { v: "local", t: "Local" },
   { v: "oficina", t: "Oficina" },
+  { v: "cochera", t: "Cochera" },
 ];
 
 /**

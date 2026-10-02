@@ -15,7 +15,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Propiedades en venta",
-  description: "Buscá casas, departamentos, terrenos, locales y oficinas en venta directamente de sus dueños en Buenos Aires. Sin comisiones.",
+  description: "Buscá casas, departamentos, terrenos, locales, oficinas y cocheras en venta directamente de sus dueños en Buenos Aires. Sin comisiones.",
   alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/propiedades` },
 };
 

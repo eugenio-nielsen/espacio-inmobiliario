@@ -59,7 +59,7 @@ create table if not exists public.properties (
   slug              text not null unique,
   titulo            text not null,
   descripcion       text,
-  tipo              text not null check (tipo in ('casa','departamento','terreno','local','oficina')),
+  tipo              text not null check (tipo in ('casa','departamento','terreno','local','oficina','cochera')),
   operacion         text not null check (operacion in ('venta','alquiler')),
   precio            numeric(14,2) not null,
   moneda            text not null default 'USD' check (moneda in ('USD','ARS')),

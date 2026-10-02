@@ -47,6 +47,7 @@ const TIPO_LABEL: Record<string, string> = {
   terreno: "Terreno",
   local: "Local",
   oficina: "Oficina",
+  cochera: "Cochera",
 };
 
 /** Arma una lista plana de los datos cargados (solo los presentes). */

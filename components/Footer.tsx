@@ -20,6 +20,7 @@ const TIPOS: [string, string][] = [
   ["Terrenos en venta", "terreno"],
   ["Locales comerciales", "local"],
   ["Oficinas", "oficina"],
+  ["Cocheras", "cochera"],
 ];
 
 const ESPACIO: [string, string][] = [

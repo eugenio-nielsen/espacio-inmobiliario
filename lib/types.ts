@@ -1,4 +1,4 @@
-export type PropertyTipo = "casa" | "departamento" | "terreno" | "local" | "oficina";
+export type PropertyTipo = "casa" | "departamento" | "terreno" | "local" | "oficina" | "cochera";
 export type PropertyOperacion = "venta" | "alquiler";
 export type PropertyStatus = "activa" | "pausada" | "vendida";
 export type Moneda = "USD" | "ARS";
