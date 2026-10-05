@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 const GA_ID = "G-EV1LYND1S5";
 
 export const metadata: Metadata = {
@@ -35,7 +35,6 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: { card: "summary_large_image" },
-  alternates: { canonical: SITE },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

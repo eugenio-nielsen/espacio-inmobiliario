@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import { Scale, BadgeCheck, FileText, Wallet, ArrowRight, Send } from "lucide-react";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Comprar una propiedad · Con quién consultarlo antes de decidir",

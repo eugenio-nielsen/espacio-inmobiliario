@@ -11,7 +11,7 @@ import PalabraRotativa from "@/components/como-funciona/PalabraRotativa";
 import AsesoriaContacto from "@/components/precios/AsesoriaContacto";
 import { ArrowRight, Plus } from "lucide-react";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Cómo funciona · Comprar y vender con acompañamiento",

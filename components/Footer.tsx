@@ -4,26 +4,16 @@ import SelloEN from "@/components/SelloEN";
 import FirmaTrazo from "@/components/FirmaTrazo";
 import Guilloche from "@/components/ui/Guilloche";
 import Reveal from "@/components/como-funciona/Reveal";
-import { BARRIO_PAGES } from "@/lib/barrios";
+import { BARRIO_PAGES, TIPO_PAGES } from "@/lib/barrios";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import "./footer.css";
 
 const WHATSAPP = "5491164519421";
 const EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
-/* Los tipos coinciden con la columna `tipo` de properties (minúscula).
-   Antes estos links apuntaban todos a /propiedades sin filtro:
-   prometían un listado filtrado y entregaban el listado completo. */
-const TIPOS: [string, string][] = [
-  ["Departamentos en venta", "departamento"],
-  ["Casas en venta", "casa"],
-  ["Terrenos en venta", "terreno"],
-  ["Locales comerciales", "local"],
-  ["Oficinas", "oficina"],
-  ["Cocheras", "cochera"],
-];
 
 const ESPACIO: [string, string][] = [
+  ["Sobre nosotros", "/sobre-nosotros"],
   ["Cómo funciona", "/como-funciona"],
   ["Vender mi propiedad", "/vender"],
   ["Comprar con respaldo", "/comprar"],
@@ -178,9 +168,9 @@ export default function Footer() {
 
         <div className="pie-col">
           <h3 className="pie-h">Propiedades</h3>
-          {TIPOS.map(([texto, tipo]) => (
-            <Link key={tipo} className="pie-link" href={`/propiedades?tipo=${tipo}`}>
-              {texto}
+          {TIPO_PAGES.map((t) => (
+            <Link key={t.slug} className="pie-link" href={`/propiedades/venta/${t.slug}`}>
+              {t.plural} en venta
             </Link>
           ))}
           <Link className="pie-link" href="/propiedades">Ver todas</Link>
@@ -188,11 +178,12 @@ export default function Footer() {
 
         <div className="pie-col">
           <h3 className="pie-h">Barrios</h3>
-          {BARRIO_PAGES.map(b => (
+          {BARRIO_PAGES.filter(b => b.intro.length > 0).map(b => (
             <Link key={b.slug} className="pie-link" href={`/propiedades/venta/${b.slug}`}>
               {b.nombre}
             </Link>
           ))}
+          <Link className="pie-link" href="/precios-m2">Todos los barrios</Link>
         </div>
 
         <div className="pie-col">

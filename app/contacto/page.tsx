@@ -7,7 +7,7 @@ import FormContacto from "@/components/contacto/FormContacto";
 import { motivoValido } from "@/lib/motivos";
 import { Mail, Clock, MapPin } from "lucide-react";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 const WHATSAPP = "5491164519421";
 const EMAIL = "eugenio@espacioinmobiliario.com.ar";
 

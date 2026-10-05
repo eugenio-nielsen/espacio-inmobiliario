@@ -4,7 +4,7 @@ import { ArrowRight, Calculator, MessagesSquare, ScrollText, Users } from "lucid
 import Guilloche from "@/components/ui/Guilloche";
 import Indice from "@/components/ui/Indice";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Cátedra Inmobiliaria · Herramientas para corredores y martilleros",

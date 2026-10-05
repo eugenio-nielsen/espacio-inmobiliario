@@ -11,7 +11,7 @@ import Secuencia from "@/components/ui/Secuencia";
 import Indice, { type ItemIndice } from "@/components/ui/Indice";
 import RegistroDueno from "@/components/propietarios/RegistroDueno";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 const PAGINA = "/propietarios/publicar";
 
 export const metadata: Metadata = {

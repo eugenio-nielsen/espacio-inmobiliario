@@ -1101,3 +1101,33 @@
   .ts-precision-corta strong::before { content: "Precisión: "; font-style: normal; font-family: var(--font-sans); font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.6); }
   .ts-mesa-nota .ts-hoja { padding: 20px 14px; }
 }
+
+/* ── Texto de apoyo bajo el tasador (SEO + dudas frecuentes) ─────── */
+.ts-info {
+  max-width: 800px;
+  margin: clamp(56px, 7vw, 90px) auto 0;
+  font-family: var(--font-sans);
+  color: var(--ink-600);
+}
+.ts-info section { margin-bottom: 38px; }
+.ts-info h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(21px, 3vw, 27px);
+  letter-spacing: -.01em;
+  color: var(--navy-800);
+  margin: 0 0 14px;
+}
+.ts-info p, .ts-info li { font-size: 15.5px; line-height: 1.75; }
+.ts-info p { margin: 0 0 12px; }
+.ts-info ul { margin: 0; padding-left: 20px; }
+.ts-info a { color: var(--gold-700); text-decoration: underline; text-underline-offset: 2px; }
+.ts-info details {
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+}
+.ts-info summary { cursor: pointer; font-weight: 600; color: var(--navy-800); font-size: 15px; }
+.ts-info details p { margin: 10px 0 0; font-size: 14.5px; }

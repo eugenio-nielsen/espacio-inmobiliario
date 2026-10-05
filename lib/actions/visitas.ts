@@ -12,7 +12,7 @@ import {
 } from "@/lib/email";
 import type { VisitasConfig, VisitaStatus } from "@/lib/types";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 /* ────────────────────────────────────────────────────────────
    Público: pedir una visita

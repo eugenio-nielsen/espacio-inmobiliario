@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth/user";
@@ -22,13 +23,46 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Espacio Inmobiliario · Propiedades directas de dueños en Argentina",
   description: "Comprá o vendé propiedades directamente con los dueños, sin comisiones y con acompañamiento profesional. Espacio Inmobiliario, Buenos Aires.",
-  alternates: { canonical: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000" },
+  alternates: { canonical: SITE },
   openGraph: {
     title: "Espacio Inmobiliario · Dueños Directos",
     description: "Propiedades directas de dueños en Buenos Aires. Sin comisiones.",
     type: "website",
   },
 };
+
+/** Quién es el sitio, para el panel de conocimiento y la búsqueda interna de Google. */
+const datosEstructurados = [
+  {
+    "@context": "https://schema.org",
+    "@type": ["Organization", "RealEstateAgent"],
+    "@id": `${SITE}/#organizacion`,
+    name: "Espacio Inmobiliario",
+    url: SITE,
+    logo: `${SITE}/icon.png`,
+    image: `${SITE}/opengraph-image`,
+    description: "Portal de propiedades de dueños directos y tasador online de departamentos en la Ciudad de Buenos Aires.",
+    email: "eugenio@espacioinmobiliario.com.ar",
+    telephone: "+5491164519421",
+    areaServed: ["Ciudad Autónoma de Buenos Aires", "Provincia de Buenos Aires"],
+    address: { "@type": "PostalAddress", addressLocality: "Buenos Aires", addressCountry: "AR" },
+    founder: { "@type": "Person", name: "Eugenio Nielsen", url: `${SITE}/sobre-nosotros` },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE}/#sitio`,
+    name: "Espacio Inmobiliario",
+    url: SITE,
+    inLanguage: "es-AR",
+    publisher: { "@id": `${SITE}/#organizacion` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${SITE}/propiedades?q={search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+  },
+];
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -65,6 +99,7 @@ export default async function HomePage() {
 
   return (
     <div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }} />
       <Navbar />
 
       {/* ── Apertura (hero) ─────────────────────────────────── */}

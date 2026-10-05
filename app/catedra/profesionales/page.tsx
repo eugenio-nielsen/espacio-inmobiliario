@@ -7,7 +7,7 @@ import RedProfesionales from "@/components/catedra/RedProfesionales";
 import { getCurrentUser } from "@/lib/auth/user";
 import { profesionalesAprobados } from "@/lib/catedra/data";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Red de profesionales de confianza · Cátedra Inmobiliaria",

@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -5,7 +6,7 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Política de privacidad",
   description: "Política de privacidad y protección de datos personales de Espacio Inmobiliario.",
-  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/privacidad` },
+  alternates: { canonical: `${SITE}/privacidad` },
 };
 
 export default function PrivacidadPage() {

@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { cache } from "react";
 import { after } from "next/server";
 import Link from "next/link";
@@ -59,25 +60,54 @@ const getPropiedad = cache(async (shortId: string) => {
   return data as (Property & { profiles: Profile }) | null;
 });
 
+/** Corta en el último espacio antes del límite, sin dejar palabras a medias. */
+function recortar(texto: string, max: number): string {
+  const limpio = texto.replace(/\s+/g, " ").trim();
+  if (limpio.length <= max) return limpio;
+  const corte = limpio.slice(0, max - 1);
+  return corte.slice(0, corte.lastIndexOf(" ") > 40 ? corte.lastIndexOf(" ") : max - 1).replace(/[,;:.\s]+$/, "") + "…";
+}
+
+/**
+ * Título y descripción pensados para la búsqueda: tipo, ambientes, zona y
+ * precio, que es lo que alguien escribe en Google, en vez de depender del
+ * título libre que cargó cada dueño (que sigue mostrándose en la ficha).
+ */
+function seoDeFicha(d: Property) {
+  const tipo = TIPO_LABEL[d.tipo] || "Propiedad";
+  const zona = d.barrio || d.ciudad;
+  const precio = `${d.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(d.precio)}`;
+  const amb = d.tipo !== "cochera" && d.ambientes ? ` ${d.ambientes} amb.` : "";
+  const title = `${tipo}${amb} en venta en ${zona} · ${precio}`;
+  const datos = [
+    d.superficie_total ? `${d.superficie_total} m²` : null,
+    d.tipo !== "cochera" && d.dormitorios ? `${d.dormitorios} dorm.` : null,
+    d.tipo !== "cochera" && d.banos ? `${d.banos} baño${d.banos > 1 ? "s" : ""}` : null,
+    d.apto_credito ? "apto crédito" : null,
+  ].filter(Boolean).join(", ");
+  const base = `${tipo}${amb} en ${zona}, ${d.provincia}${datos ? ` (${datos})` : ""}. ${precio}. Dueño directo, sin comisión inmobiliaria.`;
+  const extra = d.descripcion ? " " + d.descripcion : "";
+  return { title, description: recortar(base + extra, 158) };
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const data = await getPropiedad(id);
 
-  if (!data) return { title: "Propiedad no encontrada" };
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const description = data.descripcion?.slice(0, 160) ||
-    `${TIPO_LABEL[data.tipo]} en ${data.barrio || data.ciudad}, ${data.provincia}. Espacio Inmobiliario.`;
-  const canonicalUrl = `${siteUrl}${buildPropertyUrl({ operacion: data.operacion, barrio: data.barrio, ciudad: data.ciudad, tipo: data.tipo, id })}`;
+  if (!data) return { title: "Propiedad no encontrada", robots: { index: false } };
+  const { title, description } = seoDeFicha(data);
+  const canonicalUrl = `${SITE}${buildPropertyUrl({ operacion: data.operacion, barrio: data.barrio, ciudad: data.ciudad, tipo: data.tipo, id })}`;
+  const imagen = data.fotos?.[0];
 
   return {
-    title: data.titulo,
+    title,
     description,
     alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: data.titulo, description,
-      images: data.fotos?.[0] ? [{ url: data.fotos[0], width: 1200, height: 630 }] : [],
+      title, description, url: canonicalUrl, type: "website",
+      ...(imagen && { images: [{ url: imagen, width: 1200, height: 630, alt: data.titulo }] }),
     },
-    twitter: { card: "summary_large_image", title: data.titulo, description },
+    twitter: { card: "summary_large_image", title, description, ...(imagen && { images: [imagen] }) },
   };
 }
 
@@ -182,18 +212,35 @@ export default async function PropiedadPage({ params }: PageProps) {
   }
 
   const diasPublicada = Math.max(0, Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000));
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = SITE;
   const urlFicha = `${siteUrl}${buildPropertyUrl({ operacion: p.operacion, barrio: p.barrio, ciudad: p.ciudad, tipo: p.tipo, id })}`;
 
   const jsonLd = {
     "@context": "https://schema.org", "@type": "RealEstateListing",
     name: p.titulo, description: p.descripcion || p.titulo,
-    url: `${siteUrl}${buildPropertyUrl({ operacion: p.operacion, barrio: p.barrio, ciudad: p.ciudad, tipo: p.tipo, id })}`,
+    url: urlFicha,
+    datePosted: p.created_at,
+    dateModified: p.updated_at,
     image: p.fotos,
-    offers: { "@type": "Offer", price: p.precio, priceCurrency: p.moneda, availability: "https://schema.org/InStock" },
+    offers: { "@type": "Offer", price: p.precio, priceCurrency: p.moneda, availability: "https://schema.org/InStock", url: urlFicha },
     address: { "@type": "PostalAddress", streetAddress: p.direccion || "", addressLocality: p.barrio || p.ciudad, addressRegion: p.provincia, addressCountry: "AR" },
+    ...(geoResult && { geo: { "@type": "GeoCoordinates", latitude: geoResult.lat, longitude: geoResult.lng } }),
     ...(p.superficie_total && { floorSize: { "@type": "QuantitativeValue", value: p.superficie_total, unitCode: "MTK" } }),
-    ...(p.dormitorios && !esCochera && { numberOfRooms: p.dormitorios }),
+    ...(p.dormitorios && !esCochera && { numberOfBedrooms: p.dormitorios }),
+    ...(p.ambientes && !esCochera && { numberOfRooms: p.ambientes }),
+    ...(p.banos && !esCochera && { numberOfBathroomsTotal: p.banos }),
+    provider: { "@type": "Organization", name: "Espacio Inmobiliario", url: SITE },
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE },
+      { "@type": "ListItem", position: 2, name: "Propiedades", item: `${SITE}/propiedades` },
+      ...(getBarrioPage(slugifyUbicacion(p.barrio || p.ciudad))
+        ? [{ "@type": "ListItem", position: 3, name: p.barrio || p.ciudad, item: `${SITE}/propiedades/venta/${slugifyUbicacion(p.barrio || p.ciudad)}` }]
+        : []),
+      { "@type": "ListItem", position: getBarrioPage(slugifyUbicacion(p.barrio || p.ciudad)) ? 4 : 3, name: p.titulo, item: urlFicha },
+    ],
   };
 
   const whatsappMsg = encodeURIComponent(`Hola, vi tu propiedad "${p.titulo}" en Espacio Inmobiliario y me interesa. ¿Podemos hablar?`);
@@ -242,6 +289,7 @@ export default async function PropiedadPage({ params }: PageProps) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <div className="property-page-pad" style={{ minHeight: "100vh", background: "var(--cream)" }}>
         <Navbar />
 

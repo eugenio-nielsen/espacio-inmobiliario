@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { Fragment, Suspense } from "react";
 import Link from "next/link";
 import RecordarBusqueda from "@/components/properties/RecordarBusqueda";
@@ -13,11 +14,25 @@ import Footer from "@/components/Footer";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Propiedades en venta",
-  description: "Buscá casas, departamentos, terrenos, locales, oficinas y cocheras en venta directamente de sus dueños en Buenos Aires. Sin comisiones.",
-  alternates: { canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/propiedades` },
-};
+const DESCRIPCION = "Buscá casas, departamentos, terrenos, locales, oficinas y cocheras en venta directamente de sus dueños en Buenos Aires. Sin comisiones.";
+
+/**
+ * Listado general. Las búsquedas filtradas (tipo, precio, texto, orden…) son
+ * combinaciones casi infinitas de la misma lista: no se indexan, pero sí se
+ * siguen los links. Cada página de la paginación es su propia URL canónica,
+ * y los filtros por tipo tienen su landing propia en /propiedades/venta/<tipo>.
+ */
+export async function generateMetadata({ searchParams }: { searchParams: Promise<SearchParams> }): Promise<Metadata> {
+  const sp = await searchParams;
+  const filtrada = Object.entries(sp).some(([k, v]) => k !== "pagina" && !!v);
+  const pagina = Math.max(1, Number(sp.pagina) || 1);
+  return {
+    title: pagina > 1 ? `Propiedades en venta · Página ${pagina}` : "Propiedades en venta",
+    description: DESCRIPCION,
+    alternates: { canonical: pagina > 1 && !filtrada ? `${SITE}/propiedades?pagina=${pagina}` : `${SITE}/propiedades` },
+    ...(filtrada && { robots: { index: false, follow: true } }),
+  };
+}
 
 const PAGE_SIZE = 12;
 

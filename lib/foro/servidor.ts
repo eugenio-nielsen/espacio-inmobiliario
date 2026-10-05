@@ -12,7 +12,8 @@ import type { MiembroPrivado, Rol } from "@/lib/foro/types";
  */
 
 export const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
-export const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
+export { SITE };
 export const BUCKET = "foro-imagenes";
 
 const COLS_PRIVADO =

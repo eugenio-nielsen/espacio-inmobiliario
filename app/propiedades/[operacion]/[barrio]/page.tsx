@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site";
 import { Suspense } from "react";
 import Link from "next/link";
 import RecordarBusqueda from "@/components/properties/RecordarBusqueda";
@@ -5,39 +6,61 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
-import { getBarrioPage, BARRIO_PAGES } from "@/lib/barrios";
+import { getBarrioPage, getTipoPage, barriosVecinos, COMUNA_DE_BARRIO, BARRIO_PAGES, TIPO_PAGES } from "@/lib/barrios";
+import { resumenBarrio, fmtUsd } from "@/lib/mercado";
 import { getPreciosBarrios } from "@/lib/estimador/data";
 import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
 import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MapPin, TrendingUp, Building2, Calculator, Plus } from "lucide-react";
+import TipoLanding, { metadataTipo } from "./TipoLanding";
+import { MapPin, TrendingUp, Building2, Calculator, Plus, ArrowRight } from "lucide-react";
 
 export const revalidate = 300;
+
+// Solo existen los barrios y tipos listados: cualquier otro slug es un 404
+// de verdad (y no una página "no encontrada" con estado 200).
+export const dynamicParams = false;
 
 type PageProps = { params: Promise<{ operacion: string; barrio: string }> };
 
 export function generateStaticParams() {
-  return BARRIO_PAGES.map((b) => ({ operacion: "venta", barrio: b.slug }));
+  return [
+    ...BARRIO_PAGES.map((b) => ({ operacion: "venta", barrio: b.slug })),
+    ...TIPO_PAGES.map((t) => ({ operacion: "venta", barrio: t.slug })),
+  ];
 }
+
+const h2Estilo: React.CSSProperties = {
+  fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(19px,3vw,26px)",
+  letterSpacing: "-.01em", color: "var(--navy-800)", margin: "0 0 14px",
+};
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { operacion, barrio } = await params;
+  const tipoPage = getTipoPage(barrio);
+  if (operacion === "venta" && tipoPage) return metadataTipo(tipoPage);
   const data = getBarrioPage(barrio);
-  if (operacion !== "venta" || !data) return { title: "Página no encontrada" };
+  if (operacion !== "venta" || !data) return { title: "Página no encontrada", robots: { index: false } };
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const esCaba = data.provincia === "Ciudad Autónoma de Buenos Aires";
   const zona = esCaba ? "CABA" : "Provincia de Buenos Aires";
+  const precio = esCaba ? resumenBarrio(data.nombre, await getPreciosBarrios())?.precio : undefined;
+  const title = `Propiedades en venta en ${data.nombre} · Dueño directo`;
+  const description = `Casas, terrenos y departamentos en venta en ${data.nombre}, ${zona}, publicados directamente por sus dueños. Sin comisión inmobiliaria.${precio ? ` Precio de referencia del m²: US$ ${fmtUsd(precio)}. Tasá tu propiedad gratis.` : esCaba ? " Tasá tu propiedad gratis." : ""}`;
+  const url = `${SITE}/propiedades/venta/${data.slug}`;
   return {
-    title: `Propiedades en venta en ${data.nombre} · Dueño directo`,
-    description: `Casas, terrenos y departamentos en venta en ${data.nombre}, ${zona}, publicados directamente por sus dueños. Sin comisión inmobiliaria.${esCaba ? " Mirá el precio del m² y tasá tu propiedad gratis." : ""}`,
-    alternates: { canonical: `${siteUrl}/propiedades/venta/${data.slug}` },
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: "website" },
   };
 }
 
 export default async function BarrioPage({ params }: PageProps) {
   const { operacion, barrio } = await params;
+  const tipoPage = getTipoPage(barrio);
+  if (operacion === "venta" && tipoPage) return <TipoLanding tipo={tipoPage} />;
   const data = getBarrioPage(barrio);
   if (operacion !== "venta" || !data) notFound();
 
@@ -57,8 +80,44 @@ export default async function BarrioPage({ params }: PageProps) {
   const count = properties?.length || 0;
   // El tasador solo cubre CABA: no lo ofrecemos en partidos de provincia
   const esCaba = data.provincia === "Ciudad Autónoma de Buenos Aires";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const fmt = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n);
+  const siteUrl = SITE;
+  const fmt = fmtUsd;
+
+  const resumen = esCaba ? resumenBarrio(data.nombre, precios) : null;
+  const comuna = COMUNA_DE_BARRIO[data.nombre];
+  const vecinos = barriosVecinos(data.nombre);
+  const nota = "Son valores de referencia del tasador, no una tasación: el precio real depende del estado, el piso, la luz y la orientación.";
+  const posicion = !resumen ? "" : resumen.difPct === 0
+    ? "en línea con el promedio porteño"
+    : `un ${Math.abs(resumen.difPct)}% ${resumen.difPct > 0 ? "por encima" : "por debajo"} del promedio porteño`;
+
+  const faq: { q: string; a: string }[] = [];
+  if (resumen) {
+    faq.push(
+      {
+        q: `¿Cuánto cuesta el metro cuadrado en ${data.nombre}?`,
+        a: `El valor de referencia del m² en ${data.nombre} es de US$ ${fmt(resumen.precio)}. Es el barrio número ${resumen.puesto} de ${resumen.total} por precio en la Ciudad de Buenos Aires, ${posicion} (US$ ${fmt(resumen.promedio)}/m²).`,
+      },
+      {
+        q: `¿Cuánto cuesta un departamento en ${data.nombre}?`,
+        a: `A valor de referencia, un departamento de ${resumen.ejemplos.map((e) => `${e.m2} m² ronda los US$ ${fmt(e.valor)}`).join(", y uno de ")}. ${nota}`,
+      },
+      {
+        q: `¿Cómo sé cuánto vale mi departamento en ${data.nombre}?`,
+        a: "Podés estimarlo gratis con el tasador online: elegís el barrio, cargás superficie, piso, antigüedad y estado, y te devuelve un rango de valor al instante. Si querés, Eugenio Nielsen lo revisa con vos sin cargo.",
+      },
+    );
+  }
+  faq.push({
+    q: `¿Puedo comprar sin comisión inmobiliaria en ${data.nombre}?`,
+    a: "Sí. Las propiedades de esta página las publican sus dueños directamente, así que hablás con ellos sin intermediarios y sin pagar comisión de compra. Espacio Inmobiliario puede acompañarte con la revisión de la documentación antes de firmar.",
+  });
+
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -75,9 +134,12 @@ export default async function BarrioPage({ params }: PageProps) {
     },
   };
 
+  const parrafo: React.CSSProperties = { fontFamily: "var(--font-sans)", fontSize: 15.5, lineHeight: 1.75, color: "var(--ink-600)", margin: "0 0 14px" };
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--cream)" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
       <Suspense fallback={null}><RecordarBusqueda /></Suspense>
       <Navbar />
 
@@ -129,20 +191,24 @@ export default async function BarrioPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Texto editorial */}
+        {/* Texto editorial: el escrito a mano, o uno armado con los datos del barrio */}
         <div style={{ maxWidth: 720, marginBottom: 36 }}>
-          {data.intro.map((p, i) => (
-            <p key={i} style={{ fontFamily: "var(--font-sans)", fontSize: 15.5, lineHeight: 1.75, color: "var(--ink-600)", margin: "0 0 14px" }}>
-              {p}
+          {data.intro.length === 0 && (
+            <p style={parrafo}>
+              {data.nombre} es un barrio de la Ciudad de Buenos Aires{comuna ? `, parte de la Comuna ${comuna}` : ""}.
+              {resumen
+                ? ` Hoy el valor de referencia del metro cuadrado de un departamento es de US$ ${fmt(resumen.precio)}: el puesto ${resumen.puesto} de ${resumen.total} barrios por precio, ${posicion}.`
+                : ""}
+              {" "}Acá publican directamente sus dueños, así que podés comprar sin pagar comisión inmobiliaria.
             </p>
+          )}
+          {data.intro.map((p, i) => (
+            <p key={i} style={parrafo}>{p}</p>
           ))}
         </div>
 
         {/* Propiedades */}
-        <h2 style={{
-          fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "clamp(19px,3vw,26px)",
-          letterSpacing: "-.01em", color: "var(--navy-800)", margin: "0 0 18px",
-        }}>
+        <h2 style={{ ...h2Estilo, margin: "0 0 18px" }}>
           En venta ahora en {data.nombre}
         </h2>
 
@@ -161,6 +227,53 @@ export default async function BarrioPage({ params }: PageProps) {
               <TarjetaPropiedad key={p.id} property={p} priority={i < 3} />
             ))}
           </div>
+        )}
+
+        {/* Cuánto cuesta (datos del tasador) */}
+        {resumen && (
+          <section style={{ maxWidth: 760, marginBottom: 36 }}>
+            <h2 style={h2Estilo}>Cuánto cuesta un departamento en {data.nombre}</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12, marginBottom: 12 }}>
+              {resumen.ejemplos.map((e) => (
+                <div key={e.m2} style={{ background: "#fff", border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)", padding: "14px 16px", fontFamily: "var(--font-sans)" }}>
+                  <div style={{ fontSize: 13, color: "var(--ink-500)" }}>Departamento de {e.m2} m²</div>
+                  <div style={{ fontSize: 22, fontWeight: 600, color: "var(--navy-800)", marginTop: 2 }}>US$ {fmt(e.valor)}</div>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, lineHeight: 1.65, color: "var(--ink-500)", margin: 0 }}>
+              {nota}{" "}
+              <Link href="/precios-m2" style={{ color: "var(--gold-700)", textDecoration: "underline" }}>Ver el precio del m² de todos los barrios</Link>.
+            </p>
+          </section>
+        )}
+
+        {/* Preguntas frecuentes */}
+        <section style={{ maxWidth: 760, marginBottom: 36 }}>
+          <h2 style={h2Estilo}>Preguntas frecuentes sobre {data.nombre}</h2>
+          {faq.map((f) => (
+            <details key={f.q} style={{ background: "#fff", border: "1px solid var(--line-200)", borderRadius: "var(--radius-md)", padding: "14px 18px", marginBottom: 10, fontFamily: "var(--font-sans)" }}>
+              <summary style={{ cursor: "pointer", fontWeight: 600, color: "var(--navy-800)", fontSize: 15 }}>{f.q}</summary>
+              <p style={{ fontSize: 14.5, lineHeight: 1.7, color: "var(--ink-600)", margin: "10px 0 0" }}>{f.a}</p>
+            </details>
+          ))}
+        </section>
+
+        {/* Barrios vecinos */}
+        {vecinos.length > 0 && (
+          <section style={{ marginBottom: 36 }}>
+            <h2 style={{ ...h2Estilo, fontSize: "clamp(17px,2.6vw,22px)", margin: "0 0 12px" }}>Otros barrios de la Comuna {comuna}</h2>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              {vecinos.map((v) => (
+                <Link key={v.slug} href={`/propiedades/venta/${v.slug}`} style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--navy-800)", background: "#fff", border: "1px solid var(--line-200)", borderRadius: 999, padding: "7px 16px", textDecoration: "none" }}>
+                  {v.nombre}
+                </Link>
+              ))}
+              <Link href="/precios-m2" style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: "var(--gold-700)", display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 8px", textDecoration: "none" }}>
+                Todos los barrios <ArrowRight size={14} />
+              </Link>
+            </div>
+          </section>
         )}
 
         {/* CTA dueños del barrio */}

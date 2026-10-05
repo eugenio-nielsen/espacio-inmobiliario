@@ -19,7 +19,7 @@ import { renderForo } from "@/lib/foro/markdown";
 import { aliasPorDefecto, extracto, fechaLarga, haceCuanto, plural, urlTema } from "@/lib/foro/texto";
 import type { Comentario, Respuesta, Tema } from "@/lib/foro/types";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ categoria: string; slug: string }> };
 

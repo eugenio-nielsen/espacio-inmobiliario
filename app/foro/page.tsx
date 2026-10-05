@@ -8,7 +8,7 @@ import { conteoCategorias, estadisticas, listarTemas, POR_PAGINA } from "@/lib/f
 import { esOrden, ORDENES, type Orden } from "@/lib/foro/types";
 import { plural } from "@/lib/foro/texto";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Tertulia Inmobiliaria · El foro para comprar, vender y resolver dudas",

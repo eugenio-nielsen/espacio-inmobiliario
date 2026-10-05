@@ -1,4 +1,4 @@
-import { Calculator, LineChart } from "lucide-react";
+import { Calculator, LineChart, TrendingUp } from "lucide-react";
 
 /**
  * Herramientas gratuitas del sitio. Fuente única: las consumen el
@@ -22,6 +22,12 @@ export const HERRAMIENTAS = [
     label: "Tasar departamentos",
     detalle: "Estimá cuánto vale tu departamento",
     icon: LineChart,
+  },
+  {
+    href: "/precios-m2",
+    label: "Precio del m² por barrio",
+    detalle: "Cuánto vale el m² en los 48 barrios de CABA",
+    icon: TrendingUp,
   },
   {
     href: "/blog/calculadora-aranceles-rpi-registro-de-la-propiedad-inmueble",

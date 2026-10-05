@@ -4,7 +4,7 @@ import Guilloche from "@/components/ui/Guilloche";
 import Calculadora from "@/components/catedra/Calculadora";
 import { getCostosConfig } from "@/lib/catedra/data";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Calculadora de costos de compraventa en CABA 2026 · Cátedra Inmobiliaria",

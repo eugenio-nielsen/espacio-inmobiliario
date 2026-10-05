@@ -13,7 +13,7 @@ import "@/components/blog/blog.css";
 
 export const revalidate = 300;
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 /** La serie mensual con los datos del Colegio de Escribanos. */
 const ES_SERIE = (categoria: string | null) => !!categoria?.startsWith("Seguimiento de Escrituras");

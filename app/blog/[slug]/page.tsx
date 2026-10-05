@@ -25,7 +25,7 @@ import "@/components/blog/nota.css";
 
 export const revalidate = 300;
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -65,12 +65,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.published_at || undefined,
       modifiedTime: post.updated_at,
       authors: [post.autor],
-      images: post.cover ? [{ url: post.cover, width: 1200, height: 630 }] : [],
+      ...(post.cover && { images: [{ url: post.cover, width: 1200, height: 630 }] }),
     },
     twitter: {
       card: "summary_large_image",
       title, description,
-      images: post.cover ? [post.cover] : [],
+      ...(post.cover && { images: [post.cover] }),
     },
   };
 }
@@ -135,7 +135,7 @@ export default async function PostPage({ params }: Props) {
     image: post.cover ? [post.cover] : undefined,
     datePublished: post.published_at,
     dateModified: post.updated_at,
-    author: { "@type": "Person", name: post.autor },
+    author: { "@type": "Person", name: post.autor, ...(esEugenio && { url: `${SITE}/sobre-nosotros`, jobTitle: "Fundador de Espacio Inmobiliario" }) },
     publisher: {
       "@type": "Organization",
       name: "Espacio Inmobiliario",

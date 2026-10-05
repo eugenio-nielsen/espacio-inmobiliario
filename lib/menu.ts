@@ -47,6 +47,7 @@ export const DESPLEGABLES: Desplegable[] = [
       },
       {
         items: [
+          { href: "/sobre-nosotros", label: "Quiénes somos", detalle: "Las personas detrás de cada publicación", icon: UserRound },
           { href: "/como-funciona", label: "Cómo funciona", detalle: "El proceso paso a paso, para vender y para comprar", icon: HelpCircle },
           { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
         ],

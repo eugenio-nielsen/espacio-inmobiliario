@@ -10,7 +10,7 @@ import { categoriaPorSlug } from "@/lib/foro/categorias";
 import { esOrden, ORDENES, type Orden } from "@/lib/foro/types";
 import { plural } from "@/lib/foro/texto";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://espacioinmobiliario.com.ar";
+import { SITE } from "@/lib/site";
 
 type Props = {
   params: Promise<{ categoria: string }>;
