@@ -7,6 +7,7 @@ import SelloEN from "@/components/SelloEN";
 import FirmaTrazo from "@/components/FirmaTrazo";
 import Guilloche from "@/components/ui/Guilloche";
 import type { EstimadorInput, EstimadorResultado, FactorAplicado, NivelConfianza } from "@/lib/estimador/types";
+import { datosDeclarados } from "@/lib/estimador/declarado";
 
 const WHATSAPP = "5491164519421";
 const PRECISION: Record<NivelConfianza, string> = { baja: "Baja", media: "Media", alta: "Alta" };
@@ -171,6 +172,29 @@ export default function Informe({
         <div className="ts-factores">
           <Factores t="Lo que suma" factores={resultado.factoresPositivos} vacio="Ningún factor por encima del promedio." />
           <Factores t="Lo que resta" factores={resultado.factoresNegativos} vacio="Ningún factor por debajo del promedio." />
+        </div>
+
+        {/* ── Los datos con los que se calculó ─────────────── */}
+        <div className="ts-decl">
+          <p className="ts-rotulo">Con estos datos calculamos</p>
+          <div className="ts-decl-grupos">
+            {datosDeclarados(input).map(g => (
+              <section key={g.titulo} className="ts-decl-grupo">
+                <h4>{g.titulo}</h4>
+                <dl>
+                  {g.filas.map(([k, v]) => (
+                    <div key={k} data-vacio={v === "No informó"}>
+                      <dt>{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+            ))}
+          </div>
+          <p className="ts-decl-nota">
+            Lo que figura como “No informó” no movió el valor. Si algún dato está mal, hacé otra estimación o contánoslo y lo corregimos al revisarla.
+          </p>
         </div>
 
         {/* ── La firma ─────────────────────────────────────── */}

@@ -12,7 +12,8 @@ import CatedraAdmin from "@/components/panel/CatedraAdmin";
 import type { CostosConfig } from "@/lib/catedra/costos";
 import type { ProfesionalAdmin } from "@/lib/catedra/rubros";
 import type { MiembroAdmin, ReporteAdmin, TemaAdmin } from "@/lib/foro/data";
-import type { EstimadorConfig } from "@/lib/estimador/types";
+import type { EstimadorConfig, FactorAplicado } from "@/lib/estimador/types";
+import { datosDeclarados } from "@/lib/estimador/declarado";
 import type { Post } from "@/lib/blog/types";
 
 export interface EstimacionRow {
@@ -143,10 +144,6 @@ function UsuariosTab({ owners, totals }: {
 }
 
 // ── Tab Estimador ──────────────────────────────────────────────
-const ESTADO_LABEL: Record<string, string> = {
-  a_reciclar: "A reciclar", bueno: "Bueno", muy_bueno: "Muy bueno", a_estrenar: "A estrenar",
-};
-const CAT_LABEL: Record<string, string> = { regular: "Regular", estandar: "Estándar", premium: "Premium" };
 
 function EstimadorTab({ estimaciones }: { estimaciones: EstimacionRow[] }) {
   const [search, setSearch] = useState("");
@@ -205,25 +202,14 @@ function EstimadorTab({ estimaciones }: { estimaciones: EstimacionRow[] }) {
 function EstimacionCard({ e }: { e: EstimacionRow }) {
   const [open, setOpen] = useState(false);
   const r = (e.resultado || {}) as Record<string, number>;
-  const i = (e.input || {}) as Record<string, unknown>;
-  const num = (k: string) => (typeof i[k] === "number" ? (i[k] as number) : undefined);
-  const bool = (k: string) => i[k] === true;
-
-  const detalles: [string, string][] = [
-    ["M² cubiertos", String(num("m2Cubiertos") ?? "—")],
-    ["M² balcón", String(num("m2Semicubierto") ?? 0)],
-    ["M² patio/terraza", String(num("m2Descubiertos") ?? 0)],
-    ["Ambientes", String(num("ambientes") ?? "—")],
-    ["Dormitorios", String(num("dormitorios") ?? "—")],
-    ["Baños", String(num("banos") ?? "—")],
-    ["Antigüedad", num("antiguedad") != null ? `${num("antiguedad")} años` : "—"],
-    ["Piso", String(num("piso") ?? "—")],
-    ["Estado", ESTADO_LABEL[String(i.estado)] || "—"],
-    ["Categoría", CAT_LABEL[String(i.categoria)] || "—"],
-    ["Cochera", bool("cochera") ? "Sí" : "No"],
-    ["Baulera", bool("baulera") ? "Sí" : "No"],
-    ["Vecinos especiales", bool("vecinosEspeciales") ? "Sí" : "No"],
-  ];
+  const grupos = datosDeclarados(e.input);
+  const positivos = ((e.resultado || {}) as { factoresPositivos?: FactorAplicado[] }).factoresPositivos ?? [];
+  const negativos = ((e.resultado || {}) as { factoresNegativos?: FactorAplicado[] }).factoresNegativos ?? [];
+  const usd = (n: unknown) => (typeof n === "number" ? `US$ ${new Intl.NumberFormat("es-AR").format(n)}` : "—");
+  const pct = (coef: number) => {
+    const v = (coef - 1) * 100;
+    return `${v > 0 ? "+" : "−"}${Math.abs(v).toLocaleString("es-AR", { maximumFractionDigits: 1 })}%`;
+  };
 
   return (
     <div style={{ background: "#fff", border: "1px solid var(--line-200)", borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--shadow-sm)" }}>
@@ -260,18 +246,59 @@ function EstimacionCard({ e }: { e: EstimacionRow }) {
               {e.lead_telefono && <a href={`https://wa.me/${e.lead_telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" style={contactLink}><Phone size={13} /> {e.lead_telefono}</a>}
             </div>
           )}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px,1fr))", gap: 10 }}>
-            {detalles.map(([k, v]) => (
-              <div key={k}>
-                <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: 0 }}>{k}</p>
-                <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, color: "var(--ink-800)", margin: 0 }}>{v}</p>
+          {/* Todo lo que completó en el formulario, agrupado como en el tasador */}
+          <div style={{ display: "grid", gap: 16 }}>
+            {grupos.map(g => (
+              <div key={g.titulo}>
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--gold-700)", margin: "0 0 8px" }}>{g.titulo}</p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px,1fr))", gap: 10 }}>
+                  {g.filas.map(([k, v]) => (
+                    <div key={k}>
+                      <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: 0 }}>{k}</p>
+                      <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, color: v === "No informó" ? "var(--ink-400)" : "var(--ink-800)", margin: 0 }}>{v}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
-          {r.confianza ? (
-            <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", margin: "12px 0 0" }}>
-              Valor/m²: <strong>US$ {r.precioM2Resultante ? new Intl.NumberFormat("es-AR").format(r.precioM2Resultante) : "—"}</strong> · Confianza: <strong>{String(r.confianza)}</strong>
-            </p>
+
+          {/* Cómo se llegó al número */}
+          {r.estimado ? (
+            <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px dashed var(--line-200)" }}>
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--gold-700)", margin: "0 0 8px" }}>Cómo se calculó</p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px,1fr))", gap: 10, marginBottom: 12 }}>
+                {([
+                  ["Referencia del barrio", `${usd(r.precioM2Referencia)}/m²`],
+                  ["Valor base", usd(r.valorBase)],
+                  ["Índice de ajuste", `${r.indiceAjuste ?? "—"} (${(r.ajustePct ?? 0) > 0 ? "+" : ""}${r.ajustePct ?? 0}%)`],
+                  ["Valor estimado", usd(r.estimado)],
+                  ["Rango", `${usd(r.rangoMin)} – ${usd(r.rangoMax)}`],
+                  ["Valor por m²", `${usd(r.precioM2Resultante)}/m²`],
+                  ["Confianza", String(r.confianza ?? "—")],
+                ] as [string, string][]).map(([k, v]) => (
+                  <div key={k}>
+                    <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: 0 }}>{k}</p>
+                    <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600, color: "var(--ink-800)", margin: 0 }}>{v}</p>
+                  </div>
+                ))}
+              </div>
+              {(positivos.length > 0 || negativos.length > 0) && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px,1fr))", gap: 14 }}>
+                  {([["Lo que sumó", positivos, "#15803D"], ["Lo que restó", negativos, "#B91C1C"]] as [string, FactorAplicado[], string][]).map(([t, lista, color]) => (
+                    <div key={t}>
+                      <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: "0 0 4px" }}>{t}</p>
+                      {lista.length ? lista.map(f => (
+                        <p key={f.label} style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-700)", margin: "0 0 2px", display: "flex", justifyContent: "space-between", gap: 10 }}>
+                          <span>{f.label} <span style={{ color: "var(--ink-400)" }}>· {f.detalle}</span></span>
+                          <b style={{ color }}>{pct(f.coef)}</b>
+                        </p>
+                      )) : <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-400)", margin: 0 }}>Ninguno</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           ) : null}
         </div>
       )}

@@ -83,6 +83,7 @@ export async function POST(req: Request) {
         email: email ?? "—",
         telefono: tel.valor,
         barrio: input.barrio,
+        input,
         resultado,
       });
     } catch (e) {

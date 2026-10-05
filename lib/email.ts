@@ -1,4 +1,6 @@
 import { Resend } from "resend";
+import { datosDeclarados } from "@/lib/estimador/declarado";
+import type { EstimadorResultado, FactorAplicado } from "@/lib/estimador/types";
 
 // Inicialización lazy — evita crash si la key no está configurada en el entorno
 function getResend() {
@@ -132,7 +134,9 @@ export async function sendEstimacionLead(data: {
   email: string;
   telefono?: string;
   barrio: string;
-  resultado: { estimado: number; rangoMin: number; rangoMax: number };
+  resultado: { estimado: number; rangoMin: number; rangoMax: number } & Partial<Pick<EstimadorResultado, "precioM2Resultante" | "precioM2Referencia" | "ajustePct" | "confianza" | "factoresPositivos" | "factoresNegativos">>;
+  /** Lo que completó la persona en el tasador: va completo en el mail. */
+  input?: unknown;
 }) {
   if (!process.env.RESEND_API_KEY) return;
 
@@ -162,7 +166,10 @@ export async function sendEstimacionLead(data: {
 
         <p style="${styles.label}">Estimación generada</p>
         <p style="${styles.value}">${fmt(data.resultado.estimado)} <span style="color:#8C7641;font-weight:400;">(rango ${fmt(data.resultado.rangoMin)} – ${fmt(data.resultado.rangoMax)})</span></p>
+        ${data.resultado.precioM2Resultante ? `<p style="${styles.label}">Valor por m² · referencia del barrio · precisión</p>
+        <p style="${styles.value}">${fmt(data.resultado.precioM2Resultante)}/m² · ${fmt(data.resultado.precioM2Referencia ?? 0)}/m² · ${data.resultado.confianza ?? "—"}</p>` : ""}
       </div>
+      ${detalleEstimacion(data.input, data.resultado)}
     </div>
   `);
 
@@ -173,6 +180,28 @@ export async function sendEstimacionLead(data: {
     subject: `Estimador: ${data.nombre} — ${data.barrio} (${fmt(data.resultado.estimado)})`,
     html,
   });
+}
+
+/** Los datos del formulario y los factores aplicados, para que el aviso se pueda leer sin abrir el panel. */
+function detalleEstimacion(
+  input: unknown,
+  resultado: { factoresPositivos?: FactorAplicado[]; factoresNegativos?: FactorAplicado[] },
+): string {
+  if (!input || typeof input !== "object") return "";
+  const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const pct = (c: number) => `${c > 1 ? "+" : "−"}${Math.abs((c - 1) * 100).toLocaleString("es-AR", { maximumFractionDigits: 1 })}%`;
+  const celda = "padding:3px 0;font-size:13px;color:#475569;";
+  const grupos = datosDeclarados(input).map((g) => `
+    <p style="${styles.label}">${g.titulo}</p>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
+      ${g.filas.map(([k, v]) => `<tr><td style="${celda}">${esc(k)}</td><td align="right" style="${celda}font-weight:600;color:#0E2C50;">${esc(v)}</td></tr>`).join("")}
+    </table>`).join("");
+  const factores = (t: string, lista: FactorAplicado[] = []) => lista.length ? `
+    <p style="${styles.label}">${t}</p>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
+      ${lista.map((f) => `<tr><td style="${celda}">${esc(f.label)} · ${esc(f.detalle)}</td><td align="right" style="${celda}font-weight:600;color:${f.positivo ? "#15803D" : "#B91C1C"};">${pct(f.coef)}</td></tr>`).join("")}
+    </table>` : "";
+  return `<div style="${styles.card}">${grupos}${factores("Lo que sumó", resultado.factoresPositivos)}${factores("Lo que restó", resultado.factoresNegativos)}</div>`;
 }
 
 // ── Consulta de asesoría / acompañamiento → al admin ──────────

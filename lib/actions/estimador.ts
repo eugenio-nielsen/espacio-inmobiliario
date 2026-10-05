@@ -60,6 +60,7 @@ export async function guardarLead(data: {
       email: data.email,
       telefono: data.telefono,
       barrio: data.barrio,
+      input: data.input,
       resultado: data.resultado as { estimado: number; rangoMin: number; rangoMax: number },
     });
 

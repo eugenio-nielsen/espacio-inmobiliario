@@ -1131,3 +1131,20 @@
 }
 .ts-info summary { cursor: pointer; font-weight: 600; color: var(--navy-800); font-size: 15px; }
 .ts-info details p { margin: 10px 0 0; font-size: 14.5px; }
+
+/* ── Informe: datos con los que se calculó ───────────────────────── */
+.ts-decl { margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--line-200); }
+.ts-decl-grupos { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 22px 28px; margin-top: 12px; }
+.ts-decl-grupo h4 {
+  font-family: var(--font-sans); font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--gold-700); margin: 0 0 8px;
+}
+.ts-decl-grupo dl { margin: 0; }
+.ts-decl-grupo dl > div {
+  display: flex; justify-content: space-between; gap: 14px; padding: 6px 0;
+  border-bottom: 1px dotted var(--line-200); font-family: var(--font-sans); font-size: 13.5px;
+}
+.ts-decl-grupo dt { color: var(--ink-500); }
+.ts-decl-grupo dd { margin: 0; font-weight: 600; color: var(--navy-800); text-align: right; }
+.ts-decl-grupo dl > div[data-vacio="true"] dd { color: var(--ink-400); font-weight: 400; }
+.ts-decl-nota { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-500); margin: 16px 0 0; }
