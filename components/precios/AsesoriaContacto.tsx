@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Check, Send } from "lucide-react";
 import { enviarConsultaAsesoria } from "@/lib/actions/asesoria";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP } from "@/lib/contacto";
 
 const inp: React.CSSProperties = {
   width: "100%", border: "1px solid var(--line-200)", borderRadius: "var(--radius-sm)",

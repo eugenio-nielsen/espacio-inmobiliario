@@ -5,7 +5,7 @@ import { Check, Send, MessageCircle } from "lucide-react";
 import { enviarConsultaAsesoria } from "@/lib/actions/asesoria";
 import { MOTIVOS, type MotivoId } from "@/lib/motivos";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP } from "@/lib/contacto";
 
 /**
  * Formulario de contacto con selector de motivo.

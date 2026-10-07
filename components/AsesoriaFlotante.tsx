@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { X, MessageCircle } from "lucide-react";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP } from "@/lib/contacto";
 const MENSAJE =
   "Hola! Vi el sitio de Espacio Inmobiliario y me gustaría recibir asesoramiento para vender mi propiedad.";
 

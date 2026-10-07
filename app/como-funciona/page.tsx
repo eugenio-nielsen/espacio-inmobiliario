@@ -1,3 +1,4 @@
+import { WHATSAPP } from "@/lib/contacto";
 import Link from "next/link";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
@@ -236,7 +237,7 @@ export default function ComoFuncionaPage() {
               justifyContent: "center", marginTop: "clamp(30px,4vw,42px)",
             }}>
               <a
-                href="https://wa.me/5491164519421"
+                href={`https://wa.me/${WHATSAPP}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

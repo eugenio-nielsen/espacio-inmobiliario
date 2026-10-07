@@ -8,7 +8,7 @@ import { BARRIO_PAGES, TIPO_PAGES } from "@/lib/barrios";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import "./footer.css";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP, TELEFONO_TEXTO } from "@/lib/contacto";
 const EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 
@@ -146,7 +146,7 @@ export default function Footer() {
               <dt>WhatsApp</dt>
               <dd>
                 <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener noreferrer">
-                  +54 9 11 6451-9421
+                  {TELEFONO_TEXTO}
                 </a>
               </dd>
             </div>

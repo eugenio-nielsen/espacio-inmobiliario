@@ -8,7 +8,7 @@ import Reveal from "@/components/como-funciona/Reveal";
 import { PROTOCOLO } from "@/lib/protocolo";
 import "./respaldo.css";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP } from "@/lib/contacto";
 
 /**
  * Respaldo profesional: quién responde, con pruebas en vez de adjetivos.

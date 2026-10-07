@@ -9,7 +9,7 @@ import Guilloche from "@/components/ui/Guilloche";
 import type { EstimadorInput, EstimadorResultado, FactorAplicado, NivelConfianza } from "@/lib/estimador/types";
 import { datosDeclarados } from "@/lib/estimador/declarado";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP } from "@/lib/contacto";
 const PRECISION: Record<NivelConfianza, string> = { baja: "Baja", media: "Media", alta: "Alta" };
 
 const usd = (n: number) => `US$ ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n)}`;

@@ -6,7 +6,7 @@ import FirmaTrazo from "@/components/FirmaTrazo";
 import { SITE } from "@/lib/site";
 import { MessageCircle, ArrowRight } from "lucide-react";
 
-const WHATSAPP = "5491164519421";
+import { WHATSAPP } from "@/lib/contacto";
 
 export const metadata: Metadata = {
   title: "Sobre nosotros · Quién está detrás del portal",

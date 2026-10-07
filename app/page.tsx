@@ -1,3 +1,4 @@
+import { TELEFONO_E164 } from "@/lib/contacto";
 import { SITE } from "@/lib/site";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -43,7 +44,7 @@ const datosEstructurados = [
     image: `${SITE}/opengraph-image`,
     description: "Portal de propiedades de dueños directos y tasador online de departamentos en la Ciudad de Buenos Aires.",
     email: "eugenio@espacioinmobiliario.com.ar",
-    telephone: "+5491164519421",
+    telephone: TELEFONO_E164,
     areaServed: ["Ciudad Autónoma de Buenos Aires", "Provincia de Buenos Aires"],
     address: { "@type": "PostalAddress", addressLocality: "Buenos Aires", addressCountry: "AR" },
     founder: { "@type": "Person", name: "Eugenio Nielsen", url: `${SITE}/sobre-nosotros` },
