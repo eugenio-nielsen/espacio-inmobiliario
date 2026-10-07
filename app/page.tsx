@@ -9,15 +9,13 @@ import PropiedadesHome from "@/components/home/PropiedadesHome";
 import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Plus, ArrowRight, Building2, Eye, Map as MapIcon, Percent } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
-import Counter from "@/components/ui/Counter";
 import FadeIn from "@/components/ui/FadeIn";
 import Caminos from "@/components/home/Caminos";
 import ComoTrabajamos from "@/components/home/ComoTrabajamos";
 import Respaldo from "@/components/home/Respaldo";
 import Apertura from "@/components/home/Apertura";
-import { BARRIOS_CABA, PARTIDOS_PBA } from "@/lib/ubicaciones";
 
 export const revalidate = 60;
 
@@ -88,15 +86,6 @@ export default async function HomePage() {
   const destacadas = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
 
   const activeCount = statsRow?.total_activas ?? 0;
-  const totalViews = statsRow?.total_views ?? 0;
-  const totalZonas = BARRIOS_CABA.length + PARTIDOS_PBA.length;
-
-  const stats: { icon: typeof Building2; to: number; suffix: string; label: string; static?: string }[] = [
-    { icon: Building2, to: activeCount, suffix: "", label: "Propiedades publicadas" },
-    { icon: Eye,       to: totalViews,        suffix: "", label: "Visitas totales" },
-    { icon: MapIcon,   to: totalZonas,        suffix: "", label: "Barrios y partidos" },
-    { icon: Percent,   to: 0,                 suffix: "%", label: "Comisiones", static: "0%" },
-  ];
 
   return (
     <div>
@@ -105,28 +94,6 @@ export default async function HomePage() {
 
       {/* ── Apertura (hero) ─────────────────────────────────── */}
       <Apertura logueado={!!user} />
-
-      {/* ── Banda de estadísticas ─────────────────────────────── */}
-      <section style={{ background: "var(--navy-900)", borderTop: "1px solid rgba(185,159,102,.25)", borderBottom: "1px solid rgba(185,159,102,.25)", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 50% 0%, rgba(185,159,102,.10), transparent 60%)", pointerEvents: "none" }} />
-        <div className="grid-stats-band" style={{ position: "relative", maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(36px,5vw,52px) 24px" }}>
-          {stats.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <FadeIn key={s.label} delay={i * 100} direction="up" className="stat-cell">
-                <span className="stat-number">
-                  {s.static ?? <Counter to={s.to} suffix={s.suffix} />}
-                </span>
-                <span className="stat-rule" />
-                <span className="stat-label">
-                  <Icon size={13} strokeWidth={2} color="var(--gold-400)" />
-                  {s.label}
-                </span>
-              </FadeIn>
-            );
-          })}
-        </div>
-      </section>
 
       {/* ── Las cuatro puertas ─────────────────────────────────── */}
       <section className="hm-sect" style={{ background: "var(--cream)", borderBottom: "1px solid var(--gold-200)" }}>
