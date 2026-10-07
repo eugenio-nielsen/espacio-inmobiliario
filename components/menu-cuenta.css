@@ -19,7 +19,7 @@
   padding: 4px 12px 4px 4px;
   background: var(--cream);
   border: 1px solid var(--line-200);
-  border-radius: var(--radius-pill);
+  border-radius: 3px;
   cursor: pointer;
   transition: border-color .3s var(--ease-out), background .3s var(--ease-out);
 }
@@ -64,8 +64,9 @@
   width: 292px;
   background: #fff;
   border: 1px solid var(--line-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  border-top: 2px solid var(--gold-500);
+  border-radius: 2px;
+  box-shadow: 0 28px 52px -18px rgba(14, 44, 80, .28), 0 4px 12px rgba(20, 17, 11, .05);
   padding: 6px;
   animation: mc-abre .22s var(--ease-out);
 }
@@ -118,7 +119,7 @@
   width: 100%;
   padding: 10px 11px;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 2px;
   background: none;
   font-family: var(--font-sans);
   font-size: 13.5px !important;
@@ -151,7 +152,7 @@
 .mm-cuenta {
   background: var(--cream);
   border: 1px solid var(--gold-200);
-  border-radius: var(--radius-md);
+  border-radius: 2px;
   padding: 6px;
 }
 .mm-cuenta-cabeza {

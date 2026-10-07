@@ -22,10 +22,12 @@ export type Desplegable = { titulo: string; grupos: GrupoMenu[] };
  * "Propiedades" (link directo) y estos dos.
  *
  *   · "Sobre nosotros": qué hacemos (los servicios para comprar y para
- *     vender), cómo trabajamos y el blog.
- *   · "Herramientas": lo que se usa: el tasador, la calculadora del
- *     Registro, el foro y la Cátedra. Foro y Cátedra eran links sueltos
- *     en la barra, y "Servicios" un desplegable aparte.
+ *     vender) y cómo trabajamos. "Quiénes somos" vive en el footer.
+ *   · "Herramientas": lo que se usa y se consulta: el tasador, la
+ *     calculadora del Registro, el blog, el foro y la Cátedra.
+ *
+ * "Propiedades" es el destino principal del sitio y el Navbar lo destaca
+ * sobre el resto.
  *
  * Un grupo con rótulo lo muestra como encabezado; sin rótulo va solo,
  * separado por una línea. Los consumen el menú de escritorio
@@ -47,9 +49,7 @@ export const DESPLEGABLES: Desplegable[] = [
       },
       {
         items: [
-          { href: "/sobre-nosotros", label: "Quiénes somos", detalle: "Las personas detrás de cada publicación", icon: UserRound },
-          { href: "/como-funciona", label: "Cómo funciona", detalle: "El proceso paso a paso, para vender y para comprar", icon: HelpCircle },
-          { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
+          { href: "/como-funciona", label: "Cómo funciona", detalle: "El proceso, paso a paso", icon: HelpCircle },
         ],
       },
     ],
@@ -60,6 +60,7 @@ export const DESPLEGABLES: Desplegable[] = [
       {
         items: [
           ...HERRAMIENTAS,
+          { href: "/blog", label: "Blog", detalle: "Guías para comprar y vender con información", icon: BookOpen },
           { href: "/foro", label: "Foro", detalle: "Tertulia Inmobiliaria: preguntá y debatí con otros", icon: MessagesSquare },
           { href: "/catedra", label: "Cátedra Inmobiliaria", detalle: "Para estudiantes y recién matriculados", icon: GraduationCap },
         ],
@@ -92,4 +93,20 @@ export const MENU_CUENTA: ItemCuenta[] = [
 /** Las opciones que le corresponden a este usuario. */
 export function opcionesCuenta(esAdmin: boolean) {
   return MENU_CUENTA.filter(o => !o.soloAdmin || esAdmin);
+}
+
+const ROMANOS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+
+/** Numeral romano para numerar las entradas de un desplegable. */
+export const romano = (n: number) => ROMANOS[n - 1] ?? String(n);
+
+/**
+ * Cuál de los destinos corresponde a la página actual: el más específico
+ * que la contiene. Sin esto, "/blog" marcaría como actual también a
+ * "/blog/calculadora-aranceles…", que es otra entrada del menú.
+ */
+export function hrefActivo(ruta: string, hrefs: string[]): string | undefined {
+  return hrefs
+    .filter(h => ruta === h || ruta.startsWith(`${h}/`))
+    .sort((a, b) => b.length - a.length)[0];
 }

@@ -1,0 +1,349 @@
+/* Navegación del sitio (prefijo .nv-): la barra, los desplegables y el
+   menú móvil. Fuera de globals.css por el cache de Tailwind, que en
+   Windows no ve los cambios; un CSS plano sí recarga.
+
+   El criterio es el mismo del resto del sitio —el idioma notarial del
+   hero y del footer—: títulos en serif, rótulos en versalitas espaciadas,
+   numerales romanos en dorado y filetes finos en vez de cajas y globos.
+   Esquinas casi rectas: lo redondeado era lo que lo hacía sentir genérico.
+
+   Jerarquía de la barra, de izquierda a derecha:
+     1. las secciones del sitio, en versalitas con subrayado dorado;
+     2. un filete vertical;
+     3. la cuenta (Ingresar / la píldora del usuario) y la acción principal. */
+
+/* ── La barra ──────────────────────────────────────────────── */
+.nv {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, .97);
+  border-bottom: 1px solid var(--line-200);
+}
+/* Un filete dorado que se desvanece hacia los bordes, como el de una escritura */
+.nv::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--gold-400) 22%, var(--gold-400) 78%, transparent);
+  opacity: .65;
+}
+.nv-in {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.nv-logo { flex-shrink: 0; display: block; }
+
+.nav-links-desktop.nv-nav { gap: clamp(18px, 2.3vw, 34px); }
+
+/* ── Enlaces ───────────────────────────────────────────────── */
+.nav-links-desktop .nv-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 9px 0;
+  background: none;
+  border: 0;
+  font-family: var(--font-sans);
+  font-size: 11.5px !important;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color .3s var(--ease-out);
+}
+/* El subrayado dorado entra desde la izquierda */
+.nv-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: .16em;
+  bottom: 3px;
+  height: 1px;
+  background: var(--gold-500);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .45s var(--ease-out);
+}
+.nv-link:hover,
+.nv-link[aria-expanded="true"],
+.nv-link[aria-current="page"],
+.nv-link[data-activo="true"] { color: var(--navy-800); }
+.nv-link:hover::after,
+.nv-link[aria-expanded="true"]::after,
+.nv-link[aria-current="page"]::after,
+.nv-link[data-activo="true"]::after { transform: scaleX(1); }
+.nv-link:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 3px; }
+
+.nv-chev { color: var(--gold-600); transition: transform .3s var(--ease-out); }
+.nv-link[aria-expanded="true"] .nv-chev { transform: rotate(180deg); }
+
+/* Propiedades es el destino principal: va por encima del resto. Más grande
+   y firme, sobre un tablero crema con un filete dorado fijo debajo. Esquinas
+   rectas: es un índice de carpeta, no un botón. */
+.nav-links-desktop .nv-link-principal {
+  padding: 10px 18px;
+  font-size: 12.5px !important;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: var(--navy-800);
+  background: var(--gold-50);
+  border-bottom: 2px solid var(--gold-500);
+  transition: color .3s var(--ease-out), background .3s var(--ease-out);
+}
+.nv-link-principal::after { display: none; }
+.nav-links-desktop .nv-link-principal:hover { background: var(--gold-100); }
+
+/* Ingresar: es de la cuenta, no del sitio, así que pesa menos */
+.nav-links-desktop .nv-link-suave { color: var(--ink-500); }
+
+/* El filete vertical separa el sitio de la cuenta */
+.nv-sep {
+  width: 1px;
+  height: 24px;
+  background: var(--line-200);
+  flex-shrink: 0;
+}
+
+/* La acción principal: sólida, de esquinas casi rectas, con un filete dorado al pasar */
+.nav-links-desktop .nv-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 20px;
+  background: var(--navy-800);
+  color: #fff;
+  border: 1px solid var(--navy-800);
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 11.5px !important;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .35s var(--ease-out), box-shadow .35s var(--ease-out);
+}
+.nv-cta:hover { background: var(--navy-950); box-shadow: inset 0 0 0 1px var(--gold-500); }
+.nv-cta:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 3px; }
+.nv-cta-mas { color: var(--gold-300); font-size: 15px; line-height: 1; font-weight: 400; letter-spacing: 0; }
+
+/* ── Desplegables de escritorio ────────────────────────────── */
+.nv-drop { position: relative; }
+
+/* El contenedor transparente tapa el hueco entre el botón y el panel:
+   al bajar el mouse el menú no se cierra en el camino */
+.nv-panel-wrap {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: 30;
+  padding-top: 14px;
+  transform: translateX(-50%);
+  animation: nv-abre .26s var(--ease-out);
+}
+@keyframes nv-abre {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+}
+.nv-panel {
+  width: 352px;
+  background: #fff;
+  border: 1px solid var(--line-200);
+  border-top: 2px solid var(--gold-500);
+  border-radius: 2px;
+  box-shadow: 0 28px 52px -18px rgba(14, 44, 80, .28), 0 4px 12px rgba(20, 17, 11, .05);
+  padding: 4px 0 6px;
+}
+
+/* Rótulo de grupo: serif cursiva en dorado, con un filete que sigue de largo */
+.nv-grupo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 16px 22px 6px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--gold-700);
+}
+.nv-grupo::after { content: ""; flex: 1; height: 1px; background: var(--line-200); }
+.nv-grupo-corte { border-top: 1px solid var(--line-100); margin-top: 6px; }
+
+.nv-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 0 4px;
+  padding: 11px 22px;
+  text-decoration: none;
+  transition: background .3s var(--ease-out);
+}
+/* Un filete dorado crece desde el centro al pasar y en la página actual */
+.nv-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: var(--gold-500);
+  transform: scaleY(0);
+  transition: transform .4s var(--ease-out);
+}
+.nv-item:hover { background: var(--gold-50); }
+.nv-item:hover::before,
+.nv-item[aria-current="page"]::before { transform: scaleY(1); }
+
+.nv-n {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--gold-600);
+}
+.nv-t {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.3;
+  letter-spacing: -.005em;
+  color: var(--navy-800);
+  transition: transform .45s var(--ease-out);
+}
+.nv-item:hover .nv-t { transform: translateX(3px); }
+.nv-d {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-500);
+}
+.nv-item[aria-current="page"] .nv-n { color: var(--gold-700); }
+
+/* ── Menú móvil ────────────────────────────────────────────── */
+.nv .mobile-menu-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  border: 1px solid var(--line-200);
+  color: var(--navy-800);
+}
+.nv .mobile-menu-btn:hover { border-color: var(--gold-400); }
+
+.mobile-menu-panel {
+  width: min(88vw, 360px);
+  border-left: 2px solid var(--gold-500);
+  padding: 22px 24px 24px;
+}
+.nv-m-cab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.nv-m-cab-t {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--gold-700);
+}
+.nv-m-cab-t::after { content: ""; flex: 1; height: 1px; background: var(--line-200); }
+.nv-m-cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--line-200);
+  border-radius: 2px;
+  color: var(--ink-600);
+  cursor: pointer;
+}
+
+/* "Propiedades" es el destino principal: la fila más grande del menú */
+.nv-m-principal {
+  display: block;
+  margin-top: 6px;
+  padding: 16px 18px 18px;
+  background: var(--gold-50);
+  border-left: 2px solid var(--gold-500);
+  text-decoration: none;
+}
+.nv-m-principal .nv-t { font-size: 26px; letter-spacing: -.015em; }
+.nv-m-principal .nv-d { font-size: 13px; }
+
+.nv-m-grupo {
+  margin: 24px 0 2px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.nv-m-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: baseline;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line-100);
+  text-decoration: none;
+}
+.nv-m-item .nv-t { font-size: 18px; }
+.nv-m-item[aria-current="page"] .nv-t { color: var(--gold-700); }
+
+.nv-m-pie { margin-top: auto; padding-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+.nv-m-cta,
+.nv-m-cta-sec {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 14px 18px;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.nv-m-cta { background: var(--navy-800); color: #fff; border: 1px solid var(--navy-800); }
+.nv-m-cta-sec { background: #fff; color: var(--navy-800); border: 1px solid var(--line-200); }
+.nv-m-cta-sec:hover { border-color: var(--gold-400); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nv-panel-wrap { animation: none; }
+  .nv-link::after, .nv-item::before, .nv-t { transition: none; }
+}
+
+/* Con el menú móvil abierto, la barra pasa por encima de todo (incluido el
+   botón flotante de asesoría): el panel vive dentro de ella y, con su z-index
+   de 20, quedaba tapado por ese botón. */
+.nv:has(.mobile-menu-panel) { z-index: 60; }

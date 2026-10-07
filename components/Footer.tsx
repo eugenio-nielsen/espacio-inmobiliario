@@ -13,7 +13,7 @@ const EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 
 const ESPACIO: [string, string][] = [
-  ["Sobre nosotros", "/sobre-nosotros"],
+  ["Quiénes somos", "/sobre-nosotros"],
   ["Cómo funciona", "/como-funciona"],
   ["Vender mi propiedad", "/vender"],
   ["Comprar con respaldo", "/comprar"],
@@ -193,6 +193,7 @@ export default function Footer() {
               {h.label}
             </Link>
           ))}
+          <Link className="pie-link" href="/precios-m2">Precio del m² por barrio</Link>
         </div>
 
         <div className="pie-col">

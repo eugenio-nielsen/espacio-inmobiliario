@@ -1457,10 +1457,6 @@ select:focus, input:focus, textarea:focus {
 /* clamp en el gap: con seis destinos + Herramientas + sesión, 22px
    fijos partían "Cómo funciona" en dos líneas en pantallas medianas */
 .nav-links-desktop { display: flex; align-items: center; gap: clamp(12px, 1.6vw, 22px); }
-@media (max-width: 1100px) {
-  .nav-links-desktop { font-size: 13.5px; }
-  .nav-links-desktop a, .nav-links-desktop button { font-size: 13.5px !important; }
-}
 .mobile-menu-btn { display: none; }
 @media (max-width: 767px) {
   .nav-links-desktop { display: none !important; }
@@ -1821,8 +1817,6 @@ select:focus, input:focus, textarea:focus {
 }
 
 /* Desplegable "Herramientas" del menú de escritorio */
-.nav-herramienta { transition: background var(--dur-fast) var(--ease-out); }
-.nav-herramienta:hover { background: var(--navy-50); }
 
 /* ── Aviso flotante de asesoramiento ──────────────────────────
    Discreto: abajo a la derecha en desktop, franja inferior en
