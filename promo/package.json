@@ -1,0 +1,15 @@
+{
+  "name": "promo-video",
+  "private": true,
+  "type": "module",
+  "description": "Generador de videos promocionales de propiedades (1080x1920) para redes",
+  "scripts": {
+    "nuevo": "node nuevo.mjs",
+    "video": "node render.mjs"
+  },
+  "dependencies": {
+    "lucide-static": "^1.50.0",
+    "mp4-muxer": "^5.2.1",
+    "puppeteer-core": "^24.0.0"
+  }
+}

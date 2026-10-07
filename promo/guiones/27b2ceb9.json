@@ -1,0 +1,95 @@
+{
+  "id": "27b2ceb9",
+  "duracion": 30,
+  "ficha": "https://www.espacioinmobiliario.com.ar/propiedades/venta/villa-crespo/departamento/27b2ceb9",
+  "fotos": [
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/9a2e1c6c-2849-4018-9a6a-1f20a7194fd4.webp",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/37e01d47-c3e0-45f6-bcf0-4c6930c79685.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/328c274f-c6ee-4cee-aa5e-a993844104d8.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/756b2e8e-d917-4553-afb3-fbe8f8b94102.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/cf6531a5-a4d9-4d5d-8044-76801c554b0d.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/b63efbf8-6ddf-4717-8cf3-887421e0fc08.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/4d69d397-191f-47ff-83df-532441017501.jpeg"
+  ],
+
+  "pie": [
+    { "id": "amb",   "icono": "layout-grid",  "valor": 4,  "rotulo": "ambientes" },
+    { "id": "dorm",  "icono": "bed-double",   "valor": 3,  "rotulo": "dormitorios" },
+    { "id": "banos", "icono": "bath",         "valor": 2,  "rotulo": "baños" },
+    { "id": "m2",    "icono": "ruler",        "valor": 82, "unidad": "m²", "rotulo": "totales" },
+    { "id": "piso",  "icono": "building-2",   "valor": "6", "rotulo": "piso" }
+  ],
+
+  "apertura": {
+    "foto": 0,
+    "rotulo": "En venta · Dueño directo",
+    "titulo": "Villa Crespo",
+    "bajada": "Departamento de 4 ambientes",
+    "chips": [
+      { "icono": "sun", "texto": "Muy luminoso" },
+      { "icono": "snowflake", "texto": "Aire acondicionado" }
+    ],
+    "resalta": "amb"
+  },
+
+  "escenas": [
+    {
+      "foto": 4,
+      "titulo": "3 dormitorios",
+      "bajada": "Ideal para familias",
+      "chips": [
+        { "icono": "compass", "texto": "Orientación norte" },
+        { "icono": "sofa", "texto": "Living-comedor" }
+      ],
+      "resalta": "dorm"
+    },
+    {
+      "foto": 3,
+      "titulo": "Cocina independiente",
+      "bajada": "con lavadero separado",
+      "chips": [
+        { "icono": "washing-machine", "texto": "Lavadero separado" },
+        { "icono": "archive", "texto": "Mucho espacio de guardado" }
+      ]
+    },
+    {
+      "foto": 6,
+      "titulo": "Balcón corrido",
+      "bajada": "9 metros al aire libre",
+      "chips": [
+        { "icono": "sun", "texto": "Sol directo" },
+        { "icono": "ruler", "texto": "12 m² de balcón" }
+      ],
+      "resalta": "m2"
+    }
+  ],
+
+  "mapa": {
+    "lat": -34.5971258,
+    "lng": -58.4390011,
+    "titulo": "Villa Crespo",
+    "bajada": "Ciudad de Buenos Aires",
+    "radio": 250,
+    "cerca": [
+      { "icono": "bus-front",    "texto": "1 cuadra de Av. Corrientes" },
+      { "icono": "train-front",  "texto": "2 cuadras de Est. Malabia · Línea B" },
+      { "icono": "store",        "texto": "2 cuadras de Av. Scalabrini Ortiz" },
+      { "icono": "route",        "texto": "6 cuadras de Av. Córdoba" }
+    ]
+  },
+
+  "precio": {
+    "foto": 0,
+    "lugar": "Villa Crespo",
+    "rotulo": "Precio de venta",
+    "moneda": "US$",
+    "valor": 160000,
+    "notas": ["Apto crédito hipotecario", "Al frente · muy luminoso"]
+  },
+
+  "cierre": {
+    "titulo": "Tratá directo con el dueño",
+    "rotulo": "Sin comisión inmobiliaria",
+    "boton": "Ver la ficha completa"
+  }
+}
