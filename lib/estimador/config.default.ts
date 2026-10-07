@@ -13,6 +13,14 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
   topeMin: 0.5,
   topeMax: 1.55,
   rango: { alta: 0.05, media: 0.08, baja: 0.12 },
+  topesGrupo: {
+    // Una categoría premium ya trae amenities y buen estado: sin tope, el
+    // mismo edificio se contaba tres veces. Valores provisorios, a calibrar.
+    calidad: { label: "Calidad del edificio (categoría, estado y antigüedad)", max: 1.30 },
+    amenities: { label: "Amenities", max: 1.06 },
+    extras: { label: "Cochera, baulera, servicio y calefacción", max: 1.12 },
+    luz_vista: { label: "Luz y vista (disposición, vista y orientación)", min: 0.90, max: 1.08 },
+  },
   factores: [
     {
       id: "superficie_cubierta",
@@ -80,6 +88,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "categoria",
       activo: true,
+      grupo: "calidad",
       opciones: {
         regular: { coef: 0.90, label: "Regular" },
         estandar: { coef: 1.00, label: "Estándar" },
@@ -92,6 +101,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "estado",
       activo: true,
+      grupo: "calidad",
       opciones: {
         a_reciclar: { coef: 0.85, label: "A reciclar" },
         bueno: { coef: 1.00, label: "Bueno" },
@@ -105,6 +115,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "rango",
       input: "antiguedad",
       activo: true,
+      grupo: "calidad",
       rangos: [
         { max: 5, coef: 1.03, label: "Hasta 5 años" },
         { min: 6, max: 15, coef: 1.01, label: "6 a 15 años" },
@@ -119,6 +130,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "disposicion",
       activo: true,
+      grupo: "luz_vista",
       opciones: {
         frente: { coef: 1.03, label: "Frente" },
         contrafrente: { coef: 0.97, label: "Contrafrente" },
@@ -131,6 +143,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "vista",
       activo: true,
+      grupo: "luz_vista",
       opciones: {
         abierta: { coef: 1.06, label: "Abierta / panorámica" },
         despejada: { coef: 1.03, label: "Despejada" },
@@ -144,6 +157,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "orientacion",
       activo: true,
+      grupo: "luz_vista",
       opciones: {
         norte: { coef: 1.02, label: "Norte" },
         noreste: { coef: 1.02, label: "Noreste" },
@@ -161,6 +175,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "cochera",
       activo: true,
+      grupo: "extras",
       opciones: {
         no: { coef: 1.00, label: "Sin cochera" },
         descubierta: { coef: 1.04, label: "Descubierta" },
@@ -174,6 +189,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "baulera",
       activo: true,
+      grupo: "extras",
       coefTrue: 1.02,
       coefFalse: 1.00,
     },
@@ -183,6 +199,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "dependenciaServicio",
       activo: true,
+      grupo: "extras",
       coefTrue: 1.03,
       coefFalse: 1.00,
     },
@@ -192,6 +209,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "opcion",
       input: "calefaccion",
       activo: true,
+      grupo: "extras",
       opciones: {
         losa: { coef: 1.03, label: "Losa radiante" },
         central: { coef: 1.02, label: "Central" },
@@ -259,6 +277,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "amenities.pileta",
       activo: true,
+      grupo: "amenities",
       coefTrue: 1.03,
       coefFalse: 1.00,
     },
@@ -268,6 +287,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "amenities.gimnasio",
       activo: true,
+      grupo: "amenities",
       coefTrue: 1.02,
       coefFalse: 1.00,
     },
@@ -277,6 +297,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "amenities.seguridad",
       activo: true,
+      grupo: "amenities",
       coefTrue: 1.02,
       coefFalse: 1.00,
     },
@@ -286,6 +307,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "amenities.sum",
       activo: true,
+      grupo: "amenities",
       coefTrue: 1.015,
       coefFalse: 1.00,
     },
@@ -295,6 +317,7 @@ export const DEFAULT_CONFIG: EstimadorConfig = {
       tipo: "booleano",
       input: "amenities.parrilla",
       activo: true,
+      grupo: "amenities",
       coefTrue: 1.01,
       coefFalse: 1.00,
     },

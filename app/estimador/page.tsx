@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import Guilloche from "@/components/ui/Guilloche";
 import Tasador from "@/components/estimador/Tasador";
 import InfoTasador, { PREGUNTAS_TASADOR } from "@/components/estimador/InfoTasador";
-import { getBarriosDisponibles } from "@/lib/estimador/data";
+import { getContextoTasador } from "@/lib/estimador/data";
 import "@/components/estimador/tasador.css";
 
 export const revalidate = 300;
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
  * components/estimador/Tasador.tsx; estilos en tasador.css (.ts-).
  */
 export default async function EstimadorPage() {
-  const barrios = await getBarriosDisponibles();
+  const { barrios, barriosConZonas, actualizado } = await getContextoTasador();
   const jsonLd = [
     {
       "@context": "https://schema.org",
@@ -42,6 +42,7 @@ export default async function EstimadorPage() {
       description: "Estimá gratis el valor de venta de un departamento en la Ciudad de Buenos Aires, con valores de referencia por barrio.",
       offers: { "@type": "Offer", price: "0", priceCurrency: "ARS" },
       provider: { "@type": "Organization", name: "Espacio Inmobiliario", url: SITE },
+      ...(actualizado && { dateModified: actualizado }),
     },
     {
       "@context": "https://schema.org",
@@ -74,8 +75,8 @@ export default async function EstimadorPage() {
       </section>
 
       <main className="ts-principal">
-        <Tasador barrios={barrios} />
-        <InfoTasador />
+        <Tasador barrios={barrios} barriosConZonas={barriosConZonas} />
+        <InfoTasador actualizado={actualizado} />
       </main>
 
       <Footer />

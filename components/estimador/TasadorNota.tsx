@@ -1,6 +1,6 @@
 import Guilloche from "@/components/ui/Guilloche";
 import Tasador from "@/components/estimador/Tasador";
-import { getBarriosDisponibles } from "@/lib/estimador/data";
+import { getContextoTasador } from "@/lib/estimador/data";
 import "./tasador.css";
 
 /**
@@ -12,7 +12,7 @@ import "./tasador.css";
  * arriba de la hoja (ver `embebido` en Tasador).
  */
 export default async function TasadorNota() {
-  const barrios = await getBarriosDisponibles();
+  const { barrios, barriosConZonas } = await getContextoTasador();
   return (
     <section className="ts-nota" aria-label="Tasador de departamentos en CABA">
       <Guilloche id="ts-gq-nota" className="ts-nota-gq" />
@@ -20,7 +20,7 @@ export default async function TasadorNota() {
         <p className="ts-eyebrow">Tasador · Departamentos en CABA</p>
         <p className="ts-nota-t">¿Cuánto vale <em>tu departamento?</em></p>
       </header>
-      <Tasador barrios={barrios} embebido />
+      <Tasador barrios={barrios} barriosConZonas={barriosConZonas} embebido />
     </section>
   );
 }

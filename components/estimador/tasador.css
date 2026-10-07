@@ -1148,3 +1148,12 @@
 .ts-decl-grupo dd { margin: 0; font-weight: 600; color: var(--navy-800); text-align: right; }
 .ts-decl-grupo dl > div[data-vacio="true"] dd { color: var(--ink-400); font-weight: 400; }
 .ts-decl-nota { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: var(--ink-500); margin: 16px 0 0; }
+.ts-decl-aviso { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 10px 14px; }
+
+/* Dirección: por qué conviene darla, y que no es obligatoria */
+.ts-dir-nota {
+  font-family: var(--font-sans); font-size: 13px; line-height: 1.6; color: var(--ink-500);
+  margin: -4px 0 0; padding: 12px 14px; background: var(--navy-50); border-left: 3px solid var(--gold-500);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.ts-dir-nota strong { color: var(--navy-800); }

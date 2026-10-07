@@ -9,6 +9,7 @@ import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import { getBarrioPage, getTipoPage, barriosVecinos, COMUNA_DE_BARRIO, BARRIO_PAGES, TIPO_PAGES } from "@/lib/barrios";
 import { resumenBarrio, fmtUsd } from "@/lib/mercado";
 import { getPreciosBarrios } from "@/lib/estimador/data";
+import { getPreciosConFecha } from "@/lib/mercado";
 import TarjetaPropiedad from "@/components/properties/TarjetaPropiedad";
 import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import Navbar from "@/components/Navbar";
@@ -65,16 +66,18 @@ export default async function BarrioPage({ params }: PageProps) {
   if (operacion !== "venta" || !data) notFound();
 
   const supabase = await createClient();
-  const [{ data: properties }, precios] = await Promise.all([
+  const [{ data: properties }, filasPrecios] = await Promise.all([
     supabase
       .from("properties")
       .select(PROPERTY_CARD_COLS)
       .eq("status", "activa")
       .eq("barrio", data.nombre)
       .order("created_at", { ascending: false }),
-    getPreciosBarrios(),
+    getPreciosConFecha(),
   ]);
 
+  const precios = Object.fromEntries(filasPrecios.map((r) => [r.barrio, r.precio]));
+  const actualizado = filasPrecios.find((r) => r.barrio === data.nombre)?.actualizado;
   const lista = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
   const precioM2 = precios[data.nombre];
   const count = properties?.length || 0;
@@ -86,7 +89,8 @@ export default async function BarrioPage({ params }: PageProps) {
   const resumen = esCaba ? resumenBarrio(data.nombre, precios) : null;
   const comuna = COMUNA_DE_BARRIO[data.nombre];
   const vecinos = barriosVecinos(data.nombre);
-  const nota = "Son valores de referencia del tasador, no una tasación: el precio real depende del estado, el piso, la luz y la orientación.";
+  const fechaPrecio = actualizado ? new Date(actualizado).toLocaleDateString("es-AR", { month: "long", year: "numeric", timeZone: "America/Argentina/Buenos_Aires" }) : null;
+  const nota = `Son valores de referencia de Espacio Inmobiliario${fechaPrecio ? `, actualizados en ${fechaPrecio}` : ""}, no una tasación: el precio real depende del estado, el piso, la luz y la orientación.`;
   const posicion = !resumen ? "" : resumen.difPct === 0
     ? "en línea con el promedio porteño"
     : `un ${Math.abs(resumen.difPct)}% ${resumen.difPct > 0 ? "por encima" : "por debajo"} del promedio porteño`;

@@ -84,6 +84,13 @@ export default function Informe({
   const span = resultado.rangoMax - resultado.rangoMin;
   const marca = span > 0 ? ((resultado.estimado - resultado.rangoMin) / span) * 100 : 50;
   const ajuste = resultado.ajustePct;
+  const actualizado = resultado.precioActualizado
+    ? new Date(resultado.precioActualizado).toLocaleDateString("es-AR", { month: "long", year: "numeric", timeZone: "America/Argentina/Buenos_Aires" })
+    : null;
+  const zona = resultado.ubicacion?.zona;
+  const topes = resultado.topesAplicados ?? [];
+  const faltantes = resultado.faltantes ?? [];
+  const advertencias = resultado.advertencias ?? [];
 
   return (
     <article className="ts-informe" aria-labelledby="ts-inf-valor">
@@ -137,7 +144,14 @@ export default function Informe({
             <span className="ts-cl-n">I</span>
             <div>
               <h4>Referencia del barrio</h4>
-              <p>El valor del metro cuadrado en {input.barrio}{input.condicionObra !== "usado" ? ", ajustado por ser " + (input.condicionObra === "pozo" ? "en pozo" : "a estrenar") : ""}.</p>
+              <p>El valor del metro cuadrado en {input.barrio}{input.condicionObra !== "usado" ? ", ajustado por ser " + (input.condicionObra === "pozo" ? "en pozo" : "a estrenar") : ""}{actualizado ? `, actualizado en ${actualizado}` : ""}.{" "}
+                {zona
+                  ? `Ajustado a tu zona (${zona.nombre}, ${pct(zona.coef)}).`
+                  : input.direccion?.trim() && resultado.ubicacion
+                    ? `Ubicamos tu dirección, pero todavía no distinguimos zonas en ${input.barrio}: usamos el promedio del barrio.`
+                    : !input.direccion?.trim()
+                      ? "Sin dirección, usamos el promedio del barrio: con ella se ajusta a tu zona."
+                      : ""}</p>
             </div>
             <strong>{usd(resultado.precioM2Referencia)}/m²</strong>
           </li>
@@ -173,6 +187,12 @@ export default function Informe({
           <Factores t="Lo que suma" factores={resultado.factoresPositivos} vacio="Ningún factor por encima del promedio." />
           <Factores t="Lo que resta" factores={resultado.factoresNegativos} vacio="Ningún factor por debajo del promedio." />
         </div>
+        {topes.length > 0 && (
+          <p className="ts-decl-nota">
+            Para no contar dos veces lo mismo, algunos ajustes se limitaron:{" "}
+            {topes.map(t => `${t.label.split(" (")[0].toLowerCase()} (${pct(t.antes)} → ${pct(t.despues)})`).join("; ")}.
+          </p>
+        )}
 
         {/* ── Los datos con los que se calculó ─────────────── */}
         <div className="ts-decl">
@@ -192,8 +212,16 @@ export default function Informe({
               </section>
             ))}
           </div>
+          {advertencias.length > 0 && (
+            <p className="ts-decl-nota ts-decl-aviso">
+              <strong>Revisá estos datos:</strong> {advertencias.join(" ")}
+            </p>
+          )}
           <p className="ts-decl-nota">
-            Lo que figura como “No informó” no movió el valor. Si algún dato está mal, hacé otra estimación o contánoslo y lo corregimos al revisarla.
+            {faltantes.length > 0
+              ? `Lo que figura como “No informó” no movió el valor. Para un rango más ajustado faltó: ${faltantes.slice(0, 4).join(", ")}${faltantes.length > 4 ? " y algunos más" : ""}. `
+              : "Con estos datos el rango es el más ajustado posible. "}
+            Si algún dato está mal, hacé otra estimación o contánoslo y lo corregimos al revisarla.
           </p>
         </div>
 
@@ -234,7 +262,7 @@ export default function Informe({
       </section>
 
       <p className="ts-aviso">
-        <strong>Importante:</strong> esta estimación es orientativa y no constituye una tasación profesional.
+        <strong>Fuente:</strong> valor de referencia por barrio de Espacio Inmobiliario{actualizado ? `, actualizado en ${actualizado}` : ""}. <strong>Importante:</strong> esta estimación es orientativa y no constituye una tasación profesional.
         Los valores pueden variar según condiciones particulares del inmueble, la demanda del mercado y el
         momento de comercialización.
       </p>

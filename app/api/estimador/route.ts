@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { after } from "next/server";
 import { estimarPrecio } from "@/lib/estimador/engine";
-import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
+import { getEstimadorConfig } from "@/lib/estimador/data";
+import { getPreciosConFecha } from "@/lib/mercado";
+import { sanearInput } from "@/lib/estimador/sanear";
+import { ubicarDireccion } from "@/lib/estimador/ubicar";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
 import { sendEstimacionLead } from "@/lib/email";
-import type { EstimadorInput } from "@/lib/estimador/types";
 
 type Contacto = { nombre?: string; telefono?: string; email?: string };
-type Body = EstimadorInput & { contacto?: Contacto };
+type Body = Record<string, unknown> & { contacto?: Contacto };
 
 /**
  * POST /api/estimador
@@ -32,8 +34,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "JSON inválido." }, { status: 400 });
   }
 
-  if (!body?.barrio) {
-    return NextResponse.json({ error: "Falta el barrio." }, { status: 400 });
+
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "Faltan los datos de la estimación." }, { status: 400 });
   }
 
   const nombre = (body.contacto?.nombre ?? "").trim();
@@ -46,9 +49,26 @@ export async function POST(req: Request) {
   }
   const email = (body.contacto?.email ?? "").trim() || null;
 
-  const { contacto: _contacto, ...input } = body;
-  const [precios, config] = await Promise.all([getPreciosBarrios(), getEstimadorConfig()]);
-  const resultado = estimarPrecio(input as EstimadorInput, precios, config);
+  // El input llega del navegador: se lleva a la forma que espera el motor
+  const saneado = sanearInput(body);
+  if ("error" in saneado) {
+    return NextResponse.json(saneado, { status: 400 });
+  }
+  const input = saneado;
+
+  // La dirección es opcional: sin ella (o si no se la ubica) se usa el promedio del barrio
+  const [filas, config, ubicacion] = await Promise.all([
+    getPreciosConFecha(),
+    getEstimadorConfig(),
+    input.direccion ? ubicarDireccion(input.direccion, input.barrio) : Promise.resolve(null),
+  ]);
+  const precios = Object.fromEntries(filas.map((f) => [f.barrio, f.precio]));
+  const actualizado = filas.find((f) => f.barrio === input.barrio)?.actualizado;
+  const resultado = estimarPrecio(input, precios, config, {
+    precioActualizado: actualizado,
+    ubicacion,
+    direccionNoUbicada: !!input.direccion && !ubicacion,
+  });
 
   if ("error" in resultado) {
     return NextResponse.json(resultado, { status: 422 });

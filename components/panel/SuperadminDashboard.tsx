@@ -203,6 +203,7 @@ function EstimacionCard({ e }: { e: EstimacionRow }) {
   const [open, setOpen] = useState(false);
   const r = (e.resultado || {}) as Record<string, number>;
   const grupos = datosDeclarados(e.input);
+  const extra = (e.resultado || {}) as { faltantes?: string[]; advertencias?: string[]; topesAplicados?: { label: string; antes: number; despues: number }[]; puntaje?: number; precioActualizado?: string; ubicacion?: { lat: number; lng: number; barrioDetectado?: string; zona?: { nombre: string; coef: number } } };
   const positivos = ((e.resultado || {}) as { factoresPositivos?: FactorAplicado[] }).factoresPositivos ?? [];
   const negativos = ((e.resultado || {}) as { factoresNegativos?: FactorAplicado[] }).factoresNegativos ?? [];
   const usd = (n: unknown) => (typeof n === "number" ? `US$ ${new Intl.NumberFormat("es-AR").format(n)}` : "—");
@@ -275,7 +276,9 @@ function EstimacionCard({ e }: { e: EstimacionRow }) {
                   ["Valor estimado", usd(r.estimado)],
                   ["Rango", `${usd(r.rangoMin)} – ${usd(r.rangoMax)}`],
                   ["Valor por m²", `${usd(r.precioM2Resultante)}/m²`],
-                  ["Confianza", String(r.confianza ?? "—")],
+                  ["Confianza", `${String(r.confianza ?? "—")}${extra.puntaje != null ? ` (${extra.puntaje}/100)` : ""}`],
+                  ...(extra.ubicacion ? [["Ubicación", extra.ubicacion.zona ? `Zona ${extra.ubicacion.zona.nombre} (${pct(extra.ubicacion.zona.coef)})` : "Ubicada, sin zona cargada"] as [string, string]] : []),
+                  ...(extra.precioActualizado ? [["Precio del barrio actualizado", new Date(extra.precioActualizado).toLocaleDateString("es-AR")] as [string, string]] : []),
                 ] as [string, string][]).map(([k, v]) => (
                   <div key={k}>
                     <p style={{ fontFamily: "var(--font-sans)", fontSize: 11, color: "var(--ink-400)", margin: 0 }}>{k}</p>
@@ -283,6 +286,20 @@ function EstimacionCard({ e }: { e: EstimacionRow }) {
                   </div>
                 ))}
               </div>
+              {extra.ubicacion && (
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)", margin: "0 0 8px" }}>
+                  <a href={`https://www.openstreetmap.org/?mlat=${extra.ubicacion.lat}&mlon=${extra.ubicacion.lng}#map=17/${extra.ubicacion.lat}/${extra.ubicacion.lng}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--navy-700)" }}>Ver la dirección en el mapa</a>
+                </p>
+              )}
+              {extra.advertencias && extra.advertencias.length > 0 && (
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "#92400E", margin: "0 0 8px" }}><b>Datos incoherentes:</b> {extra.advertencias.join(" ")}</p>
+              )}
+              {extra.faltantes && extra.faltantes.length > 0 && (
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)", margin: "0 0 8px" }}><b>No respondió:</b> {extra.faltantes.join(", ")}</p>
+              )}
+              {extra.topesAplicados && extra.topesAplicados.length > 0 && (
+                <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)", margin: "0 0 8px" }}><b>Topes aplicados:</b> {extra.topesAplicados.map(t => `${t.label} (${pct(t.antes)} → ${pct(t.despues)})`).join("; ")}</p>
+              )}
               {(positivos.length > 0 || negativos.length > 0) && (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px,1fr))", gap: 14 }}>
                   {([["Lo que sumó", positivos, "#15803D"], ["Lo que restó", negativos, "#B91C1C"]] as [string, FactorAplicado[], string][]).map(([t, lista, color]) => (

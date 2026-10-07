@@ -108,14 +108,15 @@ export function Numero({
 }) {
   const id = useId();
   const n = valor ?? 0;
-  const paso = (d: number) => onCambio(Math.min(max, Math.max(min, n + d)));
+  // Sin valor cargado, restar elige el mínimo (planta baja, menos de un año)
+  const paso = (d: number) => onCambio(valor == null && d < 0 ? min : Math.min(max, Math.max(min, n + d)));
   const leyenda = valor != null && formato ? formato(valor) : null;
 
   return (
     <div className={`ts-num${chico ? " ts-num-chico" : ""}`}>
       <label htmlFor={id} className="ts-rotulo">{etiqueta}</label>
       <div className="ts-num-caja">
-        <button type="button" className="ts-num-b" onClick={() => paso(-1)} aria-label={`Restar a ${etiqueta}`} disabled={n <= min}>
+        <button type="button" className="ts-num-b" onClick={() => paso(-1)} aria-label={`Restar a ${etiqueta}`} disabled={valor != null && n <= min}>
           <Minus size={14} strokeWidth={1.8} />
         </button>
         <div className="ts-num-campo">

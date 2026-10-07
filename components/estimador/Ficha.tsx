@@ -3,11 +3,19 @@
 import SelloEN from "@/components/SelloEN";
 import type { EstimadorInput, NivelConfianza } from "@/lib/estimador/types";
 
-const PRECISION: Record<NivelConfianza, { n: number; l: string; d: string }> = {
-  baja: { n: 1, l: "Baja", d: "Los detalles del paso IV ajustan el rango." },
-  media: { n: 2, l: "Media", d: "Orientación, vista y expensas la llevan a alta." },
-  alta: { n: 3, l: "Alta", d: "Con estos datos, el rango es el más ajustado." },
+const PRECISION: Record<NivelConfianza, { n: number; l: string }> = {
+  baja: { n: 1, l: "Baja" },
+  media: { n: 2, l: "Media" },
+  alta: { n: 3, l: "Alta" },
 };
+
+/** Qué decirle a la persona para que el rango se ajuste: lo que más pesa y todavía no respondió. */
+function consejo(nivel: NivelConfianza, faltantes: string[], advertencias: string[]): string {
+  if (advertencias.length) return advertencias[0];
+  if (nivel === "alta" || !faltantes.length) return "Con estos datos, el rango es el más ajustado.";
+  const lista = faltantes.slice(0, 3).join(", ");
+  return `Para ajustar el rango: ${lista}${faltantes.length > 3 ? " y algunos más" : ""}.`;
+}
 
 const OBRA = { usado: "Usado", a_estrenar: "A estrenar", pozo: "En pozo" } as const;
 const ESTADO = { a_reciclar: "a reciclar", bueno: "en buen estado", muy_bueno: "en muy buen estado", excelente: "en estado excelente" } as const;
@@ -33,10 +41,14 @@ export default function Ficha({
   confianza,
   nombre,
   emitiendo,
+  faltantes,
+  advertencias,
 }: {
   input: EstimadorInput;
   paso: number;
   confianza: NivelConfianza | null;
+  faltantes: string[];
+  advertencias: string[];
   nombre: string;
   emitiendo: boolean;
 }) {
@@ -48,10 +60,12 @@ export default function Ficha({
   const ambientes = input.ambientes
     ? input.ambientes === 1 ? "Monoambiente" : `${input.ambientes}${input.ambientes >= 5 ? " o más" : ""} ambientes`
     : null;
-  const banos = `${input.banos}${input.banos >= 3 ? " o más" : ""} ${input.banos === 1 ? "baño" : "baños"}`;
+  const banos = input.banos != null
+    ? `${input.banos}${input.banos >= 3 ? " o más" : ""} ${input.banos === 1 ? "baño" : "baños"}`
+    : null;
 
   const obra = input.condicionObra === "usado"
-    ? `Usado, ${input.antiguedad ? `${input.antiguedad} años` : "menos de un año"}, ${ESTADO[input.estado]}`
+    ? ["Usado", input.antiguedad != null ? (input.antiguedad ? `${input.antiguedad} años` : "menos de un año") : null, input.estado ? ESTADO[input.estado] : null].filter(Boolean).join(", ")
     : OBRA[input.condicionObra];
 
   const amenities = Object.entries(input.amenities)
@@ -60,7 +74,7 @@ export default function Ficha({
 
   const orientacion = input.orientacion ? `al ${input.orientacion}` : null;
   const detalles = [
-    DISPOSICION[input.disposicion],
+    input.disposicion && DISPOSICION[input.disposicion],
     orientacion,
     input.vista && VISTA[input.vista],
     input.expensas && `expensas ${input.expensas}`,
@@ -73,10 +87,10 @@ export default function Ficha({
     { t: "Distribución", v: paso > 2 || ambientes ? [ambientes, banos].filter(Boolean).join(" · ") : null },
     {
       t: "Piso",
-      v: paso > 2 ? (input.piso === 0 ? "Planta baja" : `${input.piso}° piso`) : null,
-      d: paso > 2 ? [input.ascensor ? "con ascensor" : "sin ascensor", input.ultimoPiso && "último piso"].filter(Boolean).join(", ") : null,
+      v: input.piso == null ? null : input.piso === 0 ? "Planta baja" : `${input.piso}° piso`,
+      d: input.piso == null ? null : [input.ascensor ? "con ascensor" : "sin ascensor", input.ultimoPiso && "último piso"].filter(Boolean).join(", "),
     },
-    { t: "Edificio", v: paso > 3 ? obra : null, d: paso > 3 ? CATEGORIA[input.categoria] : null },
+    { t: "Edificio", v: paso > 3 ? obra : null, d: paso > 3 && input.categoria ? CATEGORIA[input.categoria] : null },
     { t: "Amenities", v: paso > 3 ? (amenities.length ? amenities.join(" · ") : "Sin amenities") : null },
     { t: "Detalles", v: paso > 4 ? detalles.charAt(0).toUpperCase() + detalles.slice(1) : null },
     { t: "A nombre de", v: nombre || null },
@@ -123,7 +137,7 @@ export default function Ficha({
         <div className="ts-precision-riel" aria-hidden="true">
           <span /><span /><span />
         </div>
-        <p>{p ? p.d : "Elegí el barrio para empezar."}</p>
+        <p>{p && confianza ? consejo(confianza, faltantes, advertencias) : "Elegí el barrio para empezar."}</p>
       </div>
     </aside>
   );

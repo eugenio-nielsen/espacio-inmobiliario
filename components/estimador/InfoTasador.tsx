@@ -18,7 +18,11 @@ export const PREGUNTAS_TASADOR: { q: string; a: string }[] = [
   },
   {
     q: "¿Qué datos del departamento tengo que cargar?",
-    a: "El barrio, la superficie cubierta y descubierta, los ambientes, el piso, la antigüedad y el estado. Los datos opcionales (vista, orientación, cochera, amenities, situación de la escritura) afinan el rango.",
+    a: "El barrio y la superficie cubierta son obligatorios. El resto (dirección, ambientes, piso, antigüedad, estado, vista, orientación, cochera, amenities, situación de la escritura) es opcional, pero cada dato que sumás ajusta el valor y estrecha el rango.",
+  },
+  {
+    q: "¿Tengo que dar la dirección exacta?",
+    a: "No, es opcional. Si la cargás, ubicamos el departamento en el mapa y, en los barrios donde distinguimos zonas, ajustamos el valor a la tuya: dentro de un mismo barrio el metro cuadrado puede cambiar bastante, así que es lo que más acerca la estimación al valor real. Alcanza con la calle y la altura, o con la esquina. Si preferís no darla por seguridad, no pasa nada: usamos el valor promedio del barrio.",
   },
   {
     q: "¿Para qué barrios funciona?",
@@ -32,7 +36,10 @@ export const PREGUNTAS_TASADOR: { q: string; a: string }[] = [
 
 const BARRIOS_DESTACADOS = ["Palermo", "Belgrano", "Recoleta", "Caballito", "Villa Crespo", "Núñez", "Almagro", "Villa Urquiza"];
 
-export default function InfoTasador() {
+const fmtMes = (iso: string) =>
+  new Date(iso).toLocaleDateString("es-AR", { month: "long", year: "numeric", timeZone: "America/Argentina/Buenos_Aires" });
+
+export default function InfoTasador({ actualizado }: { actualizado?: string | null }) {
   return (
     <div className="ts-info">
       <section>
@@ -53,6 +60,20 @@ export default function InfoTasador() {
           <li><b>Estado y extras:</b> conservación, cochera, baulera, calefacción y cantidad de baños.</li>
           <li><b>Situación legal:</b> ocupación, escritura al día o sucesión, y si es apto crédito hipotecario.</li>
         </ul>
+      </section>
+
+      <section>
+        <h2>De dónde salen los valores</h2>
+        <p>
+          El punto de partida es un valor de referencia por metro cuadrado, en dólares, para cada barrio de la Ciudad. Lo carga y
+          lo actualiza el equipo de Espacio Inmobiliario{actualizado ? <>; la última actualización fue en <b>{fmtMes(actualizado)}</b></> : null}.
+          Es una referencia de mercado para departamentos usados, no el precio al que se cierra una operación.
+        </p>
+        <p>
+          Si cargás la dirección, ubicamos el departamento en el mapa y, en los barrios donde distinguimos zonas, ajustamos el valor
+          a la tuya. Si preferís no cargarla, usamos el promedio del barrio. En cualquier caso, la estimación muestra con qué datos
+          se calculó y qué faltó completar para que el rango sea más preciso.
+        </p>
       </section>
 
       <section>

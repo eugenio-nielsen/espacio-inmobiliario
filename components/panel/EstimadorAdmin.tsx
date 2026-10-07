@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Save, Check, Plus, Trash2, Search } from "lucide-react";
 import { updatePrecioBarrio, saveConfig } from "@/lib/actions/estimador";
 import type { EstimadorConfig, Factor } from "@/lib/estimador/types";
+import ZonasEditor from "@/components/panel/ZonasEditor";
 
 const inp: React.CSSProperties = {
   border: "1px solid var(--line-200)", borderRadius: "var(--radius-sm)",
@@ -37,7 +38,7 @@ export default function EstimadorAdmin({ initialPrecios, initialConfig }: {
         ))}
       </div>
 
-      {tab === "precios" ? <PreciosEditor rows={initialPrecios} /> : <ConfigEditor config={initialConfig} />}
+      {tab === "precios" ? <PreciosEditor rows={initialPrecios} /> : <ConfigEditor config={initialConfig} precios={initialPrecios} />}
     </div>
   );
 }
@@ -97,7 +98,7 @@ function PreciosEditor({ rows }: { rows: PrecioRow[] }) {
 }
 
 // ── Editor de coeficientes ─────────────────────────────────────
-function ConfigEditor({ config: initial }: { config: EstimadorConfig }) {
+function ConfigEditor({ config: initial, precios }: { config: EstimadorConfig; precios: PrecioRow[] }) {
   const [config, setConfig] = useState<EstimadorConfig>(structuredClone(initial));
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -130,13 +131,32 @@ function ConfigEditor({ config: initial }: { config: EstimadorConfig }) {
             onChange={v => update(c => { c.topeMin = v; })} />
           <NumField label="Tope máximo del índice" value={config.topeMax} step={0.05}
             onChange={v => update(c => { c.topeMax = v; })} />
-          <NumField label="Rango confianza alta (±)" value={config.rango.alta} step={0.01}
+          <NumField label="Rango con todos los datos (±)" value={config.rango.alta} step={0.01}
             onChange={v => update(c => { c.rango.alta = v; })} />
-          <NumField label="Rango confianza media (±)" value={config.rango.media} step={0.01}
-            onChange={v => update(c => { c.rango.media = v; })} />
-          <NumField label="Rango confianza baja (±)" value={config.rango.baja} step={0.01}
+          <NumField label="Rango sin datos opcionales (±)" value={config.rango.baja} step={0.01}
             onChange={v => update(c => { c.rango.baja = v; })} />
         </div>
+
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", margin: "10px 0 0" }}>
+          El rango se abre entre estos dos extremos de forma continua, según cuánto completó la persona (puntaje de confianza de 0 a 100).
+        </p>
+
+        <h2 style={{ ...h2, marginTop: 22 }}>Topes por grupo de factores</h2>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", margin: "4px 0 0" }}>
+          El producto de los factores de cada grupo no puede pasar de estos topes: evita contar dos veces lo mismo (por ejemplo, categoría premium y amenities).
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px,1fr))", gap: 14, marginTop: 14 }}>
+          {Object.entries(config.topesGrupo ?? {}).map(([g, t]) => (
+            <div key={g} style={{ border: "1px solid var(--line-200)", borderRadius: "var(--radius-sm)", padding: 12 }}>
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, fontWeight: 600, color: "var(--ink-700)", margin: "0 0 8px" }}>{t.label}</p>
+              <div style={{ display: "flex", gap: 10 }}>
+                <NumField label="Mínimo" value={t.min ?? 0} step={0.01} onChange={v => update(c => { c.topesGrupo![g].min = v > 0 ? v : undefined; })} />
+                <NumField label="Máximo" value={t.max ?? 0} step={0.01} onChange={v => update(c => { c.topesGrupo![g].max = v > 0 ? v : undefined; })} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "var(--ink-400)", margin: "8px 0 0" }}>Un 0 deja el extremo sin tope.</p>
 
         <h2 style={{ ...h2, marginTop: 22 }}>Condición de obra (multiplica el $/m²)</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px,1fr))", gap: 14, marginTop: 14 }}>
@@ -148,6 +168,13 @@ function ConfigEditor({ config: initial }: { config: EstimadorConfig }) {
             onChange={v => update(c => { c.estadoObra = { ...(c.estadoObra ?? { usado: 1, a_estrenar: 1.28, pozo: 1.18 }), pozo: v }; })} />
         </div>
       </div>
+
+      {/* Zonas dentro de los barrios: ajustan el valor según la dirección */}
+      <ZonasEditor
+        zonas={config.zonas ?? []}
+        precios={precios}
+        onChange={fn => update(c => { c.zonas = c.zonas ?? []; fn(c.zonas); })}
+      />
 
       {/* Factores */}
       {config.factores.map((factor, fi) => (
@@ -182,7 +209,7 @@ function FactorEditor({ factor, onChange, onRemove }: {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div>
           <h2 style={{ ...h2, margin: 0 }}>{factor.label}</h2>
-          <span style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "var(--ink-400)" }}>{factor.tipo} · {factor.input}</span>
+          <span style={{ fontFamily: "var(--font-sans)", fontSize: 11.5, color: "var(--ink-400)" }}>{factor.tipo} · {factor.input}{factor.grupo ? ` · grupo: ${factor.grupo}` : ""}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-600)" }}>

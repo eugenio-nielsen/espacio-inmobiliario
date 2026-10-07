@@ -36,12 +36,15 @@ export default function MapaSelector({
   enfoque,
   onElegir,
   height = 300,
+  radio,
 }: {
   pos: { lat: number; lng: number } | null;
   aproximada: boolean;
   enfoque: Enfoque;
   onElegir: (lat: number, lng: number) => void;
   height?: number;
+  /** Radio en metros del círculo a dibujar; por defecto 400 m cuando la ubicación es aproximada. */
+  radio?: number;
 }) {
   return (
     <div className="ub-mapa" style={{ height }}>
@@ -55,10 +58,10 @@ export default function MapaSelector({
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Enfocar enfoque={enfoque} />
         <AlTocar onElegir={onElegir} />
-        {pos && aproximada && (
+        {pos && (aproximada || radio) && (
           <Circle
             center={[pos.lat, pos.lng]}
-            radius={400}
+            radius={radio ?? 400}
             pathOptions={{ color: "#0E2C50", fillColor: "#0E2C50", fillOpacity: 0.1, weight: 1.5 }}
           />
         )}

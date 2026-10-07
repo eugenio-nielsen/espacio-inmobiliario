@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEstimacionLead } from "@/lib/email";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import type { EstimadorConfig } from "@/lib/estimador/types";
+import { ubicarDireccion } from "@/lib/estimador/ubicar";
 
 const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
@@ -91,12 +92,33 @@ export async function updatePrecioBarrio(barrio: string, precio: number): Promis
 export async function saveConfig(config: EstimadorConfig): Promise<{ ok: boolean; error?: string }> {
   try {
     await assertAdmin();
+    for (const z of config.zonas ?? []) {
+      const ok = z.nombre?.trim() && z.barrio
+        && Number.isFinite(z.lat) && z.lat < -34.4 && z.lat > -34.8
+        && Number.isFinite(z.lng) && z.lng < -58.2 && z.lng > -58.7
+        && z.radioM >= 50 && z.radioM <= 3000
+        && z.coef >= 0.6 && z.coef <= 1.6;
+      if (!ok) {
+        return { ok: false, error: `La zona "${z.nombre || "sin nombre"}" tiene datos fuera de rango (ubicación en CABA, radio de 50 a 3.000 m, coeficiente de 0,6 a 1,6).` };
+      }
+    }
     const admin = createAdminClient();
     const { error } = await admin
       .from("estimador_config")
       .upsert({ id: 1, config, updated_at: new Date().toISOString() });
     if (error) return { ok: false, error: error.message };
     return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Error" };
+  }
+}
+
+// ── Admin: ubicar una dirección para marcar el centro de una zona ──
+export async function ubicarParaZona(direccion: string, barrio: string): Promise<{ ok: true; lat: number; lng: number } | { ok: false; error: string }> {
+  try {
+    await assertAdmin();
+    const u = await ubicarDireccion(direccion, barrio);
+    return u ? { ok: true, lat: u.lat, lng: u.lng } : { ok: false, error: "No se encontró esa dirección. Marcala en el mapa." };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Error" };
   }

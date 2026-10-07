@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { normalizarTelefono } from "@/lib/utils/telefono";
-import { calcularConfianza } from "@/lib/estimador/engine";
-import type { EstimadorInput, EstimadorResultado } from "@/lib/estimador/types";
+import { evaluarConfianza } from "@/lib/estimador/engine";
+import type { EstimadorInput, EstimadorResultado, NivelConfianza } from "@/lib/estimador/types";
 import Guilloche from "@/components/ui/Guilloche";
 import { Opciones, Marcas, Numero, Interruptor, BuscadorBarrio, RosaVientos, type Opcion } from "./controles";
 import Ficha from "./Ficha";
@@ -30,7 +30,7 @@ import "./tasador.css";
  */
 
 const ESCENAS = [
-  { n: "I", t: "Ubicación", q: "¿En qué barrio está el departamento?", d: "Usamos el valor de referencia del metro cuadrado en ese barrio." },
+  { n: "I", t: "Ubicación", q: "¿En qué barrio está el departamento?", d: "Usamos el valor de referencia del metro cuadrado en ese barrio y, si nos das la dirección, lo ajustamos a tu zona." },
   { n: "II", t: "La unidad", q: "¿Cómo es el departamento?", d: "Solo la superficie cubierta es obligatoria." },
   { n: "III", t: "El edificio", q: "Contanos del edificio", d: "La antigüedad, el estado y la categoría mueven el valor." },
   { n: "IV", t: "Detalles", q: "Detalles que afinan el valor", d: "Es opcional, pero cada dato ajusta el rango de la estimación." },
@@ -91,15 +91,18 @@ const FRASES_EMISION = [
 const INICIAL: EstimadorInput = {
   barrio: "", direccion: "",
   m2Cubiertos: 0, m2Semicubierto: 0, m2Descubiertos: 0,
-  ambientes: undefined, dormitorios: undefined, banos: 1,
-  antiguedad: 0, condicionObra: "usado", estado: "bueno",
-  piso: 0, ultimoPiso: false, ascensor: true,
-  disposicion: "frente", orientacion: "", vista: "",
+  // Lo que no se respondió queda vacío: el motor lo trata como neutro y la
+  // precisión lo cuenta como faltante. Antes arrancaba con "frente", planta
+  // baja o "menos de un año", que movían el valor sin que nadie los eligiera.
+  ambientes: undefined, dormitorios: undefined, banos: undefined,
+  antiguedad: undefined, condicionObra: "usado", estado: "",
+  piso: undefined, ultimoPiso: false, ascensor: true,
+  disposicion: "", orientacion: "", vista: "",
   cochera: "no", baulera: false, dependenciaServicio: false,
   calefaccion: "", expensas: "", aptoCredito: false,
-  ocupacion: "libre", situacionDominial: "escritura",
+  ocupacion: "", situacionDominial: "",
   vecinosEspeciales: false,
-  categoria: "estandar",
+  categoria: "",
   amenities: { pileta: false, sum: false, gimnasio: false, seguridad: false, parrilla: false },
 };
 
@@ -107,9 +110,12 @@ const esperar = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 export default function Tasador({
   barrios,
+  barriosConZonas = [],
   embebido = false,
 }: {
   barrios: string[];
+  /** Barrios con zonas cargadas: ahí la dirección sí ajusta el valor, y se cuenta en la precisión. */
+  barriosConZonas?: string[];
   /** Dentro de una nota del blog: sin la ficha lateral, con la precisión arriba. */
   embebido?: boolean;
 }) {
@@ -201,7 +207,10 @@ export default function Tasador({
     setError(null);
   }
 
-  const confianza = input.barrio ? calcularConfianza(input, true) : null;
+  const evaluacion = input.barrio
+    ? evaluarConfianza(input, true, { direccionAfina: barriosConZonas.includes(input.barrio) })
+    : null;
+  const confianza = evaluacion?.nivel ?? null;
   const escena = ESCENAS[paso - 1];
 
   if (resultado) {
@@ -232,8 +241,13 @@ export default function Tasador({
               <BuscadorBarrio barrios={barrios} valor={input.barrio} onCambio={v => { set("barrio", v); setError(null); }} />
               <label className="ts-texto">
                 <span className="ts-rotulo">Dirección <em>(opcional)</em></span>
-                <input value={input.direccion} onChange={e => set("direccion", e.target.value)} placeholder="Ej.: Av. Santa Fe 1234" />
+                <input value={input.direccion} onChange={e => set("direccion", e.target.value)} placeholder="Ej.: Av. Santa Fe 1234, o la esquina" autoComplete="street-address" />
               </label>
+              <p className="ts-dir-nota">
+                <strong>Es el dato que más afina la estimación:</strong> dentro de un mismo barrio, el valor del m² cambia bastante de
+                una zona a otra. Alcanza con la calle y la altura, o con la esquina. La usamos solo para ubicar la zona en un mapa
+                (a través de OpenStreetMap) y no se publica. Si preferís no cargarla, no hay problema: usamos el valor promedio del barrio.
+              </p>
             </div>
           )}
 
@@ -264,8 +278,9 @@ export default function Tasador({
                   chico
                   etiqueta="Piso"
                   valor={input.piso}
-                  onCambio={v => set("piso", v ?? 0)}
+                  onCambio={v => set("piso", v)}
                   max={80}
+                  placeholder="Ej.: 4"
                   formato={v => (v === 0 ? "Planta baja" : `${v}° piso`)}
                 />
                 <div className="ts-sws">
@@ -283,7 +298,7 @@ export default function Tasador({
                   nombre="Condición de obra"
                   opciones={CONDICION_OBRA}
                   valor={input.condicionObra}
-                  onCambio={v => setInput(p => ({ ...p, condicionObra: v, antiguedad: v === "usado" ? p.antiguedad : 0 }))}
+                  onCambio={v => setInput(p => ({ ...p, condicionObra: v, antiguedad: v === "usado" ? p.antiguedad : undefined, estado: v === "usado" ? p.estado : "" }))}
                   columnas={3}
                 />
               </Grupo>
@@ -294,17 +309,18 @@ export default function Tasador({
                     etiqueta="Antigüedad"
                     unidad="años"
                     valor={input.antiguedad}
-                    onCambio={v => set("antiguedad", v ?? 0)}
+                    onCambio={v => set("antiguedad", v)}
                     max={150}
+                    placeholder="Ej.: 15"
                     formato={v => (v === 0 ? "Menos de un año" : null)}
                   />
                   <Grupo t="Estado de conservación">
-                    <Opciones nombre="Estado de conservación" opciones={ESTADOS} valor={input.estado} onCambio={v => set("estado", v)} columnas={4} />
+                    <Opciones nombre="Estado de conservación" opciones={ESTADOS} valor={input.estado || undefined} onCambio={v => set("estado", v)} columnas={4} />
                   </Grupo>
                 </>
               )}
               <Grupo t="Categoría del edificio">
-                <Opciones nombre="Categoría del edificio" opciones={CATEGORIAS} valor={input.categoria} onCambio={v => set("categoria", v)} columnas={3} />
+                <Opciones nombre="Categoría del edificio" opciones={CATEGORIAS} valor={input.categoria || undefined} onCambio={v => set("categoria", v)} columnas={3} />
               </Grupo>
               <Grupo t="Amenities" nota="Marcá todas las que tenga">
                 <Marcas
@@ -326,7 +342,7 @@ export default function Tasador({
                   </Grupo>
                   <div className="ts-luz-col">
                     <Grupo t="Disposición">
-                      <Opciones nombre="Disposición" opciones={DISPOSICIONES} valor={input.disposicion} onCambio={v => set("disposicion", v)} />
+                      <Opciones nombre="Disposición" opciones={DISPOSICIONES} valor={input.disposicion || undefined} onCambio={v => set("disposicion", v)} />
                     </Grupo>
                     <Grupo t="Vista">
                       <Opciones nombre="Vista" opciones={VISTAS} valor={input.vista || undefined} onCambio={v => set("vista", v)} columnas={2} />
@@ -441,7 +457,7 @@ export default function Tasador({
 
       {/* ── La ficha, que se escribe con cada respuesta ───────── */}
       {!embebido && (
-        <Ficha input={input} paso={paso} confianza={confianza} nombre={contacto.nombre.trim()} emitiendo={emitiendo} />
+        <Ficha input={input} paso={paso} confianza={confianza} faltantes={evaluacion?.faltantes ?? []} advertencias={evaluacion?.advertencias ?? []} nombre={contacto.nombre.trim()} emitiendo={emitiendo} />
       )}
     </div>
   );
@@ -450,7 +466,7 @@ export default function Tasador({
 const PRECISION = { baja: 1, media: 2, alta: 3 } as const;
 
 /** La precisión en una línea, para cuando la ficha no entra (en una nota). */
-function PrecisionCorta({ confianza }: { confianza: ReturnType<typeof calcularConfianza> | null }) {
+function PrecisionCorta({ confianza }: { confianza: NivelConfianza | null }) {
   const n = confianza ? PRECISION[confianza] : 0;
   return (
     <div className="ts-precision-corta" data-nivel={n}>
