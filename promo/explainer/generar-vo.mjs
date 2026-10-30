@@ -25,7 +25,7 @@ mkdirSync(OUT, { recursive: true });
 const solo = process.argv[2];
 const prev = existsSync(path.join(OUT, "vo.json")) ? JSON.parse(readFileSync(path.join(OUT, "vo.json"), "utf8")) : { escenas: {} };
 
-// Valeria: rioplatense, cálida. Un poco menos enérgica que en el anuncio: acá explica.
+// Melanie (colección "Claude" de ElevenLabs): cálida y clara, pensada para tutoriales y bienvenidas.
 const ajustes = { stability: 0.45, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true, speed: 1.0 };
 
 for (let i = 0; i < guion.escenas.length; i++) {

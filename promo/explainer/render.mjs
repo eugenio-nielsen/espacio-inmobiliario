@@ -3,6 +3,7 @@
  *
  *   node explainer/render.mjs                    → salida/explainer.mp4
  *   node explainer/render.mjs --cuadros 1,12,30  → solo esos segundos, como JPG en salida/
+ *   node explainer/render.mjs --bitrate 2000000 --salida explainer-web  → versión liviana para el sitio
  *
  * Necesita vo/ (node explainer/generar-vo.mjs) y capturas/ (node explainer/capturar.mjs).
  * Las capturas que falten se dibujan como "captura pendiente", para poder revisar el ritmo.
@@ -17,6 +18,9 @@ import puppeteer from "puppeteer-core";
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const PROMO = path.join(AQUI, "..");
 const opciones = process.argv.slice(2);
+const valorDe = nombre => { const i = opciones.indexOf(nombre); return i >= 0 ? opciones[i + 1] : null; };
+const bitrate = valorDe("--bitrate");
+const nombreSalida = valorDe("--salida") || "explainer";
 const iC = opciones.indexOf("--cuadros");
 const cuadros = iC >= 0 ? opciones[iC + 1].split(",").map(Number) : null;
 
@@ -54,7 +58,7 @@ const base = `http://127.0.0.1:${servidor.address().port}`;
 
 const carpeta = path.join(PROMO, "salida");
 await mkdir(carpeta, { recursive: true });
-const archivo = path.join(carpeta, "explainer.mp4");
+const archivo = path.join(carpeta, `${nombreSalida}.mp4`);
 
 const nav = await puppeteer.launch({ executablePath: CHROME, headless: true, protocolTimeout: 30 * 60 * 1000, args: ["--hide-scrollbars", "--autoplay-policy=no-user-gesture-required"] });
 try {
@@ -63,7 +67,7 @@ try {
   p.on("console", m => { if (m.type() === "error") console.error("  [página]", m.text()); });
   await p.exposeFunction("promoTrozo", b64 => appendFile(archivo, Buffer.from(b64, "base64")));
   await p.exposeFunction("promoAvance", x => { process.stdout.write(`\r  codificando… ${Math.round(x * 100)}%  `); });
-  await p.goto(base + "/", { waitUntil: "networkidle0" });
+  await p.goto(base + "/" + (bitrate ? `?bitrate=${bitrate}` : ""), { waitUntil: "networkidle0" });
   const listo = await p.evaluate(() => window.explainer.preparar());
   console.log(`Explainer: ${listo.duracion} s`);
   console.log("  " + listo.escenas.join(" · "));

@@ -11,6 +11,8 @@
  */
 
 const W = 1920, H = 1080, FPS = 30;
+// Para la web se baja con ?bitrate=2000000 (la pantalla casi no se mueve y comprime muy bien)
+const BITRATE = Number(new URLSearchParams(location.search).get("bitrate")) || 8_000_000;
 const NAVY = "#0A2038", NAVY2 = "#0E2C50", GOLD = "#B99F66", GOLD_L = "#D9C9A1", CREMA = "#F7F4EE";
 
 // La ventana donde se ve el sitio
@@ -283,7 +285,7 @@ function vistaPrevia(t) { cuadro(t); return lienzo.toDataURL("image/jpeg", 0.9);
 
 async function elegirCodec() {
   for (const codec of ["avc1.640028", "avc1.4d0028", "avc1.42e028", "avc1.420028"]) {
-    const { supported } = await VideoEncoder.isConfigSupported({ codec, width: W, height: H, bitrate: 8_000_000, framerate: FPS });
+    const { supported } = await VideoEncoder.isConfigSupported({ codec, width: W, height: H, bitrate: BITRATE, framerate: FPS });
     if (supported) return codec;
   }
   throw new Error("Este Chrome no puede codificar H.264 a 1920x1080.");
@@ -339,7 +341,7 @@ async function grabar() {
 
   // Video
   const ve = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: e => { falla = e; } });
-  ve.configure({ codec, width: W, height: H, bitrate: 8_000_000, framerate: FPS, latencyMode: "quality" });
+  ve.configure({ codec, width: W, height: H, bitrate: BITRATE, framerate: FPS, latencyMode: "quality" });
   const n = Math.round(total * FPS);
   for (let i = 0; i < n; i++) {
     cuadro(i / FPS);

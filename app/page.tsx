@@ -10,7 +10,7 @@ import { conPropietarioVerificado } from "@/lib/propiedades/verificados";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Plus, ArrowRight } from "lucide-react";
-import ServiciosEcosistema from "@/components/servicios/ServiciosEcosistema";
+import Explainer from "@/components/home/Explainer";
 import FadeIn from "@/components/ui/FadeIn";
 import Caminos from "@/components/home/Caminos";
 import ComoTrabajamos from "@/components/home/ComoTrabajamos";
@@ -60,6 +60,18 @@ const datosEstructurados = [
       target: { "@type": "EntryPoint", urlTemplate: `${SITE}/propiedades?q={search_term_string}` },
       "query-input": "required name=search_term_string",
     },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: "Cómo funciona Espacio Inmobiliario: de la cuenta a la escritura",
+    description: "Recorrido por el sitio: crear la cuenta, publicar una propiedad, buscar, usar el tasador, el panel y las herramientas.",
+    thumbnailUrl: `${SITE}/video/explainer-poster.jpg`,
+    contentUrl: `${SITE}/video/explainer.mp4`,
+    uploadDate: "2026-10-30",
+    duration: "PT1M20S",
+    inLanguage: "es-AR",
+    publisher: { "@id": `${SITE}/#organizacion` },
   },
 ];
 
@@ -157,8 +169,10 @@ export default async function HomePage() {
           su propia <section>: el fondo y la cinta van a todo el ancho. */}
       <Respaldo />
 
-      {/* ── Ecosistema de servicios ───────────────────────────── */}
-      <ServiciosEcosistema isLoggedIn={!!user} />
+      {/* ── El recorrido en video ─────────────────────────────────
+          Ocupa el lugar del viejo "Ecosistema de servicios", que había
+          quedado desactualizado y fuera de la estética del sitio. */}
+      <Explainer />
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <Footer />

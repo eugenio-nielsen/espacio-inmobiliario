@@ -1,0 +1,251 @@
+/* Estilos de components/home/Explainer.tsx y ExplainerVideo.tsx.
+   Viven fuera de globals.css por la misma razón que respaldo.css: el
+   cache de PostCSS de Tailwind no ve los cambios en Windows. */
+
+/* ═══════════════════════════════════════════════════════════════
+   El recorrido en video (home) — prefijo .ex-
+   Mismo idioma que Respaldo: marco doble con esquineros dorados.
+   ═══════════════════════════════════════════════════════════════ */
+.ex {
+  position: relative;
+  background: #FFFDF9;
+  border-bottom: 1px solid var(--gold-200);
+  padding: clamp(72px, 9vw, 124px) 0 clamp(64px, 8vw, 108px);
+  overflow: clip;
+}
+.ex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 45% at 50% 0%, rgba(185,159,102,.13), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 50% 100%, rgba(14,44,80,.05), transparent 70%);
+}
+.ex-in {
+  position: relative;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Cabecera ──────────────────────────────────────────────── */
+.ex-cab { max-width: 720px; margin: 0 auto clamp(34px, 4.4vw, 52px); text-align: center; }
+.ex-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+}
+.ex-eyebrow::before,
+.ex-eyebrow::after { content: ""; width: 40px; height: 1px; background: var(--gold-500); }
+.ex-t {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(31px, 4.3vw, 52px);
+  line-height: 1.06;
+  letter-spacing: -.032em;
+  color: var(--navy-800);
+  margin: 20px 0 20px;
+  text-wrap: balance;
+}
+.ex-t em { font-style: italic; font-weight: 500; color: var(--gold-600); }
+.ex-lead {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(15.5px, 1.45vw, 17.5px);
+  line-height: 1.75;
+  color: var(--ink-700);
+  margin: 0 auto;
+  max-width: 54ch;
+}
+
+/* ── El marco del video ────────────────────────────────────── */
+.ex-wrap { max-width: 980px; margin: 0 auto; }
+.ex-marco {
+  position: relative;
+  background: linear-gradient(180deg, #fff, #FFFDF9);
+  border: 1px solid var(--gold-300);
+  border-radius: 3px;
+  padding: clamp(12px, 1.6vw, 20px);
+  box-shadow:
+    0 50px 90px -34px rgba(14,44,80,.34),
+    0 16px 34px -20px rgba(14,44,80,.18),
+    0 1px 2px rgba(20,17,11,.04);
+}
+/* Marco interior fino */
+.ex-marco::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--gold-200);
+  pointer-events: none;
+}
+/* Esquineros */
+.ex-marco::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  pointer-events: none;
+  --c: var(--gold-500);
+  background:
+    linear-gradient(var(--c), var(--c)) top left     / 20px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left     / 1px 20px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right    / 20px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right    / 1px 20px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left  / 20px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left  / 1px 20px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 20px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 1px 20px no-repeat;
+}
+.ex-pantalla {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 16 / 9;
+  background: var(--navy-900);
+  overflow: hidden;
+}
+.ex-video { display: block; width: 100%; height: 100%; object-fit: cover; background: var(--navy-900); }
+
+/* Botón de play sobre el póster */
+.ex-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  border: 0;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(10,32,56,.18), rgba(10,32,56,.52));
+  transition: background .5s var(--ease-out);
+}
+.ex-play:hover { background: linear-gradient(180deg, rgba(10,32,56,.1), rgba(10,32,56,.42)); }
+.ex-play-aro {
+  display: grid;
+  place-items: center;
+  width: clamp(68px, 8vw, 92px);
+  height: clamp(68px, 8vw, 92px);
+  border-radius: 50%;
+  background: rgba(10,32,56,.78);
+  border: 1px solid var(--gold-500);
+  box-shadow: 0 0 0 7px rgba(185,159,102,.18), 0 18px 40px -12px rgba(0,0,0,.5);
+  color: var(--gold-300);
+  transition: transform .5s var(--ease-out), background .5s var(--ease-out), color .5s var(--ease-out);
+}
+.ex-play-aro svg { margin-left: 4px; }
+.ex-play:hover .ex-play-aro { transform: scale(1.07); background: var(--gold-600); color: #fff; }
+.ex-play-txt {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 12px rgba(0,0,0,.5);
+}
+.ex-play:focus-visible { outline: 2px solid var(--gold-500); outline-offset: -6px; }
+
+/* ── Capítulos ─────────────────────────────────────────────── */
+.ex-caps {
+  list-style: none;
+  margin: clamp(22px, 2.6vw, 30px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 10px;
+}
+.ex-cap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--navy-800);
+  background: transparent;
+  border: 1px solid var(--gold-200);
+  border-radius: 2px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background .35s var(--ease-out), border-color .35s var(--ease-out), color .35s var(--ease-out);
+}
+.ex-cap-n { font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--gold-700); }
+.ex-cap:hover { border-color: var(--gold-500); background: #fff; }
+.ex-cap-on { background: var(--navy-800); border-color: var(--navy-800); color: #fff; }
+.ex-cap-on .ex-cap-n { color: var(--gold-300); }
+.ex-cap:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+
+/* ── Llamados ──────────────────────────────────────────────── */
+.ex-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 28px;
+  margin-top: clamp(30px, 3.6vw, 44px);
+}
+.ex-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 17px 26px;
+  border-radius: 2px;
+  background: var(--navy-800);
+  color: #fff;
+  box-shadow: var(--shadow-navy);
+  transition: background .4s var(--ease-out);
+}
+.ex-cta:hover { background: var(--navy-900); }
+.ex-cta svg { transition: transform .4s var(--ease-out); }
+.ex-cta:hover svg { transform: translateX(4px); }
+.ex-cta-texto {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 17px 0;
+  color: var(--navy-800);
+  transition: color .4s var(--ease-out);
+}
+.ex-cta-texto::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 11px;
+  height: 1px;
+  background: var(--gold-500);
+  transform-origin: left;
+  transition: transform .5s var(--ease-out);
+}
+.ex-cta-texto:hover { color: var(--gold-700); }
+.ex-cta-texto:hover::after { transform: scaleX(.35); }
+.ex-cta-texto svg { transition: transform .4s var(--ease-out); }
+.ex-cta-texto:hover svg { transform: translateX(4px); }
+
+@media (max-width: 640px) {
+  .ex-in { padding: 0 16px; }
+  .ex-marco { padding: 8px; }
+  .ex-marco::before { inset: 4px; }
+  .ex-eyebrow::before, .ex-eyebrow::after { width: 24px; }
+  .ex-play-txt { font-size: 10.5px; letter-spacing: .16em; }
+  .ex-cap { padding: 9px 12px; font-size: 13px; }
+}
