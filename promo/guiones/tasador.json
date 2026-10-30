@@ -1,0 +1,56 @@
+{
+  "tipo": "herramienta",
+  "id": "tasador",
+  "duracion": 30,
+
+  "tiempos": {
+    "gancho":  [0, 3.6],
+    "p1":      [3.6, 8.6],
+    "p2":      [8.6, 13.2],
+    "p3":      [13.2, 15.6],
+    "p4":      [15.6, 18.0],
+    "emision": [18.0, 20.6],
+    "informe": [20.6, 26.2],
+    "cierre":  [26.2, 30.0]
+  },
+
+  "datos": {
+    "gancho": "Gratis, en cinco pasos.",
+    "barrio": "Palermo",
+    "direccion": "Honduras 5000",
+    "nota_direccion": "Con la dirección ajustamos el valor a tu zona.",
+    "superficie": 58,
+    "balcon": 5,
+    "ambientes": 3,
+    "banos": 2,
+    "piso": 3,
+    "antiguedad": 20,
+    "emision": ["Tomando el valor de referencia del barrio", "Ponderando superficies", "Aplicando los ajustes de la unidad"],
+    "valor": 167000,
+    "rangoMin": 159000,
+    "rangoMax": 175000,
+    "factores": [
+      { "label": "Disposición", "detalle": "Frente", "coef": 1.03 },
+      { "label": "Vista", "detalle": "Despejada", "coef": 1.03 },
+      { "label": "Orientación", "detalle": "Norte", "coef": 1.02 },
+      { "label": "Piso", "detalle": "1° a 3°", "coef": 0.95 }
+    ]
+  },
+
+  "subtitulos": [
+    { "ini": 0.4,  "fin": 3.4,  "texto": "¿Cuánto vale tu departamento? Descubrilo gratis." },
+    { "ini": 3.9,  "fin": 8.3,  "texto": "Elegí el barrio y, si querés, sumá la dirección." },
+    { "ini": 8.9,  "fin": 13.0, "texto": "Contanos los metros, los ambientes y el piso." },
+    { "ini": 13.5, "fin": 17.8, "texto": "Sumá los detalles: cada dato ajusta el valor." },
+    { "ini": 18.2, "fin": 20.4, "texto": "Calculamos tu estimación al instante." },
+    { "ini": 21.0, "fin": 26.0, "texto": "Un valor estimado, su rango y cómo llegamos a él." },
+    { "ini": 26.5, "fin": 29.8, "texto": "Probalo gratis. Link en la bio." }
+  ],
+
+  "cierre": {
+    "titulo": "Tasá tu departamento gratis",
+    "rotulo": "Tasador online · Buenos Aires",
+    "boton": "espacioinmobiliario.com.ar/estimador",
+    "aviso": "Ejemplo ilustrativo. Estimación orientativa, no reemplaza una tasación profesional."
+  }
+}

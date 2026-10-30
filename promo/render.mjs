@@ -52,9 +52,16 @@ if (!CHROME) {
 
 // ── Servidor local ───────────────────────────────────────────
 
+// Un guion con "tipo": "herramienta" usa su propio motor (herramienta.js):
+// cuenta cómo se usa una herramienta del sitio, no una propiedad.
+const esHerramienta = guion.tipo === "herramienta";
+const PAGINA = esHerramienta ? "herramienta.html" : "video.html";
+
 const ARCHIVOS = {
   "/video.html": [path.join(AQUI, "video.html"), "text/html; charset=utf-8"],
   "/video.js": [path.join(AQUI, "video.js"), "text/javascript; charset=utf-8"],
+  "/herramienta.html": [path.join(AQUI, "herramienta.html"), "text/html; charset=utf-8"],
+  "/herramienta.js": [path.join(AQUI, "herramienta.js"), "text/javascript; charset=utf-8"],
   "/mp4-muxer.js": [path.join(AQUI, "node_modules", "mp4-muxer", "build", "mp4-muxer.js"), "text/javascript; charset=utf-8"],
   "/logo.png": [path.join(AQUI, "..", "public", "logo.png"), "image/png"],
 };
@@ -87,7 +94,7 @@ async function leerTile(z, x, y) {
 
 /** Solo las fotos que figuran en el guion, pedidas por su posición. */
 async function leerFoto(i) {
-  const url = guion.fotos[i];
+  const url = guion.fotos?.[i];
   if (!url) return null;
   if (!fotos.has(url)) {
     const r = await fetch(url);
@@ -147,9 +154,9 @@ try {
   await pagina.exposeFunction("promoTrozo", b64 => appendFile(archivo, Buffer.from(b64, "base64")));
   await pagina.exposeFunction("promoAvance", p => { process.stdout.write(`\r  codificando… ${Math.round(p * 100)}%  `); });
 
-  await pagina.goto(`${base}/video.html`, { waitUntil: "networkidle0" });
+  await pagina.goto(`${base}/${PAGINA}`, { waitUntil: "networkidle0" });
   const listo = await pagina.evaluate(() => window.promo.preparar());
-  console.log(`Guion "${id}": ${listo.fotos} fotos, ${listo.duracion} s.`);
+  console.log(`Guion "${id}": ${esHerramienta ? "herramienta" : `${listo.fotos} fotos`}, ${listo.duracion} s.`);
   console.log(`  ${listo.tramos.join(" · ")}`);
 
   if (cuadros) {

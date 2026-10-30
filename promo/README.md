@@ -59,3 +59,40 @@ Los íconos son [Lucide](https://lucide.dev/icons) (los mismos del sitio): se es
 - `nuevo.mjs` lee la propiedad de la base y escribe el borrador del guion.
 - `render.mjs` levanta un servidor local y abre `video.html` en Chrome sin ventana.
 - `video.js` dibuja cada cuadro en un `<canvas>` según el segundo en que está, y lo codifica a H.264 con WebCodecs; `mp4-muxer` arma el MP4. No necesita ffmpeg.
+
+## Videos de herramientas (tasador, calculadoras…)
+
+Además de las propiedades, `promo/` arma videos de 30 s que cuentan cómo se usa una herramienta del sitio, con subtítulos. Un guion con `"tipo": "herramienta"` usa su propio motor, `herramienta.js`; el render es el mismo:
+
+```bash
+npm run video -- tasador --cuadros 1,7,12.5,17,21.5,25.5,28   # cuadros sueltos para revisar
+npm run video -- tasador                                       # salida/tasador.mp4
+```
+
+El guion del tasador es [`guiones/tasador.json`](guiones/tasador.json):
+
+| Campo | Qué es |
+|---|---|
+| `tiempos` | Cuándo empieza y termina cada tramo (gancho, los cuatro pasos, emisión, informe, cierre), pensado para 30 s. Con otra `duracion`, se estiran en proporción. |
+| `datos` | Lo que se "carga" en pantalla (barrio, superficie, ambientes, piso…) y el resultado del ejemplo. |
+| `subtitulos` | Cada frase con su `ini` y `fin` en segundos. Las palabras se encienden en dorado de a una. |
+| `cierre` | Título, botón y aviso final. |
+
+**Los números del ejemplo salen del motor real del tasador**, no se inventan: si se cambian los datos de `datos`, hay que recalcular `valor`, `rangoMin`, `rangoMax` y `factores` con el motor (`lib/estimador/engine.ts`) para que el video siga diciendo la verdad. El video marca el resultado como "ejemplo" y el cierre aclara que es orientativo.
+
+Para otra herramienta (calculadora de costos, RPI…), se copia `tasador.json` y se cambian los pasos: los textos de cada paso están en `herramienta.js` (`paso1` a `paso4`).
+
+## Explainer de la home (1920x1080, con voz en off)
+
+Video de ~75 s que recorre el sitio (registro, publicar, propiedades, tasador, panel, perfil, herramientas). Vive en `explainer/`:
+
+```bash
+node explainer/generar-vo.mjs     # voz en off con ElevenLabs (voz Valeria) → explainer/vo/
+node explainer/capturar.mjs       # capturas del sitio en localhost:3000 → explainer/capturas/
+node explainer/render.mjs         # salida/explainer.mp4   (--cuadros 5,20,40 para revisar cuadros sueltos)
+```
+
+- Los textos de la voz están en `explainer/guion.json`; qué captura y qué zoom va en cada escena, en `explainer/planos.json`. La duración de cada escena sale del audio.
+- Necesita `ELEVEN_LABS_API_KEY` en `../.env.local` (solo local) y el sitio corriendo (`npm run dev`).
+- Las escenas con sesión usan la cuenta de prueba de `explainer/.demo.json` (gitignorada, ver `demo.mjs` y `sembrar.mjs`). **No se borra**: se reutiliza para cualquier prueba con sesión.
+- Las capturas difuminan el nombre de quien publica una ficha real.
