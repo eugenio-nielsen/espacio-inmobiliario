@@ -96,3 +96,18 @@ node explainer/render.mjs         # salida/explainer.mp4   (--cuadros 5,20,40 pa
 - Necesita `ELEVEN_LABS_API_KEY` en `../.env.local` (solo local) y el sitio corriendo (`npm run dev`).
 - Las escenas con sesión usan la cuenta de prueba de `explainer/.demo.json` (gitignorada, ver `demo.mjs` y `sembrar.mjs`). **No se borra**: se reutiliza para cualquier prueba con sesión.
 - Las capturas difuminan el nombre de quien publica una ficha real.
+
+## Video "La familia que vendió sin pagar comisión" (9:16, Higgsfield + ElevenLabs)
+
+Historia ficticia de ~78 s para Reels, TikTok y Stories. El guion, los planos y los costos están en [`higgsfield/guion-familia.md`](higgsfield/guion-familia.md).
+
+```bash
+node higgsfield/generar-vo.mjs        # voz de Laura (Malena Tango, colección "Claude" de ElevenLabs) → higgsfield/vo/
+node higgsfield/capturar-movil.mjs    # el sitio en un celular (usa la cuenta de prueba de explainer/.demo.json)
+node higgsfield/render.mjs            # salida/familia.mp4   (--cuadros 5,40 para ver cuadros; --audio para el audio solo)
+```
+
+- Los 8 clips (`higgsfield/clips/c1..c8.mp4`) se generan con **Wan 3.0, 720p, 9:16, sin audio**, con imágenes de referencia de los personajes para que se vean iguales (`higgsfield/refs/`). Cuestan ~15,75 créditos cada uno de 9 s; el servicio admite pocas generaciones en simultáneo.
+- `higgsfield/planos.json` dice qué clip va con cada frase; `render.mjs` mide la voz y reparte los tiempos solo.
+- La **música es sintética** (piano y cuerdas suaves, compuesta en `montaje.js`): sin licencias de terceros. Baja sola cuando habla Laura.
+- El cierre lleva el aviso "Historia recreada con inteligencia artificial". No se presenta como testimonio real.

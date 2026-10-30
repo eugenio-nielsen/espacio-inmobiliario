@@ -49,3 +49,9 @@ next-env.d.ts
 promo/explainer/.demo.json
 promo/explainer/capturas/
 promo/explainer/vo/
+
+# video de la familia: referencias, clips, voz y capturas generados
+promo/higgsfield/refs/
+promo/higgsfield/clips/
+promo/higgsfield/vo/
+promo/higgsfield/capturas/

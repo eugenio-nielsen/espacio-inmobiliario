@@ -1,0 +1,13 @@
+{
+  "cierreExtra": 4.5,
+  "escenas": {
+    "v1": [ { "tipo": "clip", "clip": "c1", "zoom": 1.05 } ],
+    "v2": [ { "tipo": "clip", "clip": "c2", "peso": 1.0 }, { "tipo": "clip", "clip": "c3", "peso": 0.45 } ],
+    "v3": [ { "tipo": "clip", "clip": "c3", "continuar": true, "peso": 0.42 }, { "tipo": "clip", "clip": "c4", "peso": 0.58 } ],
+    "v4": [ { "tipo": "movil", "imagenes": ["movil-1", "movil-2", "movil-3"] } ],
+    "v5": [ { "tipo": "clip", "clip": "c5" } ],
+    "v6": [ { "tipo": "clip", "clip": "c6" } ],
+    "v7": [ { "tipo": "clip", "clip": "c7" } ],
+    "v8": [ { "tipo": "clip", "clip": "c8", "peso": 0.6 }, { "tipo": "cierre", "peso": 0.4 } ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "voz": "1WXz8v08ntDcSTeVXMN2",
+  "nombre": "Malena Tango - Storyteller",
+  "escenas": [
+    { "id": "v1", "texto": "Hace un año, Martín y yo tomamos una decisión difícil: vender el departamento donde crecieron nuestros hijos." },
+    { "id": "v2", "texto": "Necesitábamos algo más chico. Pero cuando hicimos las cuentas, la comisión de una inmobiliaria se llevaba una parte enorme de lo que íbamos a recibir." },
+    { "id": "v3", "texto": "Y no queríamos regalar el esfuerzo de toda una vida. Pero vender solos nos daba miedo: los papeles, los certificados, la escritura… ¿y si nos equivocábamos?" },
+    { "id": "v4", "texto": "Un día encontramos Espacio Inmobiliario. Publicamos gratis. Y descubrimos que del otro lado había una persona." },
+    { "id": "v5", "texto": "Una persona que nos explicó cada papel, sin apuro, y nos acompañó hasta el último paso." },
+    { "id": "v6", "texto": "Vinieron a ver la casa familias que se enamoraron de ella, no de un número." },
+    { "id": "v7", "texto": "El día de la escritura, firmamos tranquilos. Y esa plata, que iba a ser una comisión, fue la entrada de nuestra casa nueva." },
+    { "id": "v8", "texto": "Vendé por tu cuenta, pero no solo. Espacio Inmobiliario." }
+  ]
+}
