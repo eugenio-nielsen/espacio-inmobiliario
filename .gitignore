@@ -44,3 +44,8 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# explainer: credenciales de prueba, capturas y audios generados
+promo/explainer/.demo.json
+promo/explainer/capturas/
+promo/explainer/vo/

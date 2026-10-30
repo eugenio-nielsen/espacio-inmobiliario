@@ -1,0 +1,14 @@
+{
+  "voz": "9oPKasc15pfAbMr7N6Gs",
+  "escenas": [
+    { "id": "gancho",      "texto": "Comprar o vender una propiedad no debería ser un laberinto. En Espacio Inmobiliario, dueños y compradores se conectan directo, sin comisión." },
+    { "id": "registro",    "texto": "Empezá creando tu cuenta gratis: con tu nombre, tu mail y una contraseña, en menos de un minuto." },
+    { "id": "publicar",    "texto": "Para publicar, cargás las fotos y los datos, y marcás la ubicación en el mapa. Una inteligencia artificial te ayuda a escribir la descripción." },
+    { "id": "propiedades", "texto": "Si estás buscando, filtrás por barrio, tipo de propiedad y precio. Cada ficha muestra los sellos de verificación del dueño y de la escritura." },
+    { "id": "tasador",     "texto": "¿No sabés cuánto vale? El tasador te da una estimación con datos reales del mercado, en segundos." },
+    { "id": "panel",       "texto": "Desde tu panel seguís las consultas, agendás visitas, y pausás o actualizás tu publicación cuando quieras." },
+    { "id": "perfil",      "texto": "En tu perfil validás tu identidad, y ganás la confianza de los compradores." },
+    { "id": "herramientas","texto": "Y además tenés la calculadora del Registro, el blog con guías para comprar y vender, y el foro para preguntar y debatir con otros." },
+    { "id": "cierre",      "texto": "Espacio Inmobiliario. Publicá gratis, y vendé con información." }
+  ]
+}
