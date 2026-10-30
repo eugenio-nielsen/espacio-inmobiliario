@@ -78,7 +78,8 @@ function seoDeFicha(d: Property) {
   const zona = d.barrio || d.ciudad;
   const precio = `${d.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(d.precio)}`;
   const amb = d.tipo !== "cochera" && d.ambientes ? ` ${d.ambientes} amb.` : "";
-  const title = `${tipo}${amb} en venta en ${zona} · ${precio}`;
+  const enOperacion = d.operacion === "alquiler" ? "en alquiler" : "en venta";
+  const title = `${tipo}${amb} ${enOperacion} en ${zona} · ${precio}`;
   const datos = [
     d.superficie_total ? `${d.superficie_total} m²` : null,
     d.tipo !== "cochera" && d.dormitorios ? `${d.dormitorios} dorm.` : null,
@@ -134,13 +135,14 @@ export default async function PropiedadPage({ params }: PageProps) {
   // Una cochera no tiene ambientes, dormitorios ni baños, ni "incluye
   // cochera": esos datos no se muestran aunque hayan quedado cargados.
   const esCochera = p.tipo === "cochera";
+  const esAlquiler = p.operacion === "alquiler";
   // Los parámetros de costos son los mismos de la calculadora de la Cátedra
   const costosConfig = await getCostosConfig();
 
   const fmtNum = (n: number) => new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n));
   const precio = `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(p.precio)}`;
   const precioPorM2 = p.superficie_total && p.superficie_total > 0 ? p.precio / p.superficie_total : null;
-  const usaRefBarrio = !!(precioPorM2 && p.moneda === "USD" && p.tipo === "departamento" && p.barrio);
+  const usaRefBarrio = !!(!esAlquiler && precioPorM2 && p.moneda === "USD" && p.tipo === "departamento" && p.barrio);
 
   // Agenda de visitas: las franjas se calculan en el servidor para que el
   // horario no dependa de la zona horaria de quien mira la página.
@@ -161,12 +163,12 @@ export default async function PropiedadPage({ params }: PageProps) {
     p.barrio
       ? supabase
           .from("properties").select(PROPERTY_CARD_COLS)
-          .eq("status", "activa").neq("id", p.id).eq("barrio", p.barrio)
+          .eq("status", "activa").eq("operacion", p.operacion).neq("id", p.id).eq("barrio", p.barrio)
           .order("created_at", { ascending: false }).limit(3)
       : Promise.resolve({ data: [] }),
     supabase
       .from("properties").select(PROPERTY_CARD_COLS)
-      .eq("status", "activa").neq("id", p.id).eq("tipo", p.tipo)
+      .eq("status", "activa").eq("operacion", p.operacion).neq("id", p.id).eq("tipo", p.tipo)
       .order("created_at", { ascending: false }).limit(3),
     usaRefBarrio ? getPreciosBarrios() : Promise.resolve({} as Record<string, number>),
     // Las visitas no son públicas (RLS): se leen con el admin client y solo
@@ -222,7 +224,7 @@ export default async function PropiedadPage({ params }: PageProps) {
     datePosted: p.created_at,
     dateModified: p.updated_at,
     image: p.fotos,
-    offers: { "@type": "Offer", price: p.precio, priceCurrency: p.moneda, availability: "https://schema.org/InStock", url: urlFicha },
+    offers: { "@type": "Offer", businessFunction: esAlquiler ? "http://purl.org/goodrelations/v1#LeaseOut" : "http://purl.org/goodrelations/v1#Sell", price: p.precio, priceCurrency: p.moneda, availability: "https://schema.org/InStock", url: urlFicha },
     address: { "@type": "PostalAddress", streetAddress: p.direccion || "", addressLocality: p.barrio || p.ciudad, addressRegion: p.provincia, addressCountry: "AR" },
     ...(geoResult && { geo: { "@type": "GeoCoordinates", latitude: geoResult.lat, longitude: geoResult.lng } }),
     ...(p.superficie_total && { floorSize: { "@type": "QuantitativeValue", value: p.superficie_total, unitCode: "MTK" } }),
@@ -236,10 +238,10 @@ export default async function PropiedadPage({ params }: PageProps) {
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Inicio", item: SITE },
       { "@type": "ListItem", position: 2, name: "Propiedades", item: `${SITE}/propiedades` },
-      ...(getBarrioPage(slugifyUbicacion(p.barrio || p.ciudad))
+      ...(!esAlquiler && getBarrioPage(slugifyUbicacion(p.barrio || p.ciudad))
         ? [{ "@type": "ListItem", position: 3, name: p.barrio || p.ciudad, item: `${SITE}/propiedades/venta/${slugifyUbicacion(p.barrio || p.ciudad)}` }]
         : []),
-      { "@type": "ListItem", position: getBarrioPage(slugifyUbicacion(p.barrio || p.ciudad)) ? 4 : 3, name: p.titulo, item: urlFicha },
+      { "@type": "ListItem", position: !esAlquiler && getBarrioPage(slugifyUbicacion(p.barrio || p.ciudad)) ? 4 : 3, name: p.titulo, item: urlFicha },
     ],
   };
 
@@ -304,7 +306,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                 <span style={{ color: "var(--gold-500)", margin: "0 8px" }}>/</span>
                 <Link
                   href={
-                    getBarrioPage(slugifyUbicacion(p.barrio))
+                    !esAlquiler && getBarrioPage(slugifyUbicacion(p.barrio))
                       ? `/propiedades/venta/${slugifyUbicacion(p.barrio)}`
                       : `/propiedades?provincia=${encodeURIComponent(p.provincia)}`
                   }
@@ -342,7 +344,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                   padding: "6px 11px", borderRadius: 999,
                   background: "var(--navy-800)", color: "#fff",
                 }}>
-                  Venta
+                  {esAlquiler ? "Alquiler" : "Venta"}
                 </span>
               </div>
 
@@ -404,7 +406,7 @@ export default async function PropiedadPage({ params }: PageProps) {
               </div>
 
               {/* Costos estimados de compra */}
-              <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} config={costosConfig} />
+              {!esAlquiler && <CostosCompra precio={p.precio} moneda={p.moneda} provincia={p.provincia} aptoCredito={p.apto_credito} config={costosConfig} />}
 
               {/* Mapa */}
               {geoResult && (
@@ -452,7 +454,7 @@ export default async function PropiedadPage({ params }: PageProps) {
               }}>
                 {/* Price label */}
                 <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", marginBottom: 4 }}>
-                  Precio de venta
+                  {esAlquiler ? "Alquiler mensual" : "Precio de venta"}
                 </div>
 
                 {/* Price */}

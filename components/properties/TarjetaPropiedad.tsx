@@ -108,9 +108,10 @@ export default function TarjetaPropiedad({
           alt={p.titulo}
           priority={priority}
         />
-        {(p.apto_credito || nueva) && (
+        {(p.apto_credito || nueva || p.operacion === "alquiler") && (
           <div className="tp-insignias">
             {nueva && <span className="tp-insignia">Nueva</span>}
+            {p.operacion === "alquiler" && <span className="tp-insignia tp-insignia-oro">Alquiler</span>}
             {p.apto_credito && <span className="tp-insignia tp-insignia-oro">Apto crédito</span>}
           </div>
         )}
