@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, Fragment } from "react";
-import { Search, Mail, Phone, ChevronRight, ExternalLink, ArrowUpDown } from "lucide-react";
+import { Search, Mail, Phone, ChevronRight, ExternalLink, ArrowUpDown, Pencil } from "lucide-react";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import type { Property, Inquiry } from "@/lib/types";
 
@@ -176,6 +176,9 @@ export default function TablaUsuarios({ usuarios }: { usuarios: FilaUsuario[] })
                                 <span style={dato}>{p.status}</span>
                                 <span style={dato}>{fmt(p.views ?? 0)} vistas</span>
                                 <span style={dato}>{p.inquiries.length} consultas</span>
+                                <a href={`/panel/propiedades/${p.slug}/editar`} style={{ ...enlace, flexShrink: 0 }}>
+                                  <Pencil size={12} /> Editar
+                                </a>
                                 <a href={buildPropertyUrl(p)} target="_blank" rel="noopener noreferrer" style={{ ...enlace, flexShrink: 0 }}>
                                   <ExternalLink size={12} /> Ver
                                 </a>

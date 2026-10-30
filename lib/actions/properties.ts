@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { ADMIN_EMAIL } from "@/lib/foro/servidor";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import { geocodeProperty, type GeoResult } from "@/lib/utils/geocode";
@@ -214,7 +216,10 @@ export async function updateProperty(id: string, formData: FormData) {
     provincia: formData.get("provincia") as string,
   }).catch(() => null);
 
-  const { data, error } = await supabase
+  // El superadmin corrige publicaciones ajenas: usa el cliente de servicio y
+  // no filtra por dueño. Los demás, solo las suyas (además de la RLS).
+  const esAdmin = user.email === ADMIN_EMAIL;
+  let q = (esAdmin ? createAdminClient() : supabase)
     .from("properties")
     .update({
       titulo: formData.get("titulo"),
@@ -252,14 +257,14 @@ export async function updateProperty(id: string, formData: FormData) {
       lng: geo?.lng ?? null,
       geo_aproximada: geo?.aproximada ?? null,
     })
-    .eq("id", id)
-    .eq("owner_id", user.id)
-    .select("id, operacion, barrio, tipo, slug")
-    .single();
+    .eq("id", id);
+  if (!esAdmin) q = q.eq("owner_id", user.id);
+  const { data, error } = await q.select("id, operacion, barrio, tipo, slug").single();
 
   if (error) return { error: error.message };
 
   revalidatePath("/panel");
+  revalidatePath("/panel/admin");
   const publicPath = buildPropertyUrl(data);
   revalidatePath(publicPath);
   // Las fotos como quedaron guardadas: el formulario las toma para que las
@@ -273,16 +278,16 @@ export async function deleteProperty(id: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado" };
 
-  const { error } = await supabase
-    .from("properties")
-    .delete()
-    .eq("id", id)
-    .eq("owner_id", user.id);
+  const esAdmin = user.email === ADMIN_EMAIL;
+  let q = (esAdmin ? createAdminClient() : supabase).from("properties").delete().eq("id", id);
+  if (!esAdmin) q = q.eq("owner_id", user.id);
+  const { error } = await q;
 
   if (error) return { error: error.message };
 
   revalidatePath("/panel");
-  redirect("/panel");
+  revalidatePath("/panel/admin");
+  redirect(esAdmin ? "/panel/admin" : "/panel");
 }
 
 // Cambio rápido de estado (activa / pausada / vendida) desde el panel
@@ -292,11 +297,10 @@ export async function setPropertyStatus(id: string, status: "activa" | "pausada"
   if (!user) return { ok: false, error: "No autenticado" };
   if (!["activa", "pausada", "vendida"].includes(status)) return { ok: false, error: "Estado inválido" };
 
-  const { error } = await supabase
-    .from("properties")
-    .update({ status })
-    .eq("id", id)
-    .eq("owner_id", user.id);
+  const esAdmin = user.email === ADMIN_EMAIL;
+  let q = (esAdmin ? createAdminClient() : supabase).from("properties").update({ status }).eq("id", id);
+  if (!esAdmin) q = q.eq("owner_id", user.id);
+  const { error } = await q;
 
   if (error) return { ok: false, error: error.message };
 

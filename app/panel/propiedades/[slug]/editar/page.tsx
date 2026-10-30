@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { ADMIN_EMAIL } from "@/lib/foro/servidor";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import PropertyForm from "@/components/panel/PropertyForm";
@@ -31,12 +33,12 @@ export default async function EditarPage({
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const { data: property } = await supabase
-    .from("properties")
-    .select("*")
-    .eq("slug", slug)
-    .eq("owner_id", user.id)
-    .single();
+  // El superadmin puede abrir cualquier publicación para corregirla
+  const esAdmin = user.email === ADMIN_EMAIL;
+  let consulta = (esAdmin ? createAdminClient() : supabase)
+    .from("properties").select("*").eq("slug", slug);
+  if (!esAdmin) consulta = consulta.eq("owner_id", user.id);
+  const { data: property } = await consulta.single();
 
   if (!property) notFound();
 
@@ -45,7 +47,7 @@ export default async function EditarPage({
   let cantidad = 0;
   if (creada) {
     const { count } = await supabase
-      .from("properties").select("id", { count: "exact", head: true }).eq("owner_id", user.id);
+      .from("properties").select("id", { count: "exact", head: true }).eq("owner_id", property.owner_id);
     cantidad = count ?? 0;
   }
 
@@ -64,10 +66,15 @@ export default async function EditarPage({
         />
       )}
       <div className="mb-6">
-        <Link href="/panel" className="text-sm text-gray-500 hover:text-blue-700">
+        <Link href={esAdmin && property.owner_id !== user.id ? "/panel/admin" : "/panel"} className="text-sm text-gray-500 hover:text-blue-700">
           ← Volver al panel
         </Link>
         <h1 className="text-2xl font-bold text-gray-800 mt-2">Editar propiedad</h1>
+        {esAdmin && property.owner_id !== user.id && (
+          <div className="mt-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-lg px-4 py-3 text-sm">
+            Estás editando como superadmin una publicación de otro usuario.
+          </div>
+        )}
         {creada && (
           <div className="mt-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
             ✅ Propiedad publicada exitosamente. Podés seguir editando los datos o{" "}
