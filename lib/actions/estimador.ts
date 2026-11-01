@@ -1,5 +1,6 @@
 "use server";
 
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEstimacionLead } from "@/lib/email";
@@ -7,7 +8,6 @@ import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import type { EstimadorConfig } from "@/lib/estimador/types";
 import { ubicarDireccion } from "@/lib/estimador/ubicar";
 
-const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 async function assertAdmin() {
   const supabase = await createClient();

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { InquiryStatus } from "@/lib/types";
 import { sendInquiryToOwner, sendInquiryConfirmation } from "@/lib/email";
+import { contactoBloqueado } from "@/lib/auditoria";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 
 export async function sendInquiry(propertyId: string, formData: FormData) {
@@ -23,6 +24,9 @@ export async function sendInquiry(propertyId: string, formData: FormData) {
   const mensaje  = (formData.get("mensaje")  as string)?.trim();
 
   if (!nombre || !email || !mensaje) return { error: "Completá todos los campos obligatorios." };
+
+  // Contactos bloqueados por el admin: simular éxito sin guardar ni mandar mails
+  if (await contactoBloqueado(email, telefono)) return { ok: true };
 
   const { error } = await supabase.from("inquiries").insert({
     property_id: propertyId,

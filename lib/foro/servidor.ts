@@ -11,7 +11,8 @@ import type { MiembroPrivado, Rol } from "@/lib/foro/types";
  * reciben ids que el llamador ya validó.
  */
 
-export const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
+import { ADMIN_EMAIL } from "@/lib/admin";
+export { ADMIN_EMAIL };
 import { SITE } from "@/lib/site";
 export { SITE };
 export const BUCKET = "foro-imagenes";

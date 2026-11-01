@@ -2,8 +2,16 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, Mail, Phone, Search, Trash2 } from "lucide-react";
-import { borrarConsultaAdmin, borrarContactoLead } from "@/lib/actions/inquiries-admin";
+import { Ban, ChevronRight, Mail, Phone, Search, Trash2 } from "lucide-react";
+import { borrarConsultaAdmin, borrarContactoLead, desbloquearContacto } from "@/lib/actions/inquiries-admin";
+
+export interface BloqueadoRow {
+  id: string;
+  created_at: string;
+  email: string | null;
+  telefono: string | null;
+  nombre: string | null;
+}
 
 export interface ConsultaRow {
   id: string;
@@ -44,7 +52,7 @@ const chip: React.CSSProperties = {
  * a cada propietario y para sacar de una vez a un lead falso: borrar un
  * contacto elimina sus consultas en todas las publicaciones.
  */
-export default function ConsultasAdmin({ consultas }: { consultas: ConsultaRow[] }) {
+export default function ConsultasAdmin({ consultas, bloqueados }: { consultas: ConsultaRow[]; bloqueados: BloqueadoRow[] }) {
   const router = useRouter();
   const [pendiente, startTransition] = useTransition();
   const [busqueda, setBusqueda] = useState("");
@@ -52,6 +60,7 @@ export default function ConsultasAdmin({ consultas }: { consultas: ConsultaRow[]
   const [borradas, setBorradas] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [desbloqueados, setDesbloqueados] = useState<Set<string>>(new Set());
 
   const vivas = useMemo(() => consultas.filter(c => !borradas.has(c.id)), [consultas, borradas]);
 
@@ -89,21 +98,36 @@ export default function ConsultasAdmin({ consultas }: { consultas: ConsultaRow[]
     setBorradas(prev => new Set([...prev, ...ids]));
   }
 
-  function borrarContacto(x: Contacto) {
+  function borrarContacto(x: Contacto, bloquear: boolean) {
     const ok = window.confirm(
       `¿Borrar a ${x.nombre} (${x.email}${x.telefono ? ` · ${x.telefono}` : ""})?\n\n` +
-      `Se eliminan sus ${x.consultas.length} consultas en ${x.publicaciones} publicaciones. No se puede deshacer.`
+      `Se eliminan sus ${x.consultas.length} consultas en ${x.publicaciones} publicaciones. No se puede deshacer.` +
+      (bloquear ? "\n\nAdemás se bloquea: si vuelve a consultar, el mensaje se descarta." : "")
     );
     if (!ok) return;
     setError(null);
     startTransition(async () => {
-      const r = await borrarContactoLead(x.email, x.telefono);
+      const r = await borrarContactoLead(x.email, x.telefono, { bloquear, nombre: x.nombre });
       if (!r.ok) { setError(r.error); return; }
       quitar(x.consultas.map(c => c.id));
-      setAviso(`Se borraron ${r.borradas} consultas de ${x.nombre}.`);
+      setAviso(`Se borraron ${r.borradas} consultas de ${x.nombre}${bloquear ? " y quedó bloqueado" : ""}.`);
       router.refresh();
     });
   }
+
+  function desbloquear(b: BloqueadoRow) {
+    if (!window.confirm(`¿Desbloquear a ${b.nombre || b.email || b.telefono}?`)) return;
+    setError(null);
+    startTransition(async () => {
+      const r = await desbloquearContacto(b.id);
+      if (!r.ok) { setError(r.error); return; }
+      setDesbloqueados(prev => new Set([...prev, b.id]));
+      setAviso("Contacto desbloqueado.");
+      router.refresh();
+    });
+  }
+
+  const bloqueadosVivos = bloqueados.filter(b => !desbloqueados.has(b.id));
 
   function borrarUna(c: ConsultaRow) {
     if (!window.confirm(`¿Borrar la consulta de ${c.nombre} en "${c.propiedad}"?`)) return;
@@ -165,10 +189,18 @@ export default function ConsultasAdmin({ consultas }: { consultas: ConsultaRow[]
                 <button
                   type="button"
                   disabled={pendiente}
-                  onClick={e => { e.stopPropagation(); borrarContacto(x); }}
+                  onClick={e => { e.stopPropagation(); borrarContacto(x, false); }}
                   style={{ ...chip, cursor: "pointer", color: "var(--danger)", borderColor: "var(--danger-line)", opacity: pendiente ? .5 : 1 }}
                 >
                   <Trash2 size={12} /> Borrar contacto
+                </button>
+                <button
+                  type="button"
+                  disabled={pendiente}
+                  onClick={e => { e.stopPropagation(); borrarContacto(x, true); }}
+                  style={{ ...chip, cursor: "pointer", color: "#fff", background: "var(--danger)", borderColor: "var(--danger)", opacity: pendiente ? .5 : 1 }}
+                >
+                  <Ban size={12} /> Borrar y bloquear
                 </button>
               </div>
 
@@ -208,6 +240,28 @@ export default function ConsultasAdmin({ consultas }: { consultas: ConsultaRow[]
           <p style={{ ...meta, textAlign: "center", padding: 28, margin: 0 }}>Sin consultas.</p>
         )}
       </div>
+
+      <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 17, color: "var(--navy-800)", margin: "26px 0 4px" }}>
+        Contactos bloqueados ({bloqueadosVivos.length})
+      </h3>
+      <p style={{ ...meta, margin: "0 0 10px" }}>Si escriben de nuevo, la consulta se descarta sin avisarles ni notificar al propietario.</p>
+      {bloqueadosVivos.length === 0 ? (
+        <p style={{ ...meta, fontStyle: "italic" }}>No hay contactos bloqueados.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {bloqueadosVivos.map(b => (
+            <div key={b.id} style={{ ...caja, padding: "9px 14px", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+              <strong style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-900)" }}>{b.nombre || "Sin nombre"}</strong>
+              {b.email && <span style={chip}><Mail size={12} /> {b.email}</span>}
+              {b.telefono && <span style={chip}><Phone size={12} /> {b.telefono}</span>}
+              <span style={meta}>{fmt(b.created_at)}</span>
+              <button type="button" disabled={pendiente} onClick={() => desbloquear(b)} style={{ ...chip, marginLeft: "auto", cursor: "pointer" }}>
+                Desbloquear
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,11 +1,11 @@
 "use server";
 
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { generarDescripcion, type CamposDescripcion } from "@/lib/ai/descripcion";
 
-const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 const LIMITE_POR_PROPIEDAD = 2;
 
 type Resultado =

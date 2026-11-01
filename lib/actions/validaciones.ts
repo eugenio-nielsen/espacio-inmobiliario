@@ -1,5 +1,7 @@
 "use server";
 
+import { ADMIN_EMAIL } from "@/lib/admin";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -7,7 +9,6 @@ import { sendValidacionPendiente, sendValidacionResuelta } from "@/lib/email";
 import type { EstadoValidacion, TipoDocumento } from "@/lib/types";
 
 const BUCKET = "documentos";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "eugenio@espacioinmobiliario.com.ar";
 
 /** 8 MB por archivo: una foto de documento no necesita más. */
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -209,6 +210,8 @@ export async function resolverValidacion(
   if (decision === "rechazada" && !motivo?.trim()) {
     return { error: "Poné el motivo del rechazo: la persona lo va a recibir por mail." };
   }
+
+  await registrarAuditoria(ADMIN_EMAIL, `validacion.${decision}`, id, { tipo, motivo: motivo?.trim() || null });
 
   // El trigger de la base solo deja cambiar el estado al service role
   const admin = createAdminClient();

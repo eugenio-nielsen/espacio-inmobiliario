@@ -1,3 +1,4 @@
+import { ADMIN_EMAIL } from "@/lib/admin";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -5,7 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Property, Inquiry } from "@/lib/types";
 import SuperadminDashboard, { type OwnerData, type EstimacionRow } from "@/components/panel/SuperadminDashboard";
-import type { ConsultaRow } from "@/components/panel/ConsultasAdmin";
+import type { ConsultaRow, BloqueadoRow } from "@/components/panel/ConsultasAdmin";
+import type { AuditoriaRow } from "@/components/panel/AuditoriaAdmin";
 import type { Pendiente } from "@/components/panel/ValidacionesAdmin";
 import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
 import type { Post } from "@/lib/blog/types";
@@ -17,7 +19,6 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 type Props = { searchParams: Promise<{ tab?: string }> };
 
@@ -129,6 +130,14 @@ export default async function SuperadminPage({ searchParams }: Props) {
     };
   });
 
+  // Tablas nuevas (migración add_admin_auditoria_bloqueos.sql): si faltan, quedan vacías
+  const [{ data: bloqData }, { data: audData }] = await Promise.all([
+    admin.from("contactos_bloqueados").select("*").order("created_at", { ascending: false }),
+    admin.from("admin_auditoria").select("*").order("created_at", { ascending: false }).limit(200),
+  ]);
+  const bloqueados = (bloqData || []) as BloqueadoRow[];
+  const auditoria = (audData || []) as AuditoriaRow[];
+
   const totals = {
     usuarios: owners.length,
     propiedades: props.length,
@@ -144,13 +153,15 @@ export default async function SuperadminPage({ searchParams }: Props) {
           Superadmin
         </h1>
         <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: "var(--ink-500)", margin: 0 }}>
-          Vista de solo lectura de todos los usuarios, sus propiedades y consultas.
+          Usuarios, propiedades, consultas, validaciones y moderación de toda la plataforma.
         </p>
       </div>
 
       <SuperadminDashboard
         owners={owners}
         consultas={consultas}
+        bloqueados={bloqueados}
+        auditoria={auditoria}
         totals={totals}
         estimaciones={(estimaciones || []) as EstimacionRow[]}
         precios={preciosArray}

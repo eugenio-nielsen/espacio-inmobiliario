@@ -3,12 +3,13 @@
 import { useState, useMemo } from "react";
 import TablaUsuarios from "@/components/panel/TablaUsuarios";
 import ValidacionesAdmin, { type Pendiente } from "@/components/panel/ValidacionesAdmin";
-import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, Phone, Mail, Calculator, Sliders, FileText, ShieldCheck, MessagesSquare, GraduationCap } from "lucide-react";
+import { ChevronDown, ChevronUp, Users, Building2, MessageSquare, Eye, Search, Phone, Mail, Calculator, Sliders, FileText, ShieldCheck, MessagesSquare, GraduationCap, ClipboardList } from "lucide-react";
 import type { Property, Inquiry } from "@/lib/types";
 import EstimadorAdmin from "@/components/panel/EstimadorAdmin";
 import BlogAdmin from "@/components/panel/BlogAdmin";
 import ForoAdmin from "@/components/panel/ForoAdmin";
-import ConsultasAdmin, { type ConsultaRow } from "@/components/panel/ConsultasAdmin";
+import AuditoriaAdmin, { type AuditoriaRow } from "@/components/panel/AuditoriaAdmin";
+import ConsultasAdmin, { type ConsultaRow, type BloqueadoRow } from "@/components/panel/ConsultasAdmin";
 import CatedraAdmin from "@/components/panel/CatedraAdmin";
 import type { CostosConfig } from "@/lib/catedra/costos";
 import type { ProfesionalAdmin } from "@/lib/catedra/rubros";
@@ -52,12 +53,14 @@ const INQ_STATUS: Record<string, { label: string; bg: string; color: string }> =
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 const fmtPrecio = (p: number, m: string) => `${m === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p))}`;
 
-type HubTab = "usuarios" | "consultas" | "validaciones" | "estimaciones" | "config" | "blog" | "foro" | "catedra";
-const TABS: HubTab[] = ["usuarios", "consultas", "validaciones", "estimaciones", "config", "blog", "foro", "catedra"];
+type HubTab = "usuarios" | "consultas" | "auditoria" | "validaciones" | "estimaciones" | "config" | "blog" | "foro" | "catedra";
+const TABS: HubTab[] = ["usuarios", "consultas", "auditoria", "validaciones", "estimaciones", "config", "blog", "foro", "catedra"];
 
-export default function SuperadminDashboard({ owners, consultas, totals, estimaciones, precios, config, posts, validaciones, foro, catedra, tabInicial }: {
+export default function SuperadminDashboard({ owners, consultas, bloqueados, auditoria, totals, estimaciones, precios, config, posts, validaciones, foro, catedra, tabInicial }: {
   owners: OwnerData[];
   consultas: ConsultaRow[];
+  bloqueados: BloqueadoRow[];
+  auditoria: AuditoriaRow[];
   totals: { usuarios: number; propiedades: number; consultas: number; vistas: number };
   estimaciones: EstimacionRow[];
   precios: { barrio: string; precio: number }[];
@@ -77,6 +80,7 @@ export default function SuperadminDashboard({ owners, consultas, totals, estimac
   const tabs: [HubTab, string, typeof Users][] = [
     ["usuarios", `Usuarios (${owners.length})`, Users],
     ["consultas", `Consultas (${consultas.length})`, MessageSquare],
+    ["auditoria", "Auditoría", ClipboardList],
     ["validaciones", `Validaciones${validacionesEnEspera ? ` (${validacionesEnEspera})` : ""}`, ShieldCheck],
     ["estimaciones", `Estimaciones (${estimaciones.length})`, Calculator],
     ["config", "Config Estimador", Sliders],
@@ -104,7 +108,8 @@ export default function SuperadminDashboard({ owners, consultas, totals, estimac
       </div>
 
       {tab === "usuarios" && <UsuariosTab owners={owners} totals={totals} />}
-      {tab === "consultas" && <ConsultasAdmin consultas={consultas} />}
+      {tab === "consultas" && <ConsultasAdmin consultas={consultas} bloqueados={bloqueados} />}
+      {tab === "auditoria" && <AuditoriaAdmin filas={auditoria} />}
       {tab === "validaciones" && <ValidacionesAdmin pendientes={validaciones} />}
       {tab === "estimaciones" && <EstimadorTab estimaciones={estimaciones} />}
       {tab === "config" && <EstimadorAdmin initialPrecios={precios} initialConfig={config} />}

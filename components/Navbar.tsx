@@ -1,3 +1,4 @@
+import { ADMIN_EMAIL } from "@/lib/admin";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { getCurrentUser, getCurrentProfile } from "@/lib/auth/user";
@@ -7,7 +8,6 @@ import NavLink from "@/components/NavLink";
 import MenuCuenta from "@/components/MenuCuenta";
 import "./nav.css";
 
-const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 /**
  * La barra del sitio. Estilos en nav.css (prefijo .nv-).

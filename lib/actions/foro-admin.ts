@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ADMIN_EMAIL, SITE, borrarFotos, usuarioActual } from "@/lib/foro/servidor";
+import { registrarAuditoria } from "@/lib/auditoria";
 import { sendForoAviso } from "@/lib/email";
 import { crearToken } from "@/lib/foro/firma";
 import type { Resultado } from "@/lib/foro/types";
@@ -48,6 +49,7 @@ export async function moderarContenido(tipo: Tipo, id: string, accion: "ocultar"
   await admin.from("foro_reportes").update({ estado: "resuelto" })
     .eq("tipo", tipo).eq("objetivo_id", id).eq("estado", "abierto");
 
+  await registrarAuditoria(ADMIN_EMAIL, `foro.${accion}`, id, { tipo });
   refrescar();
   return { ok: true };
 }
@@ -72,6 +74,7 @@ export async function suspenderMiembro(id: string, suspendido: boolean): Promise
   if (!(await esAdmin())) return noAutorizado;
   const { error } = await createAdminClient().from("foro_miembros").update({ suspendido }).eq("id", id);
   if (error) return { ok: false, error: error.message };
+  await registrarAuditoria(ADMIN_EMAIL, suspendido ? "foro.suspender" : "foro.reactivar", id);
   refrescar();
   return { ok: true };
 }

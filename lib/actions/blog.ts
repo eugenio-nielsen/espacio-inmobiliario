@@ -1,12 +1,12 @@
 "use server";
 
+import { ADMIN_EMAIL } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { slugifyTitulo } from "@/lib/blog/markdown";
 import type { Post, PostStatus } from "@/lib/blog/types";
 
-const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 async function assertAdmin() {
   const supabase = await createClient();
