@@ -34,7 +34,7 @@ const PASOS = [
 ] as const;
 
 const INCLUYE: ItemIndice[] = [
-  { icon: Tag, t: "Publicación gratuita", d: "Publicar no tiene costo, y si vendés por tu cuenta, no hay comisión." },
+  { icon: Tag, t: "Sin comisión", d: "No somos intermediarios: si vendés por tu cuenta, el trato es directo con el comprador." },
   { icon: MessageCircle, t: "Contacto directo", d: "Los interesados te escriben a tu WhatsApp desde la ficha, sin intermediarios." },
   { icon: CalendarDays, t: "Agenda de visitas", d: "Elegís tus horarios, los interesados piden turno online y vos confirmás." },
   { icon: Sparkles, t: "Descripción asistida", d: "Te ayudamos a escribir la descripción a partir de los datos que cargás." },
@@ -46,8 +46,8 @@ const INCLUYE: ItemIndice[] = [
 
 const PREGUNTAS = [
   {
-    q: "¿Cuánto cuesta publicar?",
-    a: "Nada. Publicar es gratis, y si vendés a un comprador que llegó por el portal, no pagás comisión.",
+    q: "¿Hay comisión al vender?",
+    a: "No. No somos intermediarios: el trato es entre vos y el comprador, y nosotros te acompañamos.",
   },
   {
     q: "¿Qué propiedades puedo publicar?",
@@ -67,7 +67,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Y si prefiero no ocuparme de la venta?",
-    a: "Podés delegarla: te acompañamos en toda la operación por un valor fijo, no un porcentaje del precio.",
+    a: "Te acompañamos en toda la operación, de la tasación a la escritura. Sin comisión: no somos intermediarios.",
   },
 ] as const;
 
@@ -109,15 +109,15 @@ export default async function PublicarPage() {
             <p className="pr-eyebrow">Para propietarios</p>
             <h1 id="pr-titulo" className="pr-t">
               <span className="pr-corte"><span>Publicá tu propiedad.</span></span>{" "}
-              <span className="pr-corte"><em>Gratis y sin comisión.</em></span>
+              <span className="pr-corte"><em>Sin comisión.</em></span>
             </h1>
             <p className="pr-lead">
               Los interesados te escriben directo a tu WhatsApp, sin intermediarios.
               Y cada publicación la revisa Eugenio Nielsen antes de salir al portal.
             </p>
             <ul className="pr-promesas">
-              <li>Sin costo de publicación</li>
               <li>Sin comisión</li>
+              <li>Sin intermediarios</li>
               <li>Contacto directo por WhatsApp</li>
               <li>Agenda de visitas online</li>
             </ul>
@@ -173,12 +173,12 @@ export default async function PublicarPage() {
         <div className="pr-in pr-delegar-in">
           <div>
             <p className="pr-cab-k">¿Preferís no ocuparte?</p>
-            <h2 className="pr-delegar-t">Delegá la venta, <em>con precio fijo</em></h2>
+            <h2 className="pr-delegar-t">Te acompañamos, <em>sin comisión</em></h2>
           </div>
           <div>
             <p className="pr-delegar-d">
               Si no querés atender consultas ni visitas, te acompañamos en toda la
-              operación, del valor a la escritura, por un valor fijo y no un porcentaje del precio.
+              operación, del valor a la escritura. No somos intermediarios, así que no hay comisión.
             </p>
             <Link href="/vender" className="pr-enlace">
               Cómo funciona la venta acompañada

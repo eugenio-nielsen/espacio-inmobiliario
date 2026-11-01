@@ -1,3 +1,4 @@
+import { ADMIN_EMAIL } from "@/lib/admin";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -29,7 +30,6 @@ import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
 
-const ADMIN_EMAIL = "eugenio@espacioinmobiliario.com.ar";
 
 /**
  * La nota publicada. Si no está publicada, el borrador para el admin (y
@@ -87,7 +87,7 @@ function llamadoPara(categoria: string | null) {
     return { t: "¿Estás por", em: "comprar?", p: "Te acompañamos a decidir con información, antes de firmar.", href: "/comprar", cta: "Comprar con respaldo" };
   }
   if (categoria === "Guía para vender" || categoria === "Consejos para propietarios") {
-    return { t: "¿Querés", em: "vender tu propiedad?", p: "Publicá gratis o delegá la venta completa a precio fijo.", href: "/vender", cta: "Cómo vender" };
+    return { t: "¿Querés", em: "vender tu propiedad?", p: "Publicá tu propiedad y te acompañamos en la venta, sin comisión.", href: "/vender", cta: "Cómo vender" };
   }
   return { t: "¿Y en tu", em: "caso?", p: "Contanos tu operación y lo vemos juntos, sin compromiso.", href: "/contacto", cta: "Hacer una consulta" };
 }

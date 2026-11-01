@@ -6,7 +6,6 @@ import FadeIn from "@/components/ui/FadeIn";
 import Indice, { type ItemIndice } from "@/components/ui/Indice";
 import Motas from "@/components/como-funciona/Motas";
 import Escalera from "@/components/vender/Escalera";
-import ComparadorComision from "@/components/precios/ComparadorComision";
 import AsesoriaContacto from "@/components/precios/AsesoriaContacto";
 import {
   BadgeCheck, ShieldCheck, MessageSquare, CalendarClock,
@@ -16,14 +15,14 @@ import {
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Vender tu propiedad · Tasación gratis y precio fijo",
+  title: "Vender tu propiedad · Tasación gratis y sin comisión",
   description:
-    "Conocé cuánto vale tu propiedad y elegí cómo venderla: publicá gratis y gestionala vos, o delegá la venta con precio fijo en lugar de una comisión.",
+    "Conocé cuánto vale tu propiedad y elegí cómo venderla: publicá y gestionala vos, o sumá nuestro acompañamiento. Sin comisión: no somos intermediarios.",
   alternates: { canonical: `${SITE}/vender` },
   openGraph: {
     title: "Vender tu propiedad · Espacio Inmobiliario",
     description:
-      "Tasá tu propiedad gratis y elegí cómo vender: por tu cuenta, o con acompañamiento profesional a precio fijo.",
+      "Tasá tu propiedad gratis y elegí cómo vender: por tu cuenta, o con nuestro acompañamiento. Sin comisión.",
     type: "website",
   },
 };
@@ -35,7 +34,7 @@ const INCLUYE: ItemIndice[] = [
   { icon: CalendarClock, t: "Coordinación de visitas", d: "Organizamos y acompañamos las visitas a tu propiedad, sin que tengas que estar pendiente." },
   { icon: Users, t: "Red de profesionales de confianza", d: "Escribanos, fotógrafos y reparadores que conocemos y recomendamos, cuando los necesites." },
   { icon: ShieldCheck, t: "Respaldo legal y documental", d: "Te acompañamos con la documentación, los certificados y el cierre seguro de la operación." },
-  { icon: Scale, t: "Precio fijo, no un porcentaje", d: "Cobramos un valor fijo por la venta. No un porcentaje del valor de tu propiedad como el resto del mercado." },
+  { icon: Scale, t: "Sin comisión", d: "No somos intermediarios: el trato es entre vos y el comprador, y nosotros te acompañamos en el camino." },
 ];
 
 export default function VenderPage() {
@@ -100,33 +99,12 @@ export default function VenderPage() {
               </span>
               <h2>Dos formas de vender. <span className="hm-i">La misma persona detrás.</span></h2>
               <p>
-                Publicar siempre es gratis. Si preferís delegar la operación,
-                sumás el acompañamiento completo con un precio fijo.
+                Sin comisión en ningún caso: no somos intermediarios. Si querés,
+                sumás nuestro acompañamiento de principio a fin.
               </p>
             </div>
           </FadeIn>
           <Escalera />
-        </div>
-      </section>
-
-      {/* ══ El comparador · la demostración ═══════════════════ */}
-      <section className="hm-sect" id="precio">
-        <div style={{ maxWidth: "var(--container)", margin: "0 auto" }}>
-          <FadeIn direction="up">
-            <div className="hm-concepto" style={{ marginBottom: "clamp(24px,3.5vw,36px)" }}>
-              <span className="es-eyebrow" style={{ display: "block", marginBottom: 10 }}>
-                Precio fijo
-              </span>
-              <h2>Lo que pagás no depende de <span className="hm-i">cuánto valga</span></h2>
-              <p>
-                Una inmobiliaria tradicional cobra un porcentaje: cuanto más vale
-                tu propiedad, más pagás. Movés el valor y mirá la diferencia.
-              </p>
-            </div>
-          </FadeIn>
-          <FadeIn direction="up" delay={110}>
-            <ComparadorComision />
-          </FadeIn>
         </div>
       </section>
 
@@ -166,8 +144,8 @@ export default function VenderPage() {
               </span>
               <h2>Contanos sobre tu propiedad</h2>
               <p>
-                Te contamos cuánto puede valer, cómo la venderíamos y qué costaría
-                delegarla. Sin compromiso.
+                Te contamos cuánto puede valer y cómo podemos acompañarte
+                en la venta. Sin compromiso.
               </p>
             </div>
           </FadeIn>

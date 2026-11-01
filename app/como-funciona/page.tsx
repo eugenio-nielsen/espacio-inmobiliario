@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Cómo funciona · Espacio Inmobiliario",
     description:
-      "Publicar siempre gratis, sin comisiones. Y si querés acompañamiento para vender, precio fijo, no un porcentaje.",
+      "Sin comisiones: no somos intermediarios. Acompañamos a dueños y compradores en cada operación.",
     type: "website",
   },
 };
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 const CINTA = [
   "Sin comisiones",
   "Trato directo con el dueño",
-  "Publicar es gratis, siempre",
-  "Precio fijo, no un porcentaje",
+  "Sin intermediarios",
+  "Acompañamiento en cada paso",
   "Cada publicación, revisada",
 ];
 
@@ -98,8 +98,8 @@ export default function ComoFuncionaPage() {
             }}>
               <div className="cf-sweep is-in" style={{ marginBottom: 26 }} />
               <p className="cf-lead" style={{ color: "rgba(255,255,255,.66)", margin: 0 }}>
-                Espacio Inmobiliario conecta a dueños con compradores de manera directa
-                y gratuita. Detrás no hay un algoritmo: hay una persona,{" "}
+                Espacio Inmobiliario conecta a dueños con compradores de manera directa,
+                sin comisiones. Detrás no hay un algoritmo: hay una persona,{" "}
                 <strong style={{ color: "var(--gold-300)", fontWeight: 500 }}>Eugenio Nielsen</strong>,
                 que revisa cada publicación y acompaña cada operación.
               </p>
@@ -163,7 +163,7 @@ export default function ComoFuncionaPage() {
       </section>
 
       {/* ══ Puntero a /vender ══════════════════════════════════
-          Acá vivían el comparador de precio fijo y los seis puntos del
+          Acá vivían el comparador de comisión y los seis puntos del
           acompañamiento. Se mudaron a /vender, su lugar natural: tener
           el mismo contenido en dos URLs las ponía a competir entre sí
           por la misma búsqueda. Queda el ancla #precios porque hubo
@@ -175,15 +175,15 @@ export default function ComoFuncionaPage() {
       >
         <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
           <Reveal>
-            <span className="cf-label cf-label-dark cf-label-center">Cuánto cuesta</span>
+            <span className="cf-label cf-label-dark cf-label-center">Sin intermediarios</span>
             <h2 className="cf-h2" style={{ color: "var(--navy-800)", margin: "24px 0 16px" }}>
-              Publicar es <span style={{ fontStyle: "italic", color: "var(--gold-700)" }}>gratis</span>.
-              Delegar la venta, precio fijo.
+              Te <span style={{ fontStyle: "italic", color: "var(--gold-700)" }}>acompañamos</span>,
+              sin cobrar comisión.
             </h2>
             <p className="cf-lead" style={{ color: "var(--ink-600)", margin: "0 auto 30px", maxWidth: "52ch" }}>
-              Publicar, recibir consultas y cerrar el trato no cuesta nada, nunca.
-              Y si preferís que nos ocupemos nosotros, cobramos un valor fijo
-              en vez de un porcentaje de tu propiedad.
+              No somos intermediarios: el trato lo cerrás directo con la otra
+              parte. Nosotros acompañamos a dueños y compradores en cada paso,
+              sin comisión.
             </p>
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
               <Link href="/vender" style={ctaGoldDark}>
@@ -328,7 +328,7 @@ export default function ComoFuncionaPage() {
           </Reveal>
           <Reveal delay={200}>
             <p className="cf-lead" style={{ color: "rgba(255,255,255,.6)", margin: "0 auto 38px", maxWidth: 470 }}>
-              Publicar tu propiedad es gratis, sin compromisos y lleva menos de 5 minutos.
+              Publicar tu propiedad es sin compromisos y lleva menos de 5 minutos.
               Y tenés a Eugenio disponible ante cualquier consulta.
             </p>
           </Reveal>

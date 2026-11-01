@@ -9,8 +9,8 @@ import { slugifyUbicacion } from "@/lib/ubicaciones";
  */
 export const PREGUNTAS_TASADOR: { q: string; a: string }[] = [
   {
-    q: "¿Cuánto cuesta tasar un departamento con esta herramienta?",
-    a: "Nada. La estimación online es gratuita y no te pide registrarte para ver el rango de valor. Si querés una revisión con una persona, Eugenio Nielsen la hace sin cargo.",
+    q: "¿Tengo que registrarme para tasar mi departamento?",
+    a: "No. La estimación online no te pide registrarte para ver el rango de valor. Si querés una revisión con una persona, Eugenio Nielsen te acompaña sin cargo.",
   },
   {
     q: "¿Qué tan precisa es la estimación?",

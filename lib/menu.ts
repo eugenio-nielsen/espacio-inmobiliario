@@ -44,7 +44,7 @@ export const DESPLEGABLES: Desplegable[] = [
         titulo: "Servicios",
         items: [
           { href: "/comprar", label: "Quiero comprar", detalle: "Decidí con respaldo antes de firmar", icon: Search },
-          { href: "/vender", label: "Quiero vender", detalle: "Publicá gratis o delegá la venta", icon: Tag },
+          { href: "/vender", label: "Quiero vender", detalle: "Publicá y vendé sin comisión", icon: Tag },
         ],
       },
       {

@@ -12,7 +12,7 @@ export const MOTIVOS = [
     /** Versión corta: en cuatro columnas el label entero se trunca. */
     boton: "Vender",
     titulo: "Contanos sobre tu propiedad",
-    bajada: "Te decimos cuánto puede valer, cómo la venderíamos y qué costaría delegarla.",
+    bajada: "Te decimos cuánto puede valer, cómo podemos acompañarte en la venta.",
     placeholder: "Dónde está, cuántos ambientes, en qué estado. Lo que sepas alcanza para empezar.",
   },
   {

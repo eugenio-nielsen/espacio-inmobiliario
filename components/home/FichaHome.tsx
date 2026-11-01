@@ -27,7 +27,7 @@ const TIPOS = [
  * nombres que el menú "Servicios".
  *
  *   · Quiero comprar: el buscador (tipo y zona; la operación es venta).
- *   · Quiero vender: publicar gratis, tasar, o delegar la venta.
+ *   · Quiero vender: publicar, tasar, o sumar acompañamiento.
  *
  * Los dos paneles ocupan la misma celda de la grilla, así la ficha
  * tiene siempre la altura del más alto y cambiar de pestaña no hace
@@ -109,7 +109,7 @@ export default function FichaHome({ logueado }: { logueado: boolean }) {
           </button>
         </form>
 
-        {/* ── Vender: publicar, tasar o delegar ────────────────── */}
+        {/* ── Vender: publicar, tasar o acompañarse ────────────────── */}
         <div
           id="ap-panel-vender"
           role="tabpanel"
@@ -119,13 +119,13 @@ export default function FichaHome({ logueado }: { logueado: boolean }) {
           inert={modo !== "vender"}
         >
           <p className="ap-vender-t">
-            Publicá gratis y gestioná la venta vos, o{" "}
-            <Link href="/vender">delegala con acompañamiento a precio fijo</Link>.
+            Publicá y gestioná la venta vos, o{" "}
+            <Link href="/vender">sumá nuestro acompañamiento, sin comisión</Link>.
           </p>
           <div className="ap-vender-acciones">
             <Link href={logueado ? "/panel/propiedades/nueva" : "/auth/registro"} className="ap-boton">
               <Plus size={15} strokeWidth={2} />
-              Publicar gratis
+              Publicar mi propiedad
             </Link>
             <Link href="/estimador" className="ap-enlace">
               Tasar mi propiedad
