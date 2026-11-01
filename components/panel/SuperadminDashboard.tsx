@@ -8,6 +8,7 @@ import type { Property, Inquiry } from "@/lib/types";
 import EstimadorAdmin from "@/components/panel/EstimadorAdmin";
 import BlogAdmin from "@/components/panel/BlogAdmin";
 import ForoAdmin from "@/components/panel/ForoAdmin";
+import ConsultasAdmin, { type ConsultaRow } from "@/components/panel/ConsultasAdmin";
 import CatedraAdmin from "@/components/panel/CatedraAdmin";
 import type { CostosConfig } from "@/lib/catedra/costos";
 import type { ProfesionalAdmin } from "@/lib/catedra/rubros";
@@ -51,11 +52,12 @@ const INQ_STATUS: Record<string, { label: string; bg: string; color: string }> =
 const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 const fmtPrecio = (p: number, m: string) => `${m === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(p))}`;
 
-type HubTab = "usuarios" | "validaciones" | "estimaciones" | "config" | "blog" | "foro" | "catedra";
-const TABS: HubTab[] = ["usuarios", "validaciones", "estimaciones", "config", "blog", "foro", "catedra"];
+type HubTab = "usuarios" | "consultas" | "validaciones" | "estimaciones" | "config" | "blog" | "foro" | "catedra";
+const TABS: HubTab[] = ["usuarios", "consultas", "validaciones", "estimaciones", "config", "blog", "foro", "catedra"];
 
-export default function SuperadminDashboard({ owners, totals, estimaciones, precios, config, posts, validaciones, foro, catedra, tabInicial }: {
+export default function SuperadminDashboard({ owners, consultas, totals, estimaciones, precios, config, posts, validaciones, foro, catedra, tabInicial }: {
   owners: OwnerData[];
+  consultas: ConsultaRow[];
   totals: { usuarios: number; propiedades: number; consultas: number; vistas: number };
   estimaciones: EstimacionRow[];
   precios: { barrio: string; precio: number }[];
@@ -74,6 +76,7 @@ export default function SuperadminDashboard({ owners, totals, estimaciones, prec
 
   const tabs: [HubTab, string, typeof Users][] = [
     ["usuarios", `Usuarios (${owners.length})`, Users],
+    ["consultas", `Consultas (${consultas.length})`, MessageSquare],
     ["validaciones", `Validaciones${validacionesEnEspera ? ` (${validacionesEnEspera})` : ""}`, ShieldCheck],
     ["estimaciones", `Estimaciones (${estimaciones.length})`, Calculator],
     ["config", "Config Estimador", Sliders],
@@ -101,6 +104,7 @@ export default function SuperadminDashboard({ owners, totals, estimaciones, prec
       </div>
 
       {tab === "usuarios" && <UsuariosTab owners={owners} totals={totals} />}
+      {tab === "consultas" && <ConsultasAdmin consultas={consultas} />}
       {tab === "validaciones" && <ValidacionesAdmin pendientes={validaciones} />}
       {tab === "estimaciones" && <EstimadorTab estimaciones={estimaciones} />}
       {tab === "config" && <EstimadorAdmin initialPrecios={precios} initialConfig={config} />}

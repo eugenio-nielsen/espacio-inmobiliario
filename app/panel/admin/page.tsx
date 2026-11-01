@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Property, Inquiry } from "@/lib/types";
 import SuperadminDashboard, { type OwnerData, type EstimacionRow } from "@/components/panel/SuperadminDashboard";
+import type { ConsultaRow } from "@/components/panel/ConsultasAdmin";
 import type { Pendiente } from "@/components/panel/ValidacionesAdmin";
 import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
 import type { Post } from "@/lib/blog/types";
@@ -111,6 +112,23 @@ export default async function SuperadminPage({ searchParams }: Props) {
     return (a.enviada_at || "").localeCompare(b.enviada_at || "");
   });
 
+  // Bandeja global de consultas, con propiedad y propietario resueltos
+  const propPorId = new Map(props.map(p => [p.id, p]));
+  const consultas: ConsultaRow[] = inqs.map(i => {
+    const p = propPorId.get(i.property_id);
+    return {
+      id: i.id,
+      created_at: i.created_at,
+      nombre: i.nombre,
+      email: i.email,
+      telefono: i.telefono ?? null,
+      mensaje: i.mensaje,
+      status: i.status,
+      propiedad: p?.titulo ?? "Publicación eliminada",
+      propietario: (p && nombrePorId.get(p.owner_id)) || "—",
+    };
+  });
+
   const totals = {
     usuarios: owners.length,
     propiedades: props.length,
@@ -132,6 +150,7 @@ export default async function SuperadminPage({ searchParams }: Props) {
 
       <SuperadminDashboard
         owners={owners}
+        consultas={consultas}
         totals={totals}
         estimaciones={(estimaciones || []) as EstimacionRow[]}
         precios={preciosArray}
