@@ -1,0 +1,55 @@
+{
+  "id": "buscar",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿Buscás propiedad? Encontrala directo con su dueño.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Propiedades",
+        "titulo": [
+          "Directo con",
+          "*el dueño.*"
+        ]
+      }
+    },
+    {
+      "id": "filtros",
+      "texto": "Filtrás por tipo, zona, dormitorios y precio, y ves si es apto crédito.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "buscar-1",
+          "buscar-2"
+        ],
+        "etiqueta": "Buscá a tu medida"
+      }
+    },
+    {
+      "id": "ficha",
+      "texto": "Cada ficha muestra los datos, las fotos y el mapa. Y le escribís al dueño, sin intermediarios.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "buscar-3",
+          "buscar-4",
+          "buscar-5"
+        ],
+        "etiqueta": "La ficha"
+      }
+    },
+    {
+      "id": "cierre",
+      "texto": "Comprá con información.",
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Comprá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "id": "nota-alquiler-sin-inmobiliaria",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Alquilar sin inmobiliaria te ahorra la comisión, pero te deja una tarea. Tres cosas para hacerla bien.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Alquilar directo",
+        "titulo": [
+          "Alquilar sin",
+          "*inmobiliaria*"
+        ]
+      }
+    },
+    {
+      "id": "p1",
+      "texto": "Elegí bien al inquilino: pedí documento, ingresos y referencias, antes de mostrar el contrato.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 3,
+        "titulo": "Elegí al|*inquilino*"
+      }
+    },
+    {
+      "id": "p2",
+      "texto": "Definí la garantía: propietaria, seguro de caución o fiador. Cada una tiene sus riesgos.",
+      "visual": {
+        "tipo": "punto",
+        "n": 2,
+        "de": 3,
+        "titulo": "Definí la|*garantía*"
+      }
+    },
+    {
+      "id": "p3",
+      "texto": "Y dejá todo por escrito: la actualización, el depósito, y quién paga qué.",
+      "visual": {
+        "tipo": "punto",
+        "n": 3,
+        "de": 3,
+        "titulo": "Dejalo todo|*por escrito*"
+      }
+    },
+    {
+      "id": "nota",
+      "texto": "Leé la guía completa en el blog de Espacio Inmobiliario.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "nota-2"
+        ],
+        "etiqueta": "En el blog"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 3.2,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Alquilá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo. Consultá con un profesional."
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "id": "clip-fotos-luz",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Una buena foto vende más rápido.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Fotos que venden",
+        "titulo": [
+          "Luz natural,",
+          "sin *flash*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Aprovechá la luz natural, sin flash, y sacala horizontal desde la esquina.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 1,
+        "titulo": "Luz|*natural*"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Fotos que",
+          "*venden.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "clip-alquiler-escrito",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Alquilar sin inmobiliaria te ahorra la comisión.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Alquilar",
+        "titulo": [
+          "Sin inmobiliaria,",
+          "todo *por escrito*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Pero dejá todo por escrito y definí bien la garantía.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 1,
+        "titulo": "Todo|*por escrito*"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Alquilá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo. Consultá con un profesional."
+      }
+    }
+  ]
+}

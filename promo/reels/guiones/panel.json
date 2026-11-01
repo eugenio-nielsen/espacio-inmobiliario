@@ -1,0 +1,54 @@
+{
+  "id": "panel",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Una vez publicado, todo tu aviso queda en un solo lugar.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Tu panel",
+        "titulo": [
+          "Todo tu aviso,",
+          "en *un solo lugar.*"
+        ]
+      }
+    },
+    {
+      "id": "panel",
+      "texto": "Seguís las consultas, agendás las visitas, y pausás o actualizás tu publicación cuando quieras.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "panel-1",
+          "panel-2",
+          "panel-3"
+        ],
+        "etiqueta": "Consultas y visitas"
+      }
+    },
+    {
+      "id": "perfil",
+      "texto": "Y en tu perfil validás tu identidad, para ganar la confianza de los compradores.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "panel-4"
+        ],
+        "etiqueta": "Tu perfil"
+      }
+    },
+    {
+      "id": "cierre",
+      "texto": "Espacio Inmobiliario. Vendé con información.",
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Vendé con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

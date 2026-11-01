@@ -1,0 +1,43 @@
+{
+  "id": "clip-tasador",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿No sabés cuánto vale tu departamento?",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "El tasador",
+        "titulo": [
+          "¿Cuánto vale",
+          "tu *departamento?*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Elegís el barrio, cargás los datos y tenés una estimación en segundos.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "tasador-3",
+          "tasador-4"
+        ],
+        "etiqueta": "El tasador · Gratis"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Tu valor,",
+          "en *segundos.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Estimación orientativa."
+      }
+    }
+  ]
+}

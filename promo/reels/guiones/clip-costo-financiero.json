@@ -1,0 +1,41 @@
+{
+  "id": "clip-costo-financiero",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Antes de pedir un crédito, mirá el costo financiero total.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Crédito hipotecario",
+        "titulo": [
+          "Mirá el costo",
+          "*financiero total*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "No alcanza con la tasa. Mirá también el ajuste por inflación.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 1,
+        "titulo": "No solo|*la tasa*"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Decidí con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo. Consultá con tu banco."
+      }
+    }
+  ]
+}

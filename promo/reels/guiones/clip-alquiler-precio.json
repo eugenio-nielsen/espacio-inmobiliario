@@ -1,0 +1,41 @@
+{
+  "id": "clip-alquiler-precio",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿Cuánto pedir de alquiler?",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Alquilar",
+        "titulo": [
+          "¿Cuánto pedir",
+          "de *alquiler?*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Empezá por comparables y ajustá por lo que distingue a tu propiedad.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 1,
+        "titulo": "Empezá por|*comparables*"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Un precio",
+          "*defendible.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo."
+      }
+    }
+  ]
+}

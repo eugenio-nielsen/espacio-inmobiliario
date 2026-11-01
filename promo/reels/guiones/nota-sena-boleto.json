@@ -1,0 +1,72 @@
+{
+  "id": "nota-sena-boleto",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Seña, boleto y reserva no son lo mismo. Qué firmás en cada paso.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Comprar",
+        "titulo": [
+          "Reserva, seña",
+          "y *boleto*"
+        ]
+      }
+    },
+    {
+      "id": "p1",
+      "texto": "La reserva saca la propiedad del mercado. Leé qué dice sobre tu plata, antes de firmar.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 3,
+        "titulo": "La|*reserva*"
+      }
+    },
+    {
+      "id": "p2",
+      "texto": "La seña confirma el trato. Si se pacta arrepentimiento, quien se arrepiente la pierde, o la devuelve duplicada.",
+      "visual": {
+        "tipo": "punto",
+        "n": 2,
+        "de": 3,
+        "titulo": "La|*seña*"
+      }
+    },
+    {
+      "id": "p3",
+      "texto": "El boleto te obliga a comprar. Y antes de entregar plata, verificá quién es el titular y que esté libre.",
+      "visual": {
+        "tipo": "punto",
+        "n": 3,
+        "de": 3,
+        "titulo": "El|*boleto*"
+      }
+    },
+    {
+      "id": "nota",
+      "texto": "Leé la nota completa en el blog de Espacio Inmobiliario.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "nota-5"
+        ],
+        "etiqueta": "En el blog"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 3.2,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Comprá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo. Consultá con un escribano."
+      }
+    }
+  ]
+}

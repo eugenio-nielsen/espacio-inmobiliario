@@ -1,0 +1,42 @@
+{
+  "id": "clip-panel",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Una vez publicado, todo tu aviso en un solo lugar.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Tu panel",
+        "titulo": [
+          "Todo tu aviso",
+          "en un *solo lugar*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Seguís las consultas, agendás visitas y pausás o actualizás cuando quieras.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "panel-1",
+          "panel-3"
+        ],
+        "etiqueta": "Tu panel"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Tu aviso,",
+          "*bajo control.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

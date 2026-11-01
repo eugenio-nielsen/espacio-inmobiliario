@@ -1,0 +1,72 @@
+{
+  "id": "nota-credito-hipotecario",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Antes de pedir un crédito hipotecario, tres cosas que conviene mirar.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Crédito hipotecario",
+        "titulo": [
+          "Antes de pedir",
+          "un *crédito*"
+        ]
+      }
+    },
+    {
+      "id": "p1",
+      "texto": "El banco evalúa dos cosas: tus ingresos, y la propiedad. Que tenga la documentación en regla.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 3,
+        "titulo": "El banco evalúa|*dos cosas*"
+      }
+    },
+    {
+      "id": "p2",
+      "texto": "Mirá el costo financiero total, no solo la tasa ni la primera cuota.",
+      "visual": {
+        "tipo": "punto",
+        "n": 2,
+        "de": 3,
+        "titulo": "Mirá el costo|*total*"
+      }
+    },
+    {
+      "id": "p3",
+      "texto": "Los créditos ajustados por inflación pueden crecer en pesos, aunque pagues todos los meses.",
+      "visual": {
+        "tipo": "punto",
+        "n": 3,
+        "de": 3,
+        "titulo": "Ojo con el ajuste|*por inflación*"
+      }
+    },
+    {
+      "id": "nota",
+      "texto": "Leé la nota completa en el blog de Espacio Inmobiliario.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "nota-3"
+        ],
+        "etiqueta": "En el blog"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 3.2,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Comprá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo. Consultá con tu banco."
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "clip-buscar",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Buscá propiedad directo con su dueño.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Buscar",
+        "titulo": [
+          "Buscá directo",
+          "con el *dueño*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Filtrás por tipo, zona, dormitorios y precio, y ves si es apto crédito.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "buscar-1",
+          "buscar-3"
+        ],
+        "etiqueta": "Buscar propiedades"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Sin",
+          "*intermediarios.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "tasador",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿No sabés cuánto vale tu departamento? Averigualo gratis, en cinco pasos.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "El tasador",
+        "titulo": [
+          "¿Cuánto vale",
+          "tu *departamento?*"
+        ]
+      }
+    },
+    {
+      "id": "barrio",
+      "texto": "Elegís tu barrio, entre cuarenta y ocho barrios porteños.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "tasador-1",
+          "tasador-2"
+        ],
+        "etiqueta": "Paso 1 · El barrio"
+      }
+    },
+    {
+      "id": "datos",
+      "texto": "Cargás la superficie, los ambientes y los detalles, como la orientación y la vista.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "tasador-3",
+          "tasador-4"
+        ],
+        "etiqueta": "Paso 2 · La unidad"
+      }
+    },
+    {
+      "id": "cierre",
+      "texto": "Una estimación con datos reales del mercado, en segundos.",
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Tu valor,",
+          "en *segundos.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Estimación orientativa."
+      }
+    }
+  ]
+}

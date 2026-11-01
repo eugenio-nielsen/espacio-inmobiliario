@@ -1,0 +1,71 @@
+{
+  "id": "nota-alquiler-precio",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿Cuánto pedir de alquiler? Tres reglas para fijar un precio defendible.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Alquileres",
+        "titulo": [
+          "¿Cuánto pedir",
+          "de *alquiler?*"
+        ]
+      }
+    },
+    {
+      "id": "p1",
+      "texto": "Mirá propiedades en alquiler parecidas a la tuya. No el precio de venta, ni lo que pagabas vos.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 3,
+        "titulo": "Empezá por|*comparables*"
+      }
+    },
+    {
+      "id": "p2",
+      "texto": "Ajustá por la luz, el piso y la cochera. Y no te olvides de las expensas: el inquilino las mira.",
+      "visual": {
+        "tipo": "punto",
+        "n": 2,
+        "de": 3,
+        "titulo": "Ajustá por lo que|*distingue a la tuya*"
+      }
+    },
+    {
+      "id": "p3",
+      "texto": "Una propiedad vacía un mes cuesta más que un descuento chico. Y revisá el precio una vez por año.",
+      "visual": {
+        "tipo": "punto",
+        "n": 3,
+        "de": 3,
+        "titulo": "Revisalo|*cada año*"
+      }
+    },
+    {
+      "id": "nota",
+      "texto": "Leé la nota completa en el blog de Espacio Inmobiliario.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "nota-1"
+        ],
+        "etiqueta": "En el blog"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 3.2,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Alquilá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

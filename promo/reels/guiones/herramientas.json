@@ -1,0 +1,54 @@
+{
+  "id": "herramientas",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Espacio Inmobiliario es más que avisos: es información para decidir mejor.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Herramientas",
+        "titulo": [
+          "Información",
+          "para *decidir mejor.*"
+        ]
+      }
+    },
+    {
+      "id": "blog",
+      "texto": "Un blog con guías para comprar, vender y alquilar, y la calculadora de aranceles del Registro de la Propiedad.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "herramientas-1",
+          "herramientas-2",
+          "herramientas-3"
+        ],
+        "etiqueta": "El blog y la calculadora"
+      }
+    },
+    {
+      "id": "foro",
+      "texto": "Y un foro para preguntar y debatir con otros.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "herramientas-4"
+        ],
+        "etiqueta": "El foro"
+      }
+    },
+    {
+      "id": "cierre",
+      "texto": "Espacio Inmobiliario. Publicá gratis, y vendé con información.",
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Publicá gratis,",
+          "vendé con *información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

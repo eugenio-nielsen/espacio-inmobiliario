@@ -1,0 +1,71 @@
+{
+  "id": "nota-fotos",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "La foto es lo primero que ve un comprador. Tres consejos para sacarlas con tu celular.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Fotos que venden",
+        "titulo": [
+          "Buenas fotos,",
+          "*sin gastar nada*"
+        ]
+      }
+    },
+    {
+      "id": "p1",
+      "texto": "Ordená y limpiá antes de sacar. Cinco minutos de preparación valen más que cualquier edición.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 3,
+        "titulo": "Ordená y|*limpiá*"
+      }
+    },
+    {
+      "id": "p2",
+      "texto": "Sacá de día, con las cortinas abiertas y las luces encendidas. Y sin flash.",
+      "visual": {
+        "tipo": "punto",
+        "n": 2,
+        "de": 3,
+        "titulo": "Aprovechá|*la luz*"
+      }
+    },
+    {
+      "id": "p3",
+      "texto": "Fotos horizontales, a la altura del pecho, desde la esquina del ambiente. Y que no falte ningún ambiente.",
+      "visual": {
+        "tipo": "punto",
+        "n": 3,
+        "de": 3,
+        "titulo": "Cuidá el|*encuadre*"
+      }
+    },
+    {
+      "id": "nota",
+      "texto": "Leé la nota completa en el blog de Espacio Inmobiliario.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "nota-4"
+        ],
+        "etiqueta": "En el blog"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 3.2,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Vendé con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

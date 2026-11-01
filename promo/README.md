@@ -111,3 +111,30 @@ node higgsfield/render.mjs            # salida/familia.mp4   (--cuadros 5,40 par
 - `higgsfield/planos.json` dice qué clip va con cada frase; `render.mjs` mide la voz y reparte los tiempos solo.
 - La **música es sintética** (piano y cuerdas suaves, compuesta en `montaje.js`): sin licencias de terceros. Baja sola cuando habla Laura.
 - El cierre lleva el aviso "Historia recreada con inteligencia artificial". No se presenta como testimonio real.
+
+## Reels de funciones y de notas (9:16, ~25 a 40 s, con voz en off)
+
+Diez reels para Instagram, TikTok y Stories, armados con un solo motor (`reels/reel.js`). Cada reel es un guion en `reels/guiones/<id>.json`: una lista de escenas, cada una con su frase de voz y un visual. Los textos para publicarlos y el calendario están en [`reels/CALENDARIO.md`](reels/CALENDARIO.md).
+
+| Tipo | Reels |
+|---|---|
+| Funciones del sitio (con capturas reales en un celular) | `publicar`, `tasador`, `panel`, `buscar`, `herramientas` |
+| Notas del blog ("tres cosas", sin capturas salvo la nota al final) | `nota-alquiler-precio`, `nota-alquiler-sin-inmobiliaria`, `nota-credito-hipotecario`, `nota-fotos`, `nota-sena-boleto` |
+
+```bash
+node reels/capturar.mjs [grupo]           # capturas del sitio en celular (npm run dev corriendo); grupos: publicar, tasador, panel, buscar, herramientas, notas
+node reels/generar-vo.mjs <reel>          # voz en off con ElevenLabs (Melanie, colección "Claude") → reels/vo/<reel>/
+node reels/render.mjs <reel>              # salida/reel-<reel>.mp4   (--cuadros 3,12,20 para ver cuadros sueltos)
+node reels/hoja.mjs <prefijo> ...         # hoja de contacto de capturas en salida/hoja.png, para revisarlas
+```
+
+Escenas de un guion (`visual.tipo`):
+
+| Tipo | Qué muestra | Campos |
+|---|---|---|
+| `gancho` | Título grande de apertura | `kicker`, `titulo` (lista de líneas; lo que va entre `*asteriscos*` sale en cursiva dorada) |
+| `movil` | El sitio dentro de un celular | `imagenes` (nombres de `capturas/`, se cruzan en orden), `etiqueta` |
+| `punto` | Un punto numerado ("1 de 3") | `n`, `de`, `titulo` (`\|` separa las líneas) |
+| `cierre` | Logo, frase final y dirección | `frase`, `url`, `aviso` |
+
+Una escena sin `texto` no lleva voz y dura `dur` segundos. La música es la misma sintética del video de la familia, sin licencias. Las capturas usan la cuenta de prueba de `explainer/.demo.json` y no envían ningún formulario.

@@ -1,0 +1,41 @@
+{
+  "id": "clip-reserva-sena-boleto",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Reserva, seña y boleto no son lo mismo.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Comprar",
+        "titulo": [
+          "Reserva, seña",
+          "y *boleto*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "El boleto te obliga a comprar. Verificá quién es el titular antes de entregar plata.",
+      "visual": {
+        "tipo": "punto",
+        "n": 1,
+        "de": 1,
+        "titulo": "El|*boleto*"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Comprá con",
+          "*información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar",
+        "aviso": "Contenido orientativo. Consultá con un escribano."
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "clip-sin-comision",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Vendé tu propiedad sin pagar comisión.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Vender",
+        "titulo": [
+          "Vendé sin",
+          "pagar *comisión*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Publicar es gratis: cargás los datos, marcás el mapa y subís las fotos.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "publicar-1",
+          "publicar-3"
+        ],
+        "etiqueta": "Publicar · Gratis"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Vendé por tu cuenta,",
+          "pero *no solo.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": "publicar",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿Querés vender tu propiedad sin pagar comisión? Publicar lleva unos minutos.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Publicar",
+        "titulo": [
+          "Publicá tu propiedad",
+          "*en minutos.*"
+        ]
+      }
+    },
+    {
+      "id": "datos",
+      "texto": "Cargás el título, el precio y los datos. Y una inteligencia artificial te ayuda a escribir la descripción.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "publicar-2"
+        ],
+        "etiqueta": "Paso 1 · Los datos"
+      }
+    },
+    {
+      "id": "mapa",
+      "texto": "Marcás la ubicación en el mapa, y subís tus fotos.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "publicar-3",
+          "publicar-5"
+        ],
+        "etiqueta": "Paso 2 · Mapa y fotos"
+      }
+    },
+    {
+      "id": "cierre",
+      "texto": "Publicá gratis, y vendé con información.",
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Publicá gratis,",
+          "vendé con *información.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}

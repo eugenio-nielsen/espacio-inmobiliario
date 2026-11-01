@@ -1,0 +1,42 @@
+{
+  "id": "clip-herramientas",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "Espacio Inmobiliario es más que avisos.",
+      "visual": {
+        "tipo": "gancho",
+        "kicker": "Herramientas",
+        "titulo": [
+          "Más que",
+          "*avisos*"
+        ]
+      }
+    },
+    {
+      "id": "cuerpo",
+      "texto": "Calculadora del Registro de la Propiedad, blog con guías y foro. Todo gratis.",
+      "visual": {
+        "tipo": "movil",
+        "imagenes": [
+          "herramientas-1",
+          "herramientas-3"
+        ],
+        "etiqueta": "Herramientas · Gratis"
+      }
+    },
+    {
+      "id": "cierre",
+      "dur": 2.6,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Información para",
+          "*decidir mejor.*"
+        ],
+        "url": "espacioinmobiliario.com.ar"
+      }
+    }
+  ]
+}
