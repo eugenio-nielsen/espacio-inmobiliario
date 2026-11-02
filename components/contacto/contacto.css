@@ -1,0 +1,327 @@
+/* /contacto — página y formulario con selector de motivo (prefijo .ct-).
+   El motivo cambia el encabezado y viaja en el asunto del mail, así
+   cada consulta llega ya clasificada.
+
+   Mismo lenguaje que el resto del sitio: esquinas de 2px, filetes
+   dorados, botones en versalitas y íconos de trazo fino. Vive fuera de
+   globals.css a propósito: el plugin de PostCSS de Tailwind cachea ese
+   archivo y en Windows no ve los cambios. */
+
+.ct-main { flex: 1; padding: clamp(40px, 6vw, 84px) 24px clamp(52px, 7vw, 96px); }
+.ct-grid {
+  max-width: var(--container);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+}
+@media (max-width: 880px) {
+  .ct-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .ct-aside { text-align: center; justify-items: center; }
+  .ct-datos { margin-inline: auto; text-align: left; }
+}
+
+/* ── Columna de contexto ───────────────────────────────────── */
+.ct-aside { display: grid; gap: 22px; justify-items: start; }
+.ct-h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(44px, 6.6vw, 80px);
+  line-height: .98;
+  letter-spacing: -.035em;
+  color: var(--navy-800);
+  margin: 0 0 22px;
+  text-wrap: balance;
+}
+.ct-i { font-style: italic; font-weight: 500; color: var(--gold-700); }
+.ct-lead {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(15.5px, 1.7vw, 18px);
+  line-height: 1.7;
+  color: var(--ink-600);
+  margin: 0 0 30px;
+  max-width: 46ch;
+}
+.ct-lead strong { font-weight: 600; color: var(--navy-800); }
+
+/* Datos de contacto: una ficha con filetes, no una lista de links */
+.ct-datos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 470px;
+  border-top: 1px solid var(--gold-200);
+}
+.ct-datos li { border-bottom: 1px solid var(--gold-200); }
+.ct-dato {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 17px 0;
+  color: inherit;
+  text-decoration: none;
+}
+a.ct-dato { transition: background .3s var(--ease-out); }
+.ct-dato-ic {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border: 1px solid var(--gold-300);
+  border-radius: 2px;
+  background: var(--gold-50);
+  color: var(--gold-700);
+  transition: background .3s var(--ease-out), color .3s var(--ease-out), border-color .3s var(--ease-out);
+}
+a.ct-dato:hover .ct-dato-ic { background: var(--navy-800); border-color: var(--navy-800); color: var(--gold-300); }
+.ct-dato-lbl {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+  margin-bottom: 5px;
+}
+.ct-dato-val {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(16px, 1.5vw, 18px);
+  line-height: 1.3;
+  color: var(--navy-800);
+  overflow-wrap: anywhere;
+}
+
+/* ── Formulario ────────────────────────────────────────────── */
+.ct-form {
+  --ct-borde: #D3CCBC;
+  background: #fff;
+  border: 1px solid var(--gold-300);
+  border-top: 2px solid var(--gold-500);
+  border-radius: 2px;
+  box-shadow: 0 40px 80px -36px rgba(14,44,80,.3), 0 4px 12px rgba(20,17,11,.04);
+  padding: clamp(22px, 3vw, 38px);
+}
+
+.ct-motivos { border: 0; margin: 0 0 28px; padding: 0; min-width: 0; }
+.ct-motivos-t {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold-700);
+  padding: 0;
+  margin-bottom: 12px;
+}
+/* Control segmentado: los filetes salen del gap sobre el fondo de la grilla */
+.ct-motivos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--ct-borde);
+  border: 1px solid var(--ct-borde);
+  border-radius: 2px;
+  overflow: hidden;
+}
+/* 2×2 en celular y en el tramo donde la columna del formulario es angosta */
+@media (max-width: 620px), (min-width: 881px) and (max-width: 1080px) {
+  .ct-motivos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.ct-motivo {
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 14px 4px;
+  background: #fff;
+  color: var(--ink-600);
+  white-space: nowrap;
+  transition: background .3s var(--ease-out), color .3s var(--ease-out);
+}
+.ct-motivo:hover { background: var(--gold-50); color: var(--navy-800); }
+.ct-motivo[data-on="true"] { background: var(--navy-800); color: #fff; }
+.ct-motivo:focus-visible { outline: 2px solid var(--gold-500); outline-offset: -4px; }
+
+.ct-cabecera {
+  margin-bottom: 26px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--gold-200);
+}
+.ct-cabecera h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 2.6vw, 29px);
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+.ct-cabecera p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-600);
+  margin: 0;
+}
+
+.ct-fila { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+@media (max-width: 540px) { .ct-fila { grid-template-columns: minmax(0, 1fr); } }
+
+.ct-campo { display: block; margin-bottom: 18px; }
+.ct-lbl {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+  margin-bottom: 8px;
+}
+.ct-inp {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--ct-borde);
+  border-radius: 2px;
+  padding: 13px 14px;
+  /* 16px evita que iOS haga zoom al enfocar el campo */
+  font-size: 16px;
+  font-family: var(--font-sans);
+  background: #fff;
+  color: var(--ink-900);
+  outline: none;
+  transition: border-color .25s var(--ease-out);
+}
+.ct-inp::placeholder { color: var(--ink-400); }
+.ct-inp:hover { border-color: var(--navy-300); }
+/* Foco con filete navy de 2px en vez del halo suave global */
+.ct-inp:focus {
+  border-color: var(--navy-800) !important;
+  box-shadow: 0 0 0 1px var(--navy-800);
+}
+.ct-area { resize: vertical; min-height: 132px; line-height: 1.55; }
+
+.ct-error {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-line);
+  border-left: 3px solid var(--danger);
+  border-radius: 2px;
+  padding: 11px 14px;
+  margin: 0 0 18px;
+}
+
+.ct-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 24px; margin-top: 8px; }
+.ct-enviar,
+.ct-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ct-enviar svg,
+.ct-wa svg { flex-shrink: 0; }
+.ct-enviar {
+  padding: 17px 28px;
+  border: 1px solid var(--navy-800);
+  border-radius: 2px;
+  background: var(--navy-800);
+  color: #fff;
+  transition: background .4s var(--ease-out), border-color .4s var(--ease-out);
+}
+.ct-enviar svg { transition: transform .4s var(--ease-out); }
+.ct-enviar:hover:not(:disabled) { background: var(--navy-700); border-color: var(--navy-700); }
+.ct-enviar:hover:not(:disabled) svg { transform: translateX(4px); }
+.ct-enviar:disabled { opacity: .6; cursor: default; }
+
+/* Segundo camino: un enlace con filete dorado, para que un solo botón mande */
+.ct-wa {
+  position: relative;
+  padding: 17px 0;
+  background: none;
+  border: 0;
+  color: var(--navy-800);
+  transition: color .3s var(--ease-out);
+}
+.ct-wa svg { color: var(--gold-700); }
+.ct-wa::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 11px;
+  height: 1px;
+  background: var(--gold-500);
+  transform-origin: left;
+  transition: transform .5s var(--ease-out);
+}
+.ct-wa:hover { color: var(--gold-700); }
+.ct-wa:hover::after { transform: scaleX(.35); }
+
+@media (max-width: 540px) {
+  .ct-enviar { width: 100%; }
+  .ct-acciones { justify-content: center; gap: 2px 0; }
+}
+
+/* ── Confirmación ──────────────────────────────────────────── */
+.ct-ok {
+  background: #fff;
+  border: 1px solid var(--success-line);
+  border-top: 2px solid var(--success);
+  border-radius: 2px;
+  box-shadow: 0 40px 80px -36px rgba(14,44,80,.3);
+  padding: clamp(34px, 4.4vw, 54px) 28px;
+  text-align: center;
+  color: var(--success);
+}
+.ct-ok-ic {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  border: 1px solid var(--success-line);
+  border-radius: 2px;
+  background: var(--success-bg);
+}
+.ct-ok h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+  margin: 20px 0 10px;
+}
+.ct-ok p {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-600);
+  margin: 0 auto;
+  max-width: 42ch;
+}

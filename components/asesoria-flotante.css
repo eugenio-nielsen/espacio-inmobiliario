@@ -1,0 +1,118 @@
+/* ── Aviso flotante de asesoramiento ──────────────────────────
+   Discreto: abajo a la derecha en desktop, franja inferior en
+   mobile. Se cierra y no vuelve por 30 días.
+
+   Mismo lenguaje que los paneles del menú: esquinas de 2px, filete
+   dorado arriba y botón en versalitas. Vive fuera de globals.css a
+   propósito: el plugin de PostCSS de Tailwind cachea ese archivo y en
+   Windows no ve los cambios. */
+
+.asesoria-flotante {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 35;
+  width: 340px;
+  background: #fff;
+  border: 1px solid var(--gold-300);
+  border-top: 2px solid var(--gold-500);
+  border-radius: 2px;
+  box-shadow: 0 28px 52px -18px rgba(14, 44, 80, .32), 0 4px 12px rgba(20, 17, 11, .06);
+  padding: 26px 26px 24px;
+  animation: asesoriaEntra .5s var(--ease-out);
+}
+
+@keyframes asesoriaEntra {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.asesoria-cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: var(--ink-400);
+  cursor: pointer;
+  transition: color .25s var(--ease-out), background .25s var(--ease-out);
+}
+.asesoria-cerrar:hover { color: var(--navy-800); background: var(--navy-50); }
+.asesoria-cerrar:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 1px; }
+
+.asesoria-titulo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 1.14;
+  letter-spacing: -.02em;
+  color: var(--navy-800);
+  margin: 0 22px 12px 0;
+  text-wrap: balance;
+}
+.asesoria-sub {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-600);
+  margin: 0 0 22px;
+}
+
+.asesoria-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--navy-800);
+  color: #fff;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .4s var(--ease-out);
+}
+.asesoria-cta:hover { background: var(--navy-700); }
+.asesoria-cta svg { flex-shrink: 0; color: var(--gold-300); }
+
+@media (max-width: 639px) {
+  /* En móvil la tarjeta tapaba media pantalla sobre el contenido. Queda
+     solo la acción: el título y la bajada explicaban algo que el propio
+     botón ya dice, y costaban ~70px de pantalla ajena. */
+  .asesoria-flotante {
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 8px 8px 8px;
+  }
+  .asesoria-texto { display: none; }
+  .asesoria-cta { flex: 1; padding: 14px 16px; }
+  /* Deja de flotar: pasa a ser un elemento más de la fila, para no
+     pisar el botón ahora que la tarjeta mide lo que mide el botón */
+  .asesoria-cerrar {
+    position: static;
+    flex-shrink: 0;
+    order: 2;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asesoria-flotante { animation: none; }
+}

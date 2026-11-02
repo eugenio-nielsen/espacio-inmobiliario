@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { X, MessageCircle } from "lucide-react";
+import "./asesoria-flotante.css";
 
 import { WHATSAPP } from "@/lib/contacto";
 const MENSAJE =
@@ -62,30 +63,13 @@ export default function AsesoriaFlotante() {
   }
 
   return (
-    <aside className="asesoria-flotante" role="complementary" aria-label="Asesoramiento para vender">
-      <button
-        type="button"
-        onClick={cerrar}
-        aria-label="Cerrar"
-        className="asesoria-cerrar"
-        style={{
-          lineHeight: 0, background: "none", border: "none",
-          cursor: "pointer", color: "var(--ink-400)", padding: 4,
-        }}
-      >
-        <X size={15} />
+    <aside className="asesoria-flotante" role="complementary" aria-label="Asesoramiento para tu propiedad">
+      <button type="button" onClick={cerrar} aria-label="Cerrar" className="asesoria-cerrar">
+        <X size={16} strokeWidth={1.5} />
       </button>
 
-      <p className="asesoria-texto" style={{
-        fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 15.5,
-        color: "var(--navy-800)", margin: "0 26px 4px 0", lineHeight: 1.3,
-      }}>
-        ¿Necesitás ayuda para vender tu propiedad?
-      </p>
-      <p className="asesoria-texto" style={{
-        fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--ink-500)",
-        margin: "0 0 12px", lineHeight: 1.45,
-      }}>
+      <p className="asesoria-texto asesoria-titulo">¿Necesitás asesoramiento con tu propiedad?</p>
+      <p className="asesoria-texto asesoria-sub">
         Te asesoramos sin cargo, de dueño directo a dueño directo.
       </p>
 
@@ -95,15 +79,9 @@ export default function AsesoriaFlotante() {
         rel="noopener noreferrer"
         onClick={cerrar}
         className="asesoria-cta"
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-          fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13.5,
-          padding: "11px 16px", borderRadius: "var(--radius-sm)",
-          background: "#25D366", color: "#fff", textDecoration: "none",
-        }}
       >
-        <MessageCircle size={15} strokeWidth={2} />
-        Solicitar asesoramiento gratis
+        <MessageCircle size={17} strokeWidth={1.5} aria-hidden="true" />
+        Solicitar asesoramiento
       </a>
     </aside>
   );

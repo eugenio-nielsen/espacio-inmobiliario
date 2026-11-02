@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, Send, MessageCircle } from "lucide-react";
+import { Check, ArrowRight, MessageCircle } from "lucide-react";
 import { enviarConsultaAsesoria } from "@/lib/actions/asesoria";
 import { MOTIVOS, type MotivoId } from "@/lib/motivos";
 
@@ -43,7 +43,7 @@ export default function FormContacto({ motivoInicial = "otro" }: { motivoInicial
   if (sent) {
     return (
       <div className="ct-ok">
-        <Check size={30} strokeWidth={2.5} />
+        <span className="ct-ok-ic"><Check size={26} strokeWidth={1.5} aria-hidden="true" /></span>
         <h3>¡Mensaje enviado!</h3>
         <p>Gracias por escribir. Eugenio se va a poner en contacto con vos a la brevedad.</p>
       </div>
@@ -90,26 +90,38 @@ export default function FormContacto({ motivoInicial = "otro" }: { motivoInicial
       </div>
 
       <div className="ct-fila">
-        <input className="ct-inp" placeholder="Nombre *" value={form.nombre}
-          onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
-        <input className="ct-inp" placeholder="Email *" type="email" value={form.email}
-          onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+        <label className="ct-campo">
+          <span className="ct-lbl">Nombre *</span>
+          <input className="ct-inp" autoComplete="name" value={form.nombre}
+            onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
+        </label>
+        <label className="ct-campo">
+          <span className="ct-lbl">Email *</span>
+          <input className="ct-inp" type="email" autoComplete="email" value={form.email}
+            onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+        </label>
       </div>
-      <input className="ct-inp" placeholder="Teléfono / WhatsApp (opcional)" value={form.telefono}
-        onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))} />
-      <textarea
-        className="ct-inp ct-area"
-        placeholder={activo.placeholder}
-        value={form.mensaje}
-        onChange={e => setForm(f => ({ ...f, mensaje: e.target.value }))}
-      />
+      <label className="ct-campo">
+        <span className="ct-lbl">Teléfono / WhatsApp (opcional)</span>
+        <input className="ct-inp" type="tel" autoComplete="tel" value={form.telefono}
+          onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))} />
+      </label>
+      <label className="ct-campo">
+        <span className="ct-lbl">Tu consulta *</span>
+        <textarea
+          className="ct-inp ct-area"
+          placeholder={activo.placeholder}
+          value={form.mensaje}
+          onChange={e => setForm(f => ({ ...f, mensaje: e.target.value }))}
+        />
+      </label>
 
       {error && <p className="ct-error">{error}</p>}
 
       <div className="ct-acciones">
         <button type="button" onClick={submit} disabled={isPending} className="ct-enviar">
-          <Send size={15} strokeWidth={2} />
           {isPending ? "Enviando…" : "Enviar consulta"}
+          <ArrowRight size={16} strokeWidth={1.6} aria-hidden="true" />
         </button>
         <a
           className="ct-wa"
@@ -117,7 +129,7 @@ export default function FormContacto({ motivoInicial = "otro" }: { motivoInicial
           target="_blank"
           rel="noopener noreferrer"
         >
-          <MessageCircle size={15} strokeWidth={2} />
+          <MessageCircle size={17} strokeWidth={1.5} aria-hidden="true" />
           Escribir por WhatsApp
         </a>
       </div>
