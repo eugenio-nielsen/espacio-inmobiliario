@@ -330,26 +330,41 @@
 .pie-sep { color: var(--gold-600); font-size: 6px; margin: 0 10px; vertical-align: middle; }
 
 /* Grabado: solo el contorno y un velo dorado que se apaga hacia abajo.
-   El margen negativo lo corta contra el borde de la página. */
+   El margen negativo lo corta contra el borde de la página. El apellido
+   se repite en una cinta infinita: dos grupos iguales y la pista corre
+   justo uno (-50%), por eso el empalme es invisible. */
 .pie-marca {
   margin: 6px 0 -.2em;
-  padding: 0 12px;
-  text-align: center;
+  overflow: hidden;
   white-space: nowrap;
   font-family: var(--font-display);
   font-weight: 600;
   font-size: clamp(44px, 10.4vw, 152px);
   line-height: 1;
   letter-spacing: -.035em;
+  user-select: none;
+  pointer-events: none;
+}
+.pie-marca-pista {
+  display: flex;
+  width: max-content;
+  animation: pie-cinta 60s linear infinite;
+}
+.pie-marca-grupo { display: flex; flex-shrink: 0; }
+.pie-marca-item {
+  padding: 0 .32em;
   color: transparent;
   -webkit-text-stroke: 1px rgba(185,159,102,.34);
   background: linear-gradient(180deg, rgba(185,159,102,.18), rgba(185,159,102,0) 72%);
   -webkit-background-clip: text;
   background-clip: text;
-  user-select: none;
-  pointer-events: none;
 }
-.pie-marca em { font-style: italic; font-weight: 500; }
+/* Alterna recto y cursiva, como la marca anterior alternaba "Espacio" e "Inmobiliario" */
+.pie-marca-item:nth-child(even) { font-style: italic; font-weight: 500; }
+@keyframes pie-cinta {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
 /* ── Responsive ────────────────────────────────────────────── */
 @media (max-width: 1023px) {
@@ -407,10 +422,10 @@
 
   .pie-legal-in { justify-content: center; text-align: center; padding: 16px 18px; }
   .pie-marca { font-size: 17vw; line-height: .92; margin-top: 10px; }
-  .pie-marca span, .pie-marca em { display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pie-luz { animation: none; }
+  .pie-marca-pista { animation: none; }
   .pie-link, .pie-link::before { transition: none; }
 }

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Calculator, Minus, Plus, RotateCcw, Zap } from "lucide-react";
+import { VALOR_MODULO, VIGENCIA, pesos } from "@/lib/rpi";
 
 /**
  * Calculadora de aranceles del Registro de la Propiedad Inmueble (CABA).
@@ -13,8 +14,6 @@ import { Calculator, Minus, Plus, RotateCcw, Zap } from "lucide-react";
  *
  * Fuente: dnrpi.jus.gob.ar · vigente desde el 03/08/2026.
  */
-const VALOR_MODULO = 300;
-const VIGENCIA = "3 de agosto de 2026";
 
 type Item = { id: string; nombre: string; modulos: number; nota?: string };
 type Grupo = { titulo: string; descripcion?: string; urgente?: boolean; items: Item[] };
@@ -26,12 +25,12 @@ const GRUPOS: Grupo[] = [
     items: [
       { id: "inf1", nombre: "Informe 1 · Dominio y gravámenes", modulos: 20 },
       { id: "inf2", nombre: "Informe 2 · Inhibiciones", modulos: 10 },
-      { id: "inf3", nombre: "Informe 3 · Índice de titulares", modulos: 10 },
+      { id: "inf3", nombre: "Informe 3 · Índice de titulares", modulos: 10, nota: "Desde el 3/8/2026 es gratis para el público general, con urgencia común y hasta 3 por persona por año (DA 6/2026)." },
       { id: "inf4", nombre: "Informe 4 · Inscripción (matrícula)", modulos: 20 },
       { id: "inf4b", nombre: "Informe 4B · Titularidad propiedad horizontal", modulos: 10 },
       { id: "inf5", nombre: "Informe 5 · Frecuencia de informes", modulos: 10 },
       { id: "inf6", nombre: "Informe 6 · Inscripción + dominio", modulos: 30 },
-      { id: "certdom", nombre: "Certificado de Dominio", modulos: 40, nota: "Bloquea la matrícula: es el que pide el escribano para escriturar." },
+      { id: "certdom", nombre: "Certificado de Dominio", modulos: 40, nota: "Bloquea la matrícula: es el que pide el escribano para escriturar. En propiedad horizontal se cobra según las unidades funcionales declaradas." },
       { id: "certinh", nombre: "Certificado de Inhibición", modulos: 10 },
       { id: "boleto", nombre: "Informe Boleto de Compraventa", modulos: 15 },
     ],
@@ -67,7 +66,6 @@ const GRUPOS: Grupo[] = [
 ];
 
 const TODOS = GRUPOS.flatMap(g => g.items);
-const pesos = (n: number) => `$${new Intl.NumberFormat("es-AR").format(n)}`;
 
 export default function CalculadoraAranceles() {
   const [cant, setCant] = useState<Record<string, number>>({});

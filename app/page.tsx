@@ -16,6 +16,8 @@ import Caminos from "@/components/home/Caminos";
 import ComoTrabajamos from "@/components/home/ComoTrabajamos";
 import Respaldo from "@/components/home/Respaldo";
 import Apertura from "@/components/home/Apertura";
+import HerramientasHome from "@/components/home/HerramientasHome";
+import UltimasNotas from "@/components/home/UltimasNotas";
 
 export const revalidate = 60;
 
@@ -148,6 +150,12 @@ export default async function HomePage() {
           </>
         )}
       </section>
+
+      {/* ── Herramientas: tasador y aranceles del Registro ───── */}
+      <HerramientasHome />
+
+      {/* ── Últimas notas del blog ────────────────────────────── */}
+      <UltimasNotas />
 
       {/* ── Cómo trabajamos ───────────────────────────────────── */}
       <section className="hm-sect" style={{ background: "var(--cream)", borderTop: "1px solid var(--gold-200)" }}>

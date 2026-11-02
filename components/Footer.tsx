@@ -220,10 +220,20 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* El nombre, grabado a todo el ancho y cortado por el borde:
-          la última imagen de cada página es la marca. */}
+      {/* El apellido, grabado y repetido sin fin a todo el ancho: una
+          cinta que corre despacio. Son dos grupos idénticos y la
+          animación avanza exactamente uno, así el corte no se nota.
+          La última imagen de cada página es la marca. */}
       <p className="pie-marca" aria-hidden="true">
-        <span>Espacio</span> <em>Inmobiliario</em>
+        <span className="pie-marca-pista">
+          {[0, 1].map(g => (
+            <span key={g} className="pie-marca-grupo">
+              {Array.from({ length: 6 }, (_, i) => (
+                <span key={i} className="pie-marca-item">Nielsen</span>
+              ))}
+            </span>
+          ))}
+        </span>
       </p>
     </footer>
   );
