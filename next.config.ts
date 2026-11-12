@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // Sin optimizador de Vercel: el plan tiene un cupo mensual de imágenes
+    // transformadas y, agotado, /_next/image responde 402 y las fotos nuevas
+    // no se ven. Se sirven directo desde Supabase, que no tiene ese tope.
+    unoptimized: true,
     // AVIF/WebP: ~30% menos peso que JPG/PNG en las fotos de propiedades
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
