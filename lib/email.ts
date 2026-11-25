@@ -837,24 +837,21 @@ export async function sendEstimacionAlUsuario(data: {
   const primerNombre = escHtml(data.nombre.trim().split(" ")[0] || "");
 
   const html = baseLayout(`
-    <div style="${styles.body_p}">
-      <h1 style="${styles.h1}">Tu estimación de precio</h1>
-      <p style="${styles.lead}">
-        Hola${primerNombre ? ` ${primerNombre}` : ""}, esta es la estimación que calculamos para tu propiedad en
-        <strong style="color:#0E2C50;">${escHtml(data.barrio)}</strong>.
+    <div style="background:#0E2C50;padding:36px 32px 32px;">
+      <p style="margin:0 0 10px;color:#CBB585;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;">Tu estimación · ${escHtml(data.barrio)}</p>
+      <p style="margin:0 0 4px;color:#DCE4EE;font-size:15px;line-height:1.6;">
+        Hola${primerNombre ? ` ${primerNombre}` : ""}, este es el valor que calculamos para tu propiedad:
       </p>
+      <p style="margin:0 0 6px;color:#fff;font-family:${SERIF};font-size:42px;line-height:1.15;font-weight:700;">${fmtUsd(data.resultado.estimado)}</p>
+      <p style="margin:0;color:#CBB585;font-size:14px;">Rango: ${fmtUsd(data.resultado.rangoMin)} – ${fmtUsd(data.resultado.rangoMax)}</p>
+    </div>
 
+    <div style="padding:28px 32px 8px;">
+      ${data.resultado.precioM2Resultante ? `
       <div style="${styles.card}">
-        <p style="${styles.label}">Valor estimado</p>
-        <p style="${styles.value};font-size:24px;">${fmtUsd(data.resultado.estimado)}</p>
-
-        <p style="${styles.label}">Rango</p>
-        <p style="${styles.value}">${fmtUsd(data.resultado.rangoMin)} – ${fmtUsd(data.resultado.rangoMax)}</p>
-
-        ${data.resultado.precioM2Resultante ? `
         <p style="${styles.label}">Valor por m²</p>
-        <p style="${styles.value}">${fmtUsd(data.resultado.precioM2Resultante)}/m²${data.resultado.confianza ? ` · precisión ${escHtml(data.resultado.confianza)}` : ""}</p>` : ""}
-      </div>
+        <p style="${styles.value}">${fmtUsd(data.resultado.precioM2Resultante)}/m²${data.resultado.confianza ? ` <span style="color:#8C7641;font-weight:400;">· precisión ${escHtml(data.resultado.confianza)}</span>` : ""}</p>
+      </div>` : ""}
 
       ${factores("Lo que sumó", data.resultado.factoresPositivos)}
       ${factores("Lo que restó", data.resultado.factoresNegativos)}
@@ -866,14 +863,16 @@ export async function sendEstimacionAlUsuario(data: {
 
       <a href="${SITE}/contacto?motivo=vender" style="${styles.btn}">Revisarla con Eugenio &rarr;</a>
       <p style="margin:18px 0 0;font-size:14px;color:#595349;">
-        ¿Ya sabés que querés vender? <a href="${SITE}/propietarios/publicar" style="color:#8C7641;">Publicá tu propiedad gratis</a>.
+        ¿Ya sabés que querés vender? <a href="${SITE}/propietarios/publicar" style="color:#8C7641;font-weight:600;">Publicá tu propiedad gratis</a>.
       </p>
-
-      <p style="color:#A39C8F;font-size:12px;margin-top:22px;line-height:1.6;">
+      <p style="color:#A39C8F;font-size:12px;margin:22px 0 24px;line-height:1.6;">
         Te escribimos porque pediste esta estimación en ${SITE.replace("https://", "")}. Si no fuiste vos, podés ignorar este email.
       </p>
     </div>
-  `);
+
+    ${bloqueHerramientas()}
+    <div style="background:#fff;padding-top:26px;border-top:1px solid #E8DFC8;">${bloqueFirma()}</div>
+  `, { completo: true });
 
   await resend.emails.send({
     from: FROM,
