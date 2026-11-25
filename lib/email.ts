@@ -269,6 +269,8 @@ export async function sendEstimacionLead(data: {
 function detalleEstimacion(
   input: unknown,
   resultado: { factoresPositivos?: FactorAplicado[]; factoresNegativos?: FactorAplicado[] },
+  /** true: en vez del desglose factor por factor, solo el total de lo que sumó y de lo que restó. */
+  soloTotales = false,
 ): string {
   if (!input || typeof input !== "object") return "";
   const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -284,7 +286,16 @@ function detalleEstimacion(
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
       ${lista.map((f) => `<tr><td style="${celda}">${esc(f.label)} · ${esc(f.detalle)}</td><td align="right" style="${celda}font-weight:600;color:${f.positivo ? "#15803D" : "#B91C1C"};">${pct(f.coef)}</td></tr>`).join("")}
     </table>` : "";
-  return `<div style="${styles.card}">${grupos}${factores("Lo que sumó", resultado.factoresPositivos)}${factores("Lo que restó", resultado.factoresNegativos)}</div>`;
+  // Total de cada lado: el producto de sus coeficientes (así se combinan en el modelo)
+  const total = (lista: FactorAplicado[] = []) => lista.reduce((p, f) => p * f.coef, 1);
+  const totales = (t: string, lista: FactorAplicado[] = [], positivo: boolean) => lista.length ? `
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:6px;">
+      <tr><td style="${styles.label};padding:3px 0;">${t}</td><td align="right" style="${celda}font-weight:700;font-size:15px;color:${positivo ? "#15803D" : "#B91C1C"};">${pct(total(lista))}</td></tr>
+    </table>` : "";
+  const cierre = soloTotales
+    ? totales("Lo que sumó", resultado.factoresPositivos, true) + totales("Lo que restó", resultado.factoresNegativos, false)
+    : factores("Lo que sumó", resultado.factoresPositivos) + factores("Lo que restó", resultado.factoresNegativos);
+  return `<div style="${styles.card}">${grupos}${cierre}</div>`;
 }
 
 // ── Consulta de asesoría / acompañamiento → al admin ──────────
@@ -822,18 +833,13 @@ export async function sendEstimacionAlUsuario(data: {
   para: string;
   nombre: string;
   barrio: string;
+  /** Lo que completó la persona en el tasador: va completo, de la ubicación a la situación. */
+  input?: unknown;
   resultado: Pick<EstimadorResultado, "estimado" | "rangoMin" | "rangoMax"> &
     Partial<Pick<EstimadorResultado, "precioM2Resultante" | "confianza" | "factoresPositivos" | "factoresNegativos">>;
 }) {
   const resend = getResend(); if (!resend) return;
 
-  const pct = (c: number) => `${c > 1 ? "+" : "−"}${Math.abs((c - 1) * 100).toLocaleString("es-AR", { maximumFractionDigits: 1 })}%`;
-  const celda = "padding:3px 0;font-size:13px;color:#475569;";
-  const factores = (titulo: string, lista: FactorAplicado[] = []) => lista.length ? `
-    <p style="${styles.label}">${titulo}</p>
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
-      ${lista.slice(0, 5).map((f) => `<tr><td style="${celda}">${escHtml(f.label)} · ${escHtml(f.detalle)}</td><td align="right" style="${celda}font-weight:600;color:${f.positivo ? "#15803D" : "#B91C1C"};">${pct(f.coef)}</td></tr>`).join("")}
-    </table>` : "";
   const primerNombre = escHtml(data.nombre.trim().split(" ")[0] || "");
 
   const html = baseLayout(`
@@ -853,8 +859,8 @@ export async function sendEstimacionAlUsuario(data: {
         <p style="${styles.value}">${fmtUsd(data.resultado.precioM2Resultante)}/m²${data.resultado.confianza ? ` <span style="color:#8C7641;font-weight:400;">· precisión ${escHtml(data.resultado.confianza)}</span>` : ""}</p>
       </div>` : ""}
 
-      ${factores("Lo que sumó", data.resultado.factoresPositivos)}
-      ${factores("Lo que restó", data.resultado.factoresNegativos)}
+      <p style="${styles.label};margin-top:6px;">Los datos que cargaste</p>
+      ${detalleEstimacion(data.input, data.resultado, true)}
 
       <p style="${styles.lead}">
         Es una estimación orientativa, calculada con los datos que cargaste y los valores

@@ -120,7 +120,7 @@ export async function POST(req: Request) {
     // dirección tiene tope propio (si no, el endpoint sirve para spamear a un tercero)
     try {
       if (await checkRateLimitClave(`estimador-mail:${email}`, 3, 86400)) {
-        await sendEstimacionAlUsuario({ para: email, nombre, barrio: input.barrio, resultado });
+        await sendEstimacionAlUsuario({ para: email, nombre, barrio: input.barrio, input, resultado });
       }
     } catch (e) {
       console.error("Error enviando la estimación al usuario:", e);
