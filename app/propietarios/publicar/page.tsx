@@ -17,7 +17,7 @@ const PAGINA = "/propietarios/publicar";
 export const metadata: Metadata = {
   title: "Publicá tu propiedad gratis y sin comisión",
   description:
-    "Publicá gratis tu departamento, casa o terreno en Espacio Inmobiliario: sin comisión, con los interesados escribiéndote directo a tu WhatsApp y cada publicación revisada antes de salir.",
+    "Publicá gratis tu departamento, casa o terreno en Espacio Inmobiliario: sin comisión, con las consultas de los interesados llegándote a tu email y a tu panel, y cada publicación revisada antes de salir.",
   alternates: { canonical: `${SITE}${PAGINA}` },
   openGraph: {
     title: "Publicá tu propiedad gratis · Espacio Inmobiliario",
@@ -30,12 +30,12 @@ const PASOS = [
   { t: "Creá tu cuenta", d: "Nombre, teléfono y email. Lleva un minuto." },
   { t: "Cargá tu propiedad", d: "Fotos, datos y la ubicación con un pin en el mapa. La descripción, si querés, te ayudamos a escribirla." },
   { t: "La revisamos", d: "Cada publicación pasa por Eugenio antes de salir al portal." },
-  { t: "Recibí a los interesados", d: "Te escriben a tu WhatsApp o piden una visita en los horarios que elijas." },
+  { t: "Recibí a los interesados", d: "Te llegan sus consultas a tu email y a tu panel, o piden una visita en los horarios que elijas." },
 ] as const;
 
 const INCLUYE: ItemIndice[] = [
   { icon: Tag, t: "Sin comisión", d: "No somos intermediarios: si vendés por tu cuenta, el trato es directo con el comprador." },
-  { icon: MessageCircle, t: "Contacto directo", d: "Los interesados te escriben a tu WhatsApp desde la ficha, sin intermediarios." },
+  { icon: MessageCircle, t: "Consultas al instante", d: "Los interesados te escriben desde la ficha y cada consulta te llega a tu email y a tu panel, sin intermediarios." },
   { icon: CalendarDays, t: "Agenda de visitas", d: "Elegís tus horarios, los interesados piden turno online y vos confirmás." },
   { icon: Sparkles, t: "Descripción asistida", d: "Te ayudamos a escribir la descripción a partir de los datos que cargás." },
   { icon: ShieldCheck, t: "Sellos de verificación", d: "Validá tu identidad y tu escritura: la ficha lo muestra y el comprador llega con más confianza." },
@@ -55,7 +55,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Cómo me contactan los interesados?",
-    a: "Desde la ficha de tu propiedad: te escriben a tu WhatsApp, te dejan una consulta que ves en tu panel o te piden una visita en los horarios que elegiste.",
+    a: "Desde la ficha de tu propiedad: te dejan una consulta, que te llega por email y la ves en tu panel, o te piden una visita en los horarios que elegiste. Tu teléfono no se muestra en la publicación.",
   },
   {
     q: "¿Tengo que validar mi identidad?",
@@ -112,13 +112,13 @@ export default async function PublicarPage() {
               <span className="pr-corte"><em>Sin comisión.</em></span>
             </h1>
             <p className="pr-lead">
-              Los interesados te escriben directo a tu WhatsApp, sin intermediarios.
+              Las consultas de los interesados te llegan directo a tu email y a tu panel, sin intermediarios.
               Y cada publicación la revisa Eugenio Nielsen antes de salir al portal.
             </p>
             <ul className="pr-promesas">
               <li>Sin comisión</li>
               <li>Sin intermediarios</li>
-              <li>Contacto directo por WhatsApp</li>
+              <li>Consultas a tu email y a tu panel</li>
               <li>Agenda de visitas online</li>
             </ul>
           </div>

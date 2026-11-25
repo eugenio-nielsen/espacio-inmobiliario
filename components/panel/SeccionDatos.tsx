@@ -51,8 +51,8 @@ export default function SeccionDatos({
         }}>
           <AlertTriangle size={16} strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} />
           <span>
-            Todavía no cargaste tu teléfono. Sin él, los interesados no ven el
-            botón de WhatsApp en tus publicaciones.
+            Todavía no cargaste tu teléfono. Lo necesitamos para poder
+            comunicarnos con vos por tus consultas y visitas; no se muestra en tus publicaciones.
           </span>
         </div>
       )}

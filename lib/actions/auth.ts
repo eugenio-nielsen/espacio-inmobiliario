@@ -46,8 +46,8 @@ export async function signUp(formData: FormData) {
 
   if (!nombre) return { error: "Ingresá tu nombre." };
 
-  // El teléfono es obligatorio: es la vía de contacto que ven los interesados
-  // (botón de WhatsApp en la ficha). Se valida acá, no solo en el formulario,
+  // El teléfono es obligatorio: es la vía para contactar al dueño (no se muestra
+  // en la ficha, las consultas entran por el sitio). Se valida acá, no solo en el formulario,
   // para que no se pueda saltear.
   const tel = normalizarTelefono(formData.get("telefono") as string);
   if (!tel.ok) return { error: tel.error };
