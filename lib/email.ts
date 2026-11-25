@@ -87,7 +87,7 @@ function bloqueHerramientas(): string {
 }
 
 /** Pie completo, a tono con el del sitio: navy y oro, con los accesos y el contacto. */
-function pieCompleto(): string {
+function pieCompleto(bajaUrl?: string): string {
   const enlace = (t: string, href: string) => `<a href="${SITE}${href}" style="color:#CBB585;text-decoration:none;font-size:13px;line-height:2;">${t}</a>`;
   return `
   <div style="background:#0E2C50;padding:28px 32px 8px;">
@@ -109,13 +109,13 @@ function pieCompleto(): string {
     </tr></table>
     <p style="margin:6px 0 0;border-top:1px solid #234C7A;padding:16px 0 4px;color:#8AA1BD;font-size:12px;line-height:1.7;text-align:center;">
       Buenos Aires, Argentina · <a href="https://wa.me/${WHATSAPP}" style="color:#CBB585;text-decoration:none;">${TELEFONO_TEXTO}</a><br/>
-      <a href="${SITE}/terminos" style="color:#8AA1BD;">Términos</a> · <a href="${SITE}/privacidad" style="color:#8AA1BD;">Privacidad</a>
+      <a href="${SITE}/terminos" style="color:#8AA1BD;">Términos</a> · <a href="${SITE}/privacidad" style="color:#8AA1BD;">Privacidad</a>${bajaUrl ? ` · <a href="${bajaUrl}" style="color:#8AA1BD;">Darme de baja</a>` : ""}
     </p>
     <p style="margin:0;padding:6px 0 20px;color:#8AA1BD;font-size:12px;text-align:center;">© ${new Date().getFullYear()} Espacio Inmobiliario</p>
   </div>`;
 }
 
-function baseLayout(content: string, opts?: { completo?: boolean }): string {
+function baseLayout(content: string, opts?: { completo?: boolean; bajaUrl?: string }): string {
   return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
 <style>@media (max-width:480px){.col{display:block!important;width:100%!important;box-sizing:border-box}}</style>
@@ -123,7 +123,7 @@ function baseLayout(content: string, opts?: { completo?: boolean }): string {
 <div style="${styles.wrap}">
   ${cabecera}
   ${content}
-  ${opts?.completo ? pieCompleto() : pieCorto()}
+  ${opts?.completo ? pieCompleto(opts.bajaUrl) : pieCorto()}
 </div></body></html>`;
 }
 
@@ -1093,4 +1093,71 @@ export async function sendAsesoriaAcuse(data: { para: string; nombre: string; me
     subject: "Recibimos tu consulta — Espacio Inmobiliario",
     html,
   });
+}
+
+// ── Plantillas para Resend (Broadcasts) ────────────────────────
+// No se envían desde el código: scripts/generar-plantillas-resend.mts las
+// escribe en emails/resend/ para pegarlas en Resend. Usan las variables de
+// Resend ({{{FIRST_NAME}}}, {{{RESEND_UNSUBSCRIBE_URL}}}), no datos nuestros.
+
+/** Seguimiento a los 7 días: cómo le fue con la tasación o con el portal. */
+export function plantillaSeguimiento(origen: "tasador" | "registro"): string {
+  const t = origen === "tasador"
+    ? {
+        eyebrow: "Una semana después",
+        titulo: "¿Qué te pareció tu tasación?",
+        lead: "hace unos días te enviamos la estimación de tu propiedad. Nos gustaría saber cómo te fue.",
+        preguntas: [
+          "¿El valor se acercó a lo que esperabas?",
+          "¿Qué dato te faltó o te pareció que no reflejaba tu propiedad?",
+          "¿Ya decidiste qué hacer: vender, esperar, alquilar?",
+        ],
+        asunto: "Mi tasación",
+        secundario: { href: "/contacto?motivo=vender", texto: "Revisar mi tasación con Eugenio" },
+        terciario: { href: "/propietarios/publicar", texto: "Publicar mi propiedad gratis" },
+      }
+    : {
+        eyebrow: "Una semana después",
+        titulo: "¿Qué te pareció el portal?",
+        lead: "hace una semana creaste tu cuenta en Espacio Inmobiliario. Queremos saber cómo te fue.",
+        preguntas: [
+          "¿Pudiste cargar tu propiedad sin trabas?",
+          "¿Hubo algo que no entendiste o que no funcionó?",
+          "¿Qué te gustaría que el portal tuviera?",
+        ],
+        asunto: "Mi experiencia en el portal",
+        secundario: { href: "/panel/propiedades/nueva", texto: "Cargar mi propiedad" },
+        terciario: { href: "/panel/perfil", texto: "Validar mi identidad" },
+      };
+
+  const items = t.preguntas.map((p, i) => `
+    <tr>
+      <td valign="top" style="padding:0 14px 12px 0;color:#B99F66;font-family:${SERIF};font-size:20px;font-weight:700;width:34px;">${["I", "II", "III"][i]}</td>
+      <td style="padding:2px 0 12px;color:#0E2C50;font-size:15px;line-height:1.5;font-weight:600;">${p}</td>
+    </tr>`).join("");
+
+  return baseLayout(`
+    <div style="background:#0E2C50;padding:36px 32px 32px;">
+      <p style="margin:0 0 10px;color:#CBB585;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;">${t.eyebrow}</p>
+      <h1 style="margin:0 0 12px;color:#fff;font-family:${SERIF};font-size:28px;line-height:1.25;font-weight:700;">${t.titulo}</h1>
+      <p style="margin:0;color:#DCE4EE;font-size:15px;line-height:1.7;">Hola {{{FIRST_NAME|}}}, ${t.lead}</p>
+    </div>
+
+    <div style="padding:28px 32px 26px;">
+      <p style="${styles.label};margin:0 0 12px;">Lo que nos interesa saber</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">${items}</table>
+      <p style="margin:6px 0 22px;color:#595349;font-size:14px;line-height:1.7;">
+        Con una línea nos alcanza: <strong>respondé este email</strong> y te lee Eugenio en persona.
+        Tu opinión nos ayuda a mejorar.
+      </p>
+      <a href="mailto:${ADMIN}?subject=${encodeURIComponent(t.asunto)}" style="${styles.btn}">Contanos cómo te fue &rarr;</a>
+      <p style="margin:20px 0 0;font-size:14px;line-height:1.9;color:#595349;">
+        <a href="${SITE}${t.secundario.href}" style="color:#8C7641;font-weight:600;">${t.secundario.texto}</a><br/>
+        <a href="${SITE}${t.terciario.href}" style="color:#8C7641;font-weight:600;">${t.terciario.texto}</a>
+      </p>
+    </div>
+
+    ${bloqueHerramientas()}
+    <div style="background:#fff;padding-top:26px;border-top:1px solid #E8DFC8;">${bloqueFirma()}</div>
+  `, { completo: true, bajaUrl: "{{{RESEND_UNSUBSCRIBE_URL}}}" });
 }
