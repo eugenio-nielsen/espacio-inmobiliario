@@ -104,9 +104,9 @@ type Estado = {
   credito: number | null;
 };
 
-function inicial(c: CostosConfig): Estado {
+function inicial(c: CostosConfig, precio = 150000): Estado {
   return {
-    precio: 150000,
+    precio,
     moneda: "USD",
     tipoCambio: c.tipoCambio,
     viviendaUnica: true,
@@ -194,8 +194,8 @@ function LineaVista({ l, moneda, abierta, alternar }: { l: Linea; moneda: Moneda
   );
 }
 
-export default function Calculadora({ config, consulta = "" }: { config: CostosConfig; consulta?: string }) {
-  const base = useMemo(() => inicial(config), [config]);
+export default function Calculadora({ config, consulta = "", foco, precioInicial }: { config: CostosConfig; consulta?: string; foco?: "vender" | "comprar"; precioInicial?: number }) {
+  const base = useMemo(() => inicial(config, precioInicial), [config, precioInicial]);
   // La página pasa la consulta de la URL: un enlace compartido llega ya con sus datos
   const [e, setE] = useState<Estado>(() => leerConsulta(base, consulta));
   const [abiertas, setAbiertas] = useState<Set<string>>(new Set());
@@ -348,8 +348,8 @@ export default function Calculadora({ config, consulta = "" }: { config: CostosC
         <div className="cat-doble" />
 
         <div className="cat-partes">
-          <div className="cat-parte">
-            <h3>Comprador <span>lo que desembolsa</span></h3>
+          <div className={`cat-parte${foco === "comprar" ? " cat-parte-foco" : ""}`}>
+            <h3>Comprador <span>lo que desembolsa</span>{foco === "comprar" && <em className="cat-parte-tu">Tu punta</em>}</h3>
             <ul className="cat-lineas">
               <li className="cat-linea cat-linea-precio">
                 <div className="cat-linea-fila"><span>Precio</span><span className="cat-linea-guia" aria-hidden="true" /><span className="cat-linea-monto">{dinero(precio, m)}</span></div>
@@ -367,8 +367,8 @@ export default function Calculadora({ config, consulta = "" }: { config: CostosC
             </div>
           </div>
 
-          <div className="cat-parte">
-            <h3>Vendedor <span>lo que le queda</span></h3>
+          <div className={`cat-parte${foco === "vender" ? " cat-parte-foco" : ""}`}>
+            <h3>Vendedor <span>lo que le queda</span>{foco === "vender" && <em className="cat-parte-tu">Tu punta</em>}</h3>
             <ul className="cat-lineas">
               <li className="cat-linea cat-linea-precio">
                 <div className="cat-linea-fila"><span>Precio</span><span className="cat-linea-guia" aria-hidden="true" /><span className="cat-linea-monto">{dinero(precio, m)}</span></div>

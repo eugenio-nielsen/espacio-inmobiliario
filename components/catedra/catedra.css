@@ -486,3 +486,25 @@ fieldset.cat-campo { margin: 0; padding: 0; border: 0; min-width: 0; }
   .cat-linea { break-inside: avoid; }
   .cat-partes { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Páginas "cuánto cuesta vender / comprar" ─────────────────── */
+.cat-parte-foco { order: -1; }
+.cat-parte-tu { display: block; width: max-content; margin: 8px 0 0; padding: 2px 8px; font-family: var(--font-sans); font-size: 9.5px; font-style: normal; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-700); border: 1px solid var(--gold-300); }
+.cat-guia-in { max-width: 860px; }
+.cat-guia .cat-seccion-t { max-width: none; }
+.cat-guia-resp { margin: 0 0 32px; padding: 20px 22px; font-family: var(--font-sans); font-size: 16px; line-height: 1.75; color: var(--ink-700, var(--ink-600)); background: #FFFDF9; box-shadow: 0 0 0 1px var(--gold-300); }
+.cat-guia-p { margin: 0 0 16px; font-family: var(--font-sans); font-weight: 300; font-size: 16px; line-height: 1.78; color: var(--ink-600); }
+.cat-guia-p strong { font-weight: 600; color: var(--navy-800); }
+.cat-guia-p a, .cat-guia-cruce a { color: var(--navy-800); text-decoration: underline; text-decoration-color: var(--gold-500); text-underline-offset: 3px; }
+.cat-guia-h3 { margin: 0 0 14px; font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--navy-800); }
+.cat-tabla-wrap { overflow-x: auto; }
+.cat-tabla { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 14.5px; color: var(--ink-600); }
+.cat-tabla th, .cat-tabla td { padding: 12px 14px; text-align: right; border-bottom: 1px solid var(--line-100); white-space: nowrap; }
+.cat-tabla thead th { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-500); border-bottom: 1px solid var(--gold-300); }
+.cat-tabla th[scope="row"], .cat-tabla thead th:first-child { text-align: left; color: var(--navy-800); font-weight: 600; }
+.cat-guia-nota { margin: 14px 0 0; font-family: var(--font-sans); font-size: 12.5px; line-height: 1.65; color: var(--ink-500); }
+.cat-faq { margin: 0; }
+.cat-faq > div { padding: 18px 0; border-bottom: 1px solid var(--line-100); }
+.cat-faq dt { margin: 0 0 6px; font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--navy-800); }
+.cat-faq dd { margin: 0; font-family: var(--font-sans); font-weight: 300; font-size: 15.5px; line-height: 1.72; color: var(--ink-600); }
+.cat-guia-cruce { margin: 28px 0 0; font-family: var(--font-sans); font-size: 14px; color: var(--ink-600); }

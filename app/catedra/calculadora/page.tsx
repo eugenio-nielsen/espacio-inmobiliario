@@ -55,6 +55,17 @@ export default async function CalculadoraPage({ searchParams }: Props) {
       </header>
 
       <Calculadora config={config} consulta={consulta.toString()} />
+
+      <section className="cat-seccion">
+        <div className="cat-in cat-guia-in">
+          <p className="cat-guia-cruce" style={{ margin: 0 }}>
+            Guías por punta:{" "}
+            <Link href="/catedra/cuanto-cuesta-vender-una-propiedad">Cuánto cuesta vender una propiedad</Link>
+            {" · "}
+            <Link href="/catedra/cuanto-cuesta-comprar-una-propiedad">Cuánto cuesta comprar una propiedad</Link>
+          </p>
+        </div>
+      </section>
     </>
   );
 }

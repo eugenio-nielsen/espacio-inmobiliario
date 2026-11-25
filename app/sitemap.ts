@@ -34,6 +34,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ["/foro/normas", 0.3],
     ["/catedra", 0.7],
     ["/catedra/calculadora", 0.8],
+    ["/catedra/cuanto-cuesta-vender-una-propiedad", 0.8],
+    ["/catedra/cuanto-cuesta-comprar-una-propiedad", 0.8],
     // /auth/registro no va en el sitemap: robots.txt bloquea /auth/ y
     // anunciarla acá mandaba señales contradictorias a los buscadores.
     ["/terminos", 0.3],
