@@ -4,6 +4,7 @@ import { Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import AsesoriaFlotante from "@/components/AsesoriaFlotante";
+import ClicksGA from "@/components/analytics/ClicksGA";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -20,6 +21,9 @@ const playfair = Playfair_Display({
 
 import { SITE } from "@/lib/site";
 const GA_ID = "G-EV1LYND1S5";
+// GA solo en el sitio publicado: en desarrollo (localhost) cada prueba
+// sumaba visitas y eventos falsos a los números reales
+const GA_ACTIVO = process.env.NODE_ENV === "production";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
@@ -44,20 +48,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
 
         <AsesoriaFlotante />
+        <ClicksGA />
 
         {/* Google Analytics — carga después de que la página es interactiva */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
-          `}
-        </Script>
+        {GA_ACTIVO && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

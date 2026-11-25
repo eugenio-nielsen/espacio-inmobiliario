@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-declare global {
-  interface Window {
-    dataLayer?: unknown[];
-    gtag?: (...args: unknown[]) => void;
-  }
-}
+import { enviarEventoGA, type ParamsGA } from "@/lib/analytics";
 
 /**
  * Manda un evento a Google Analytics una sola vez, al montarse.
@@ -18,9 +12,8 @@ declare global {
  * marcaron (?bienvenida=1, ?creada=1): si la página se recarga o se
  * comparte, el evento no se cuenta dos veces.
  *
- * El script de GA carga "afterInteractive" y puede llegar después que
- * este efecto: si gtag todavía no existe, el evento queda en la cola de
- * dataLayer con el mismo formato que usa gtag, y se envía al cargar.
+ * Cómo se manda (y qué pasa si el script de GA todavía no cargó) está
+ * en enviarEventoGA, en lib/analytics.ts.
  */
 export default function EventoGA({
   nombre,
@@ -28,7 +21,7 @@ export default function EventoGA({
   limpiar = [],
 }: {
   nombre: string;
-  params?: Record<string, string | number>;
+  params?: ParamsGA;
   /** Parámetros de la URL que se sacan después de enviar el evento. */
   limpiar?: string[];
 }) {
@@ -38,15 +31,7 @@ export default function EventoGA({
     if (enviado.current) return;
     enviado.current = true;
 
-    window.dataLayer = window.dataLayer || [];
-    const gtag =
-      window.gtag ??
-      function () {
-        // gtag encola el objeto `arguments`, no un array: se respeta
-        // eslint-disable-next-line prefer-rest-params
-        window.dataLayer!.push(arguments);
-      };
-    gtag("event", nombre, params ?? {});
+    enviarEventoGA(nombre, params);
 
     if (limpiar.length) {
       const url = new URL(window.location.href);

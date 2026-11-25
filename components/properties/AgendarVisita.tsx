@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { CalendarDays, CheckCircle2, ChevronRight, Clock } from "lucide-react";
 import { solicitarVisita } from "@/lib/actions/visitas";
+import { enviarEventoGA, type ParamsGA } from "@/lib/analytics";
 import { formatearVisita } from "@/lib/utils/agenda";
 import type { DiaConSlots } from "@/lib/utils/agenda";
 
@@ -23,9 +24,12 @@ function corta(etiqueta: string): string {
 export default function AgendarVisita({
   propertyId,
   dias,
+  ga,
 }: {
   propertyId: string;
   dias: DiaConSlots[];
+  /** Datos de la propiedad (operación, tipo) que acompañan al evento de Analytics. */
+  ga?: ParamsGA;
 }) {
   const [diaActivo, setDiaActivo] = useState(dias[0]?.dia ?? "");
   const [slot, setSlot] = useState<string | null>(null);
@@ -42,7 +46,10 @@ export default function AgendarVisita({
     startTransition(async () => {
       const r = await solicitarVisita(propertyId, formData);
       if (r?.error) setError(r.error);
-      else setEnviado(true);
+      else {
+        setEnviado(true);
+        enviarEventoGA("solicitud_visita", ga);
+      }
     });
   }
 

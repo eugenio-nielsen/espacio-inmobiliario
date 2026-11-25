@@ -4,6 +4,7 @@ import { useState } from "react";
 import AgendarVisita from "@/components/properties/AgendarVisita";
 import InquiryForm from "@/components/properties/InquiryForm";
 import type { DiaConSlots } from "@/lib/utils/agenda";
+import type { ParamsGA } from "@/lib/analytics";
 
 /**
  * Bloque de contacto de la ficha.
@@ -15,20 +16,23 @@ import type { DiaConSlots } from "@/lib/utils/agenda";
 export default function ContactoPropiedad({
   propertyId,
   dias,
+  ga,
 }: {
   propertyId: string;
   dias: DiaConSlots[];
+  /** Datos de la propiedad (operación, tipo) que acompañan al evento de Analytics. */
+  ga?: ParamsGA;
 }) {
   const hayAgenda = dias.length > 0;
   const [modo, setModo] = useState<"agenda" | "consulta">(hayAgenda ? "agenda" : "consulta");
 
-  if (!hayAgenda) return <InquiryForm propertyId={propertyId} />;
+  if (!hayAgenda) return <InquiryForm propertyId={propertyId} ga={ga} />;
 
   return (
     <div id="visitas">
       {modo === "agenda"
-        ? <AgendarVisita propertyId={propertyId} dias={dias} />
-        : <InquiryForm propertyId={propertyId} />}
+        ? <AgendarVisita propertyId={propertyId} dias={dias} ga={ga} />
+        : <InquiryForm propertyId={propertyId} ga={ga} />}
 
       <button
         type="button"

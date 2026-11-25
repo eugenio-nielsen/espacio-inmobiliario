@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Check, ArrowRight, MessageCircle } from "lucide-react";
 import { enviarConsultaAsesoria } from "@/lib/actions/asesoria";
+import { enviarEventoGA } from "@/lib/analytics";
 import { MOTIVOS, type MotivoId } from "@/lib/motivos";
 
 import { WHATSAPP } from "@/lib/contacto";
@@ -35,8 +36,10 @@ export default function FormContacto({ motivoInicial = "otro" }: { motivoInicial
     setError(null);
     startTransition(async () => {
       const r = await enviarConsultaAsesoria({ ...form, motivo });
-      if (r.ok) setSent(true);
-      else setError(r.error || "No se pudo enviar.");
+      if (r.ok) {
+        setSent(true);
+        enviarEventoGA("consulta_servicio", { servicio: "contacto", motivo });
+      } else setError(r.error || "No se pudo enviar.");
     });
   }
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { normalizarTelefono } from "@/lib/utils/telefono";
 import { evaluarConfianza } from "@/lib/estimador/engine";
+import { enviarEventoGA } from "@/lib/analytics";
 import type { EstimadorInput, EstimadorResultado, NivelConfianza } from "@/lib/estimador/types";
 import Guilloche from "@/components/ui/Guilloche";
 import { Opciones, Marcas, Numero, Interruptor, BuscadorBarrio, RosaVientos, type Opcion } from "./controles";
@@ -195,6 +196,11 @@ export default function Tasador({
         setError(data.error || "No se pudo calcular la estimación.");
       } else {
         setResultado(data);
+        enviarEventoGA("tasacion_completada", {
+          barrio: input.barrio,
+          confianza: evaluacion?.nivel,
+          origen: embebido ? "nota" : "tasador",
+        });
       }
     } catch {
       setError("Error de conexión. Intentá de nuevo.");

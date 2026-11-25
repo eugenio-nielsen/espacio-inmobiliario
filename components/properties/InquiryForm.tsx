@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { sendInquiry } from "@/lib/actions/inquiries";
+import { enviarEventoGA, type ParamsGA } from "@/lib/analytics";
 import { MessageCircle, CheckCircle2 } from "lucide-react";
 
 const inp: React.CSSProperties = {
@@ -12,7 +13,7 @@ const inp: React.CSSProperties = {
   background: "#fff",
 };
 
-export default function InquiryForm({ propertyId }: { propertyId: string }) {
+export default function InquiryForm({ propertyId, ga }: { propertyId: string; ga?: ParamsGA }) {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -24,7 +25,10 @@ export default function InquiryForm({ propertyId }: { propertyId: string }) {
     startTransition(async () => {
       const result = await sendInquiry(propertyId, formData);
       if (result?.error) setError(result.error);
-      else setSent(true);
+      else {
+        setSent(true);
+        enviarEventoGA("consulta_propiedad", ga);
+      }
     });
   }
 

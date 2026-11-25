@@ -1,9 +1,10 @@
 import { SITE } from "@/lib/site";
 import { cache } from "react";
-import { after } from "next/server";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentUser } from "@/lib/auth/user";
+import { esAdminEmail } from "@/lib/admin";
 import { notFound } from "next/navigation";
 import PropertyMapWrapper from "@/components/map/PropertyMapWrapper";
 import { geocodeProperty } from "@/lib/utils/geocode";
@@ -16,6 +17,7 @@ import Footer from "@/components/Footer";
 import StickyPropertyBar from "@/components/properties/StickyPropertyBar";
 import PropertyGallery from "@/components/properties/PropertyGallery";
 import ContactoPropiedad from "@/components/properties/ContactoPropiedad";
+import RegistrarVista from "@/components/properties/RegistrarVista";
 import { SelloPropietario, SelloDominio } from "@/components/properties/SellosVerificacion";
 import CostosCompra from "@/components/properties/CostosCompra";
 import { getCostosConfig } from "@/lib/catedra/data";
@@ -120,16 +122,13 @@ export default async function PropiedadPage({ params }: PageProps) {
   const property = await getPropiedad(id);
   if (!property) notFound();
 
-  // Incrementar vistas después de enviar la respuesta (no bloquea el render)
-  // Usamos admin client porque after() corre fuera del contexto de request (sin cookies)
-  after(async () => {
-    try {
-      const admin = createAdminClient();
-      await admin.rpc("increment_property_views", { property_id: property.id });
-    } catch (e) {
-      console.error("Error incrementando views:", e);
-    }
-  });
+  // Las visitas ya no se cuentan acá, al armar la página (la armaban también
+  // los robots y el propio dueño): las pide el navegador con <RegistrarVista>,
+  // salvo que mire el dueño o el administrador. getUser va antes del
+  // Promise.all de abajo: el adaptador de cookies de Supabase falla si corre
+  // en paralelo con otras consultas.
+  const user = await getCurrentUser();
+  const sumaVista = !(user && (user.id === property.owner_id || esAdminEmail(user.email)));
 
   const p = property;
   // Una cochera no tiene ambientes, dormitorios ni baños, ni "incluye
@@ -287,6 +286,7 @@ export default async function PropiedadPage({ params }: PageProps) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      {sumaVista && <RegistrarVista propertyId={p.id} />}
       <div className="property-page-pad" style={{ minHeight: "100vh", background: "var(--cream)" }}>
         <Navbar />
 
@@ -505,7 +505,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                 </div>
 
                 {/* Inquiry form */}
-                <ContactoPropiedad propertyId={p.id} dias={diasAgenda} />
+                <ContactoPropiedad propertyId={p.id} dias={diasAgenda} ga={{ operacion: p.operacion, tipo: p.tipo }} />
               </div>
 
               {/* Reference */}

@@ -38,7 +38,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">{l.icon}</svg>
         </a>
       ))}
-      <button onClick={copy} aria-label="Copiar link" title="Copiar link" data-copiado={copied}>
+      <button onClick={copy} aria-label="Copiar link" title="Copiar link" data-copiado={copied} data-ga-evento="share" data-ga-method="copiar">
         {copied ? <Check size={15} /> : <Link2 size={15} />}
       </button>
     </div>

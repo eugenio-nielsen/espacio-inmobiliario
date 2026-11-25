@@ -63,7 +63,7 @@ export default function AsesoriaFlotante() {
   }
 
   return (
-    <aside className="asesoria-flotante" role="complementary" aria-label="Asesoramiento para tu propiedad">
+    <aside className="asesoria-flotante" role="complementary" aria-label="Asesoramiento para tu propiedad" data-ga-zona="flotante">
       <button type="button" onClick={cerrar} aria-label="Cerrar" className="asesoria-cerrar">
         <X size={16} strokeWidth={1.5} />
       </button>

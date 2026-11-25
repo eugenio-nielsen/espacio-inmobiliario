@@ -127,7 +127,7 @@ export default function StickyPropertyBar({
           )}
         </button>
 
-        <button onClick={scrollToForm} style={{
+        <button onClick={scrollToForm} data-ga-evento="clic_consultar" data-ga-zona="barra_ficha" style={{
           flexShrink: 0, fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 14.5,
           background: "var(--navy-800)", color: "#fff", border: "none",
           padding: "12px 22px", borderRadius: "var(--radius-sm)", cursor: "pointer",

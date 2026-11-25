@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { setPropertyStatus } from "@/lib/actions/properties";
 import { solicitarAyudaVenta } from "@/lib/actions/ayuda";
+import { enviarEventoGA } from "@/lib/analytics";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import type { PropertyWithInquiries } from "@/lib/types";
 
@@ -244,8 +245,10 @@ function BotonAyuda({ propertyId }: { propertyId: string }) {
     startTransition(async () => {
       setError(null);
       const r = await solicitarAyudaVenta(propertyId);
-      if (r.ok) setEnviado(true);
-      else setError(r.error ?? "No se pudo enviar.");
+      if (r.ok) {
+        setEnviado(true);
+        enviarEventoGA("consulta_servicio", { servicio: "ayuda_vender" });
+      } else setError(r.error ?? "No se pudo enviar.");
     });
   }
 
