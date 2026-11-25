@@ -9,7 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: g.titulo,
     description: g.descripcion,
-    alternates: { canonical: `${SITE}/catedra/${g.slug}` },
+    // La versión en markdown (.md) es para asistentes de IA: ver /llms.txt
+    alternates: { canonical: `${SITE}/catedra/${g.slug}`, types: { "text/markdown": `${SITE}/catedra/${g.slug}.md` } },
     openGraph: { title: g.titulo, description: g.descripcion, url: `${SITE}/catedra/${g.slug}`, type: "website", locale: "es_AR" },
   };
 }

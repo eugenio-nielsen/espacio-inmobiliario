@@ -59,7 +59,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: url },
+    // La versión en markdown (/blog/<nota>.md) es para asistentes de IA: ver /llms.txt
+    alternates: { canonical: url, types: { "text/markdown": `${url}.md` } },
     openGraph: {
       title, description, url, type: "article",
       publishedTime: post.published_at || undefined,

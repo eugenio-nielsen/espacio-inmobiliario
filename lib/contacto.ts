@@ -6,3 +6,5 @@
 export const WHATSAPP = "5491168581116"; // para https://wa.me/<número>
 export const TELEFONO_TEXTO = "+54 9 11 6858-1116";
 export const TELEFONO_E164 = `+${WHATSAPP}`;
+/** Casilla pública de contacto (la misma que figura en los datos estructurados del home). */
+export const EMAIL_CONTACTO = "eugenio@espacioinmobiliario.com.ar";
