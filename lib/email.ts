@@ -1,6 +1,8 @@
 import { Resend } from "resend";
 import { datosDeclarados } from "@/lib/estimador/declarado";
 import type { EstimadorResultado, FactorAplicado } from "@/lib/estimador/types";
+import { HERRAMIENTAS } from "@/lib/herramientas";
+import { WHATSAPP, TELEFONO_TEXTO } from "@/lib/contacto";
 
 // Inicialización lazy — evita crash si la key no está configurada en el entorno
 function getResend() {
@@ -29,18 +31,99 @@ const styles = {
   footer:  "border-top:1px solid #F0ECE3;padding:18px 32px;text-align:center;color:#A39C8F;font-size:12px;",
 };
 
-function baseLayout(content: string): string {
-  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet"/>
-</head><body style="${styles.body}">
-<div style="${styles.wrap}">
-  <div style="${styles.header}">
-    <a href="${SITE}" style="${styles.logo}">Espacio Inmobiliario</a>
-  </div>
-  ${content}
+// Imágenes: PNG en /public/email (los clientes de correo no muestran SVG).
+// Se regeneran con scripts/generar-assets-email.mjs.
+const IMG = `${SITE}/email`;
+const SERIF = "'Playfair Display',Georgia,'Times New Roman',serif";
+const SANS = "'Outfit',system-ui,-apple-system,'Segoe UI',Arial,sans-serif";
+
+/** Logo sobre su fondo crema, con filete dorado debajo. Va en todos los mails. */
+const cabecera = `
+  <div style="background:#F8F9F4;padding:22px 32px 18px;text-align:center;border-bottom:3px solid #B99F66;">
+    <a href="${SITE}" style="text-decoration:none;"><img src="${IMG}/logo.png" width="190" alt="Espacio Inmobiliario" style="display:inline-block;border:0;height:auto;max-width:100%;"/></a>
+  </div>`;
+
+/** Pie corto: mails operativos (avisos al admin, al dueño, validaciones…). */
+function pieCorto(): string {
+  return `
   <div style="${styles.footer}">
     © ${new Date().getFullYear()} Espacio Inmobiliario · <a href="${SITE}" style="color:#A39C8F;">${SITE.replace("https://","")}</a>
-  </div>
+  </div>`;
+}
+
+/** Firma de Eugenio, como la del sitio: el trazo, el nombre y las vías de contacto. */
+function bloqueFirma(): string {
+  return `
+  <div style="padding:6px 32px 30px;">
+    <p style="margin:0 0 6px;color:#595349;font-size:14px;line-height:1.6;">Te esperamos,</p>
+    <img src="${IMG}/firma.png" width="210" alt="" style="display:block;border:0;height:auto;margin:0 0 2px -4px;"/>
+    <p style="margin:0;color:#0E2C50;font-family:${SERIF};font-size:18px;font-weight:700;">Eugenio Nielsen</p>
+    <p style="margin:2px 0 10px;color:#8C7641;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;">Fundador · Espacio Inmobiliario</p>
+    <p style="margin:0;font-size:13px;line-height:1.8;color:#595349;">
+      <a href="https://wa.me/${WHATSAPP}" style="color:#15803D;text-decoration:none;font-weight:600;">WhatsApp ${TELEFONO_TEXTO}</a><br/>
+      <a href="mailto:${ADMIN}" style="color:#0E2C50;text-decoration:none;">${ADMIN}</a>
+    </p>
+  </div>`;
+}
+
+/** Las herramientas gratuitas (misma lista que el menú y el footer del sitio). */
+function bloqueHerramientas(): string {
+  const celda = (h: { href: string; label: string; detalle: string }) => `
+    <td class="col" valign="top" width="50%" style="padding:0 6px 12px;">
+      <a href="${SITE}${h.href}" style="display:block;text-decoration:none;background:#fff;border:1px solid #E8DFC8;border-radius:12px;padding:16px 16px 14px;">
+        <span style="display:block;color:#0E2C50;font-size:15px;font-weight:700;line-height:1.3;">${h.label}</span>
+        <span style="display:block;color:#595349;font-size:13px;line-height:1.5;margin:4px 0 10px;">${h.detalle}</span>
+        <span style="color:#8C7641;font-size:13px;font-weight:700;">Abrir &rarr;</span>
+      </a>
+    </td>`;
+  return `
+  <div style="background:#F7F4EE;padding:26px 26px 14px;border-top:1px solid #E8DFC8;">
+    <p style="${styles.label};padding:0 6px;">Herramientas gratuitas</p>
+    <p style="margin:0 0 14px;padding:0 6px;color:#0E2C50;font-family:${SERIF};font-size:20px;font-weight:700;">Números claros antes de decidir</p>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+      ${HERRAMIENTAS.map(celda).join("")}
+    </tr></table>
+  </div>`;
+}
+
+/** Pie completo, a tono con el del sitio: navy y oro, con los accesos y el contacto. */
+function pieCompleto(): string {
+  const enlace = (t: string, href: string) => `<a href="${SITE}${href}" style="color:#CBB585;text-decoration:none;font-size:13px;line-height:2;">${t}</a>`;
+  return `
+  <div style="background:#0E2C50;padding:28px 32px 8px;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+      <td class="col" valign="top" width="50%" style="padding-bottom:18px;">
+        <p style="margin:0 0 6px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;">Espacio</p>
+        ${enlace("Cómo funciona", "/como-funciona")}<br/>
+        ${enlace("Blog", "/blog")}<br/>
+        ${enlace("Tertulia Inmobiliaria (foro)", "/foro")}<br/>
+        ${enlace("Cátedra Inmobiliaria", "/catedra")}
+      </td>
+      <td class="col" valign="top" width="50%" style="padding-bottom:18px;">
+        <p style="margin:0 0 6px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;">Propiedades</p>
+        ${enlace("Ver todas", "/propiedades")}<br/>
+        ${enlace("Precio del m² por barrio", "/precios-m2")}<br/>
+        ${enlace("Vender mi propiedad", "/vender")}<br/>
+        ${enlace("Comprar con respaldo", "/comprar")}
+      </td>
+    </tr></table>
+    <p style="margin:6px 0 0;border-top:1px solid #234C7A;padding:16px 0 4px;color:#8AA1BD;font-size:12px;line-height:1.7;text-align:center;">
+      Buenos Aires, Argentina · <a href="https://wa.me/${WHATSAPP}" style="color:#CBB585;text-decoration:none;">${TELEFONO_TEXTO}</a><br/>
+      <a href="${SITE}/terminos" style="color:#8AA1BD;">Términos</a> · <a href="${SITE}/privacidad" style="color:#8AA1BD;">Privacidad</a>
+    </p>
+    <p style="margin:0;padding:6px 0 20px;color:#8AA1BD;font-size:12px;text-align:center;">© ${new Date().getFullYear()} Espacio Inmobiliario</p>
+  </div>`;
+}
+
+function baseLayout(content: string, opts?: { completo?: boolean }): string {
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<style>@media (max-width:480px){.col{display:block!important;width:100%!important;box-sizing:border-box}}</style>
+</head><body style="${styles.body}">
+<div style="${styles.wrap}">
+  ${cabecera}
+  ${content}
+  ${opts?.completo ? pieCompleto() : pieCorto()}
 </div></body></html>`;
 }
 
@@ -808,7 +891,7 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
   const primerNombre = escHtml(data.nombre.trim().split(" ")[0] || "");
   const paso = (n: string, titulo: string, texto: string, href: string) => `
     <tr>
-      <td valign="top" style="padding:0 14px 16px 0;color:#B99F66;font-size:22px;font-weight:700;width:28px;">${n}</td>
+      <td valign="top" style="padding:0 14px 16px 0;color:#B99F66;font-family:${SERIF};font-size:20px;font-weight:700;width:34px;">${n}</td>
       <td style="padding:0 0 16px;">
         <a href="${href}" style="color:#0E2C50;font-size:15px;font-weight:700;text-decoration:none;">${titulo}</a>
         <p style="margin:2px 0 0;color:#595349;font-size:14px;line-height:1.6;">${texto}</p>
@@ -816,26 +899,38 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
     </tr>`;
 
   const html = baseLayout(`
-    <div style="${styles.body_p}">
-      <h1 style="${styles.h1}">Te damos la bienvenida${primerNombre ? `, ${primerNombre}` : ""}</h1>
-      <p style="${styles.lead}">
-        Tu cuenta en Espacio Inmobiliario ya está lista. Publicar es gratis y el contacto
-        con los interesados es directo, sin intermediarios. Para arrancar:
-      </p>
-
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 8px;">
-        ${paso("1", "Cargá tu propiedad", "Con buenas fotos y una descripción clara, las consultas llegan más rápido.", `${SITE}/panel/propiedades/nueva`)}
-        ${paso("2", "Validá tu identidad", "Las publicaciones de propietarios verificados generan más confianza.", `${SITE}/panel/perfil`)}
-        ${paso("3", "Calculá cuánto vale", "Usá el estimador para fijar un precio con criterio antes de publicar.", `${SITE}/estimador`)}
-      </table>
-
-      <a href="${SITE}/panel" style="${styles.btn}">Ir a mi panel &rarr;</a>
-
-      <p style="color:#A39C8F;font-size:13px;margin-top:22px;line-height:1.6;">
-        ¿Dudas? Respondé este email y te ayudamos.
+    <div style="background:#0E2C50;padding:38px 32px 34px;">
+      <p style="margin:0 0 10px;color:#CBB585;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;">Tu cuenta está lista</p>
+      <h1 style="margin:0 0 12px;color:#fff;font-family:${SERIF};font-size:30px;line-height:1.2;font-weight:700;">
+        Te damos la bienvenida${primerNombre ? `, <span style="color:#CBB585;font-style:italic;">${primerNombre}</span>` : ""}
+      </h1>
+      <p style="margin:0;color:#DCE4EE;font-size:15px;line-height:1.7;">
+        En Espacio Inmobiliario publicar es gratis y el contacto con los interesados es directo,
+        sin intermediarios. Estos son los primeros pasos:
       </p>
     </div>
-  `);
+
+    <div style="padding:30px 32px 8px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 8px;">
+        ${paso("I", "Cargá tu propiedad", "Con buenas fotos y una descripción clara, las consultas llegan más rápido.", `${SITE}/panel/propiedades/nueva`)}
+        ${paso("II", "Validá tu identidad", "Las publicaciones de propietarios verificados generan más confianza.", `${SITE}/panel/perfil`)}
+        ${paso("III", "Calculá cuánto vale", "Usá el estimador para fijar un precio con criterio antes de publicar.", `${SITE}/estimador`)}
+      </table>
+      <a href="${SITE}/panel" style="${styles.btn}">Ir a mi panel &rarr;</a>
+    </div>
+
+    <div style="padding:26px 32px 24px;">
+      <p style="${styles.label}">Y si querés conversar</p>
+      <p style="margin:0;color:#595349;font-size:14px;line-height:1.7;">
+        Sumate a la <a href="${SITE}/foro" style="color:#8C7641;font-weight:600;">Tertulia Inmobiliaria</a>
+        para preguntar y compartir con otros propietarios, o escribinos cuando quieras:
+        te responde Eugenio en persona.
+      </p>
+    </div>
+
+    ${bloqueHerramientas()}
+    <div style="background:#fff;padding-top:26px;border-top:1px solid #E8DFC8;">${bloqueFirma()}</div>
+  `, { completo: true });
 
   await resend.emails.send({
     from: FROM,
