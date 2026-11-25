@@ -168,7 +168,7 @@ export async function responderVisita(
   // necesitamos los datos igual para avisarle al interesado.
   const { data: visita } = await supabase
     .from("visitas")
-    .select("id, inicio, nombre, email, property_id, properties(id, titulo, direccion, tipo, operacion, barrio, owner_id, profiles(nombre, telefono))")
+    .select("id, inicio, nombre, email, property_id, properties(id, titulo, direccion, tipo, operacion, barrio, owner_id, profiles(nombre))")
     .eq("id", id)
     .single();
 
@@ -177,7 +177,7 @@ export async function responderVisita(
   const propiedad = visita.properties as unknown as {
     id: string; titulo: string; direccion: string | null; tipo: string; operacion: string;
     barrio: string | null; owner_id: string;
-    profiles: { nombre: string; telefono: string | null } | null;
+    profiles: { nombre: string } | null;
   } | null;
 
   if (!propiedad || propiedad.owner_id !== user.id) {
@@ -209,7 +209,6 @@ export async function responderVisita(
         confirmada: status === "confirmada",
         direccion: propiedad.direccion,
         ownerNombre: propiedad.profiles?.nombre || "El dueño",
-        ownerTelefono: propiedad.profiles?.telefono,
         nota: nota?.trim() || null,
       });
     } catch (e) {

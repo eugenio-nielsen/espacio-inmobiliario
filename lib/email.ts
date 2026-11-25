@@ -601,7 +601,6 @@ export async function sendVisitaRespuesta(data: {
   confirmada: boolean;
   direccion?: string | null;
   ownerNombre: string;
-  ownerTelefono?: string | null;
   nota?: string | null;
 }) {
   if (!process.env.RESEND_API_KEY) return;
@@ -623,10 +622,6 @@ export async function sendVisitaRespuesta(data: {
         <p style="${styles.value}">${data.direccion}</p>
         ` : ""}
 
-        ${data.ownerTelefono ? `
-        <p style="${styles.label}">Contacto del dueño</p>
-        <p style="${styles.value}"><a href="https://wa.me/${data.ownerTelefono.replace(/\D/g,"")}" style="color:#15803D;">${data.ownerTelefono}</a></p>
-        ` : ""}
       </div>
 
       ${data.nota ? `
