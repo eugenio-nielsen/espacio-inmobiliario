@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { sendAyudaVenta } from "@/lib/email";
+import { sendAyudaVenta, sendAyudaVentaAcuse } from "@/lib/email";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 
 /**
@@ -43,6 +43,15 @@ export async function solicitarAyudaVenta(propertyId: string): Promise<{ ok: boo
   } catch (e) {
     console.error("Error enviando solicitud de ayuda:", e);
     return { ok: false, error: "No se pudo enviar la solicitud. Intentá de nuevo." };
+  }
+
+  // Acuse al dueño (su email es el de la cuenta). Un fallo acá no cambia el resultado.
+  if (perfil?.email) {
+    try {
+      await sendAyudaVentaAcuse({ para: perfil.email, nombre: perfil.nombre || "", propiedadTitulo: prop.titulo });
+    } catch (e) {
+      console.error("Error enviando el acuse de ayuda para vender:", e);
+    }
   }
 
   return { ok: true };

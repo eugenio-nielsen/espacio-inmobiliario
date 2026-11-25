@@ -945,3 +945,152 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
     html,
   });
 }
+
+// ── Acuses al usuario: propiedad, ayuda para vender, asesoría ──
+// Mismo esquema que la bienvenida: hero navy, cuerpo, firma y pie completo.
+
+/** Estructura común de los mails a la persona. `cuerpo` y `lead` ya vienen escapados. */
+function mailUsuario(o: { eyebrow: string; titulo: string; lead: string; cuerpo: string; herramientas?: boolean }): string {
+  return baseLayout(`
+    <div style="background:#0E2C50;padding:36px 32px 32px;">
+      <p style="margin:0 0 10px;color:#CBB585;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;">${o.eyebrow}</p>
+      <h1 style="margin:0 0 12px;color:#fff;font-family:${SERIF};font-size:28px;line-height:1.25;font-weight:700;">${o.titulo}</h1>
+      <p style="margin:0;color:#DCE4EE;font-size:15px;line-height:1.7;">${o.lead}</p>
+    </div>
+    <div style="padding:28px 32px 26px;">${o.cuerpo}</div>
+    ${o.herramientas ? bloqueHerramientas() : ""}
+    <div style="background:#fff;padding-top:26px;border-top:1px solid #E8DFC8;">${bloqueFirma()}</div>
+  `, { completo: true });
+}
+
+const pasoMail = (n: string, titulo: string, texto: string, href?: string) => `
+  <tr>
+    <td valign="top" style="padding:0 14px 16px 0;color:#B99F66;font-family:${SERIF};font-size:20px;font-weight:700;width:34px;">${n}</td>
+    <td style="padding:0 0 16px;">
+      ${href ? `<a href="${href}" style="color:#0E2C50;font-size:15px;font-weight:700;text-decoration:none;">${titulo}</a>` : `<span style="color:#0E2C50;font-size:15px;font-weight:700;">${titulo}</span>`}
+      <p style="margin:2px 0 0;color:#595349;font-size:14px;line-height:1.6;">${texto}</p>
+    </td>
+  </tr>`;
+
+const primerNombreDe = (n: string) => escHtml(n.trim().split(" ")[0] || "");
+
+const TIPOS_PROPIEDAD: Record<string, string> = { casa: "Casa", departamento: "Departamento", terreno: "Terreno", local: "Local", oficina: "Oficina", cochera: "Cochera" };
+
+/** Propiedad cargada → confirmación al dueño. */
+export async function sendPropiedadPublicada(data: {
+  para: string;
+  nombre: string;
+  titulo: string;
+  tipo: string;
+  ubicacion: string;
+  precio: number;
+  moneda: string;
+  publicUrl: string;
+  cantidadFotos: number;
+}) {
+  const resend = getResend(); if (!resend) return;
+
+  const precio = `${data.moneda === "USD" ? "US$" : "$"} ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(data.precio))}`;
+  const nombre = primerNombreDe(data.nombre);
+
+  const pasos = [
+    data.cantidadFotos < 5
+      ? pasoMail("I", "Sumá más fotos", `Tu publicación tiene ${data.cantidadFotos === 1 ? "1 foto" : `${data.cantidadFotos} fotos`}. Con 5 o más, y una buena portada, las consultas llegan antes.`, `${SITE}/panel`)
+      : pasoMail("I", "Revisá la portada", "La primera foto es lo que se ve en los listados: elegí la mejor y ponela primera.", `${SITE}/panel`),
+    pasoMail("II", "Validá tu identidad", "Las publicaciones de propietarios verificados generan más confianza y se consultan más.", `${SITE}/panel/perfil`),
+    pasoMail("III", "Abrí tu agenda de visitas", "Elegí en qué días y horarios podés mostrarla y los interesados piden visita directamente.", `${SITE}/panel`),
+  ].join("");
+
+  const html = mailUsuario({
+    eyebrow: "Publicación creada",
+    titulo: "Tu propiedad ya está publicada",
+    lead: `Hola${nombre ? ` ${nombre}` : ""}, ya podés compartir el link: cuando alguien consulte, te avisamos por email.`,
+    cuerpo: `
+      <div style="${styles.card}">
+        <p style="${styles.label}">Propiedad</p>
+        <p style="${styles.value}">${escHtml(data.titulo)}</p>
+        <p style="${styles.label}">Tipo · Ubicación</p>
+        <p style="${styles.value}">${escHtml(TIPOS_PROPIEDAD[data.tipo] || data.tipo)} · ${escHtml(data.ubicacion)}</p>
+        <p style="${styles.label}">Precio</p>
+        <p style="${styles.value}">${precio}</p>
+      </div>
+      <a href="${data.publicUrl}" style="${styles.btn}">Ver mi publicación &rarr;</a>
+      <p style="${styles.label};margin:28px 0 12px;">Para que rinda más</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">${pasos}</table>
+      <p style="margin:6px 0 0;color:#595349;font-size:14px;line-height:1.7;">
+        ¿No sabés si el precio es el correcto? Probá el
+        <a href="${SITE}/estimador" style="color:#8C7641;font-weight:600;">estimador</a>.
+      </p>`,
+    herramientas: true,
+  });
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.para,
+    replyTo: ADMIN,
+    subject: `Tu propiedad ya está publicada — ${data.titulo}`,
+    html,
+  });
+}
+
+/** Pedido de ayuda para vender → acuse al dueño. */
+export async function sendAyudaVentaAcuse(data: { para: string; nombre: string; propiedadTitulo: string }) {
+  const resend = getResend(); if (!resend) return;
+  const nombre = primerNombreDe(data.nombre);
+
+  const html = mailUsuario({
+    eyebrow: "Acompañamiento de venta",
+    titulo: "Recibimos tu pedido",
+    lead: `Hola${nombre ? ` ${nombre}` : ""}, vimos que querés ayuda para vender <strong style="color:#fff;">"${escHtml(data.propiedadTitulo)}"</strong>. Eugenio se va a comunicar con vos.`,
+    cuerpo: `
+      <p style="${styles.label};margin:0 0 12px;">Qué sigue</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+        ${pasoMail("I", "Revisamos tu publicación", "Miramos el precio, las fotos y la descripción para ver dónde se puede mejorar.")}
+        ${pasoMail("II", "Te contactamos", "Eugenio te escribe por WhatsApp o por email para conversar, sin compromiso.")}
+        ${pasoMail("III", "Armamos el plan", "Definimos juntos cómo seguir: visitas, documentación y el camino hasta la escritura.")}
+      </table>
+      <p style="margin:6px 0 20px;color:#595349;font-size:14px;line-height:1.7;">
+        Mientras tanto, si querés agregar algún dato o tenés una duda, respondé este email.
+      </p>
+      <a href="${SITE}/panel" style="${styles.btn}">Ir a mi panel &rarr;</a>`,
+  });
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.para,
+    replyTo: ADMIN,
+    subject: "Recibimos tu pedido de ayuda para vender",
+    html,
+  });
+}
+
+/** Consulta de asesoría → acuse a quien escribió (con copia de su mensaje). */
+export async function sendAsesoriaAcuse(data: { para: string; nombre: string; mensaje: string; motivo?: string }) {
+  const resend = getResend(); if (!resend) return;
+  const nombre = primerNombreDe(data.nombre);
+
+  const html = mailUsuario({
+    eyebrow: data.motivo ? escHtml(data.motivo) : "Tu consulta",
+    titulo: "Recibimos tu mensaje",
+    lead: `Hola${nombre ? ` ${nombre}` : ""}, gracias por escribirnos. Te responde Eugenio Nielsen en persona, a la brevedad.`,
+    cuerpo: `
+      <p style="${styles.label}">Lo que nos escribiste</p>
+      <p style="${styles.message}">"${escHtml(data.mensaje)}"</p>
+      <p style="margin:0 0 20px;color:#595349;font-size:14px;line-height:1.7;">
+        Si querés agregar algo, respondé este email. Y si es urgente, escribinos por WhatsApp.
+      </p>
+      <a href="https://wa.me/${WHATSAPP}" style="${styles.btn}">Escribir por WhatsApp &rarr;</a>
+      <p style="color:#A39C8F;font-size:12px;margin:22px 0 0;line-height:1.6;">
+        Te escribimos porque enviaste una consulta en ${SITE.replace("https://", "")}. Si no fuiste vos, podés ignorar este email.
+      </p>`,
+    herramientas: true,
+  });
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.para,
+    replyTo: ADMIN,
+    subject: "Recibimos tu consulta — Espacio Inmobiliario",
+    html,
+  });
+}

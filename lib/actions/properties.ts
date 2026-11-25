@@ -8,7 +8,7 @@ import { ADMIN_EMAIL } from "@/lib/foro/servidor";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import { geocodeProperty, type GeoResult } from "@/lib/utils/geocode";
-import { sendNewPropertyToAdmin } from "@/lib/email";
+import { sendNewPropertyToAdmin, sendPropiedadPublicada } from "@/lib/email";
 import { TOPE_SIN_VALIDAR } from "@/lib/types";
 
 function slugify(str: string): string {
@@ -178,6 +178,25 @@ export async function createProperty(formData: FormData) {
       publicUrl,
       panelUrl,
     });
+
+    // Confirmación al dueño: aparte, para que un fallo no tape el aviso al admin
+    if (profile?.email) {
+      try {
+        await sendPropiedadPublicada({
+          para: profile.email,
+          nombre: profile.nombre || "",
+          titulo: data.titulo,
+          tipo: formData.get("tipo") as string,
+          ubicacion: [formData.get("barrio"), formData.get("ciudad")].filter(Boolean).join(", "),
+          precio: Number(formData.get("precio")),
+          moneda: (formData.get("moneda") as string) || "USD",
+          publicUrl,
+          cantidadFotos: fotoUrls.filter(Boolean).length,
+        });
+      } catch (e) {
+        console.error("Error enviando la confirmación al dueño:", e);
+      }
+    }
   } catch (emailError) {
     console.error("Error enviando email de nueva propiedad:", emailError);
   }
