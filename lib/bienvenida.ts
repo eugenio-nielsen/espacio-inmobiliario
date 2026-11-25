@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendBienvenida } from "@/lib/email";
+import { agregarContacto } from "@/lib/contactos";
 
 type Usuario = {
   id: string;
@@ -29,6 +30,10 @@ export async function enviarBienvenidaUnaVez(user: Usuario) {
     if (user.created_at && Date.now() - new Date(user.created_at).getTime() > TRES_DIAS) return;
 
     const nombre = typeof user.user_metadata?.nombre === "string" ? user.user_metadata.nombre : "";
+
+    // Va a la audiencia de Resend junto con la bienvenida: ya confirmó el email,
+    // así que la dirección es suya. Es idempotente, no pisa a un contacto existente.
+    await agregarContacto({ email: user.email, nombre, origen: "registro" });
     await sendBienvenida({ para: user.email, nombre });
 
     await createAdminClient().auth.admin.updateUserById(user.id, {

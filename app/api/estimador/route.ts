@@ -9,6 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, checkRateLimitClave, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
 import { sendEstimacionLead, sendEstimacionAlUsuario } from "@/lib/email";
+import { agregarContacto } from "@/lib/contactos";
 
 const EMAIL_VALIDO = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/;
 
@@ -121,6 +122,8 @@ export async function POST(req: Request) {
     try {
       if (await checkRateLimitClave(`estimador-mail:${email}`, 3, 86400)) {
         await sendEstimacionAlUsuario({ para: email, nombre, barrio: input.barrio, input, resultado });
+        // También a la audiencia de Resend (no pisa a un contacto que ya exista)
+        await agregarContacto({ email, nombre, origen: "tasador" });
       }
     } catch (e) {
       console.error("Error enviando la estimación al usuario:", e);
