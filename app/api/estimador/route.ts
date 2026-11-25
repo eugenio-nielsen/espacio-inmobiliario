@@ -6,16 +6,18 @@ import { getPreciosConFecha } from "@/lib/mercado";
 import { sanearInput } from "@/lib/estimador/sanear";
 import { ubicarDireccion } from "@/lib/estimador/ubicar";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
+import { checkRateLimit, checkRateLimitClave, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
-import { sendEstimacionLead } from "@/lib/email";
+import { sendEstimacionLead, sendEstimacionAlUsuario } from "@/lib/email";
+
+const EMAIL_VALIDO = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/;
 
 type Contacto = { nombre?: string; telefono?: string; email?: string };
 type Body = Record<string, unknown> & { contacto?: Contacto };
 
 /**
  * POST /api/estimador
- * Body: EstimadorInput + { contacto: { nombre, telefono, email? } }
+ * Body: EstimadorInput + { contacto: { nombre, telefono, email } } (los tres obligatorios; el resultado también se envía por mail)
  * Respuesta: EstimadorResultado | { error }
  *
  * El contacto es obligatorio: se pide antes de mostrar el resultado para que
@@ -47,7 +49,11 @@ export async function POST(req: Request) {
   if (!tel.ok) {
     return NextResponse.json({ error: tel.error }, { status: 400 });
   }
-  const email = (body.contacto?.email ?? "").trim() || null;
+  // El email es obligatorio: ahí se le envía el resultado
+  const email = (body.contacto?.email ?? "").trim().toLowerCase();
+  if (!EMAIL_VALIDO.test(email) || email.length > 120) {
+    return NextResponse.json({ error: "Ingresá un email válido: ahí te enviamos la estimación." }, { status: 400 });
+  }
 
   // El input llega del navegador: se lleva a la forma que espera el motor
   const saneado = sanearInput(body);
@@ -95,12 +101,12 @@ export async function POST(req: Request) {
     console.error("Error registrando estimación:", e);
   }
 
-  // El aviso al admin no debe demorar la respuesta al usuario
+  // Los mails no deben demorar la respuesta al usuario
   after(async () => {
     try {
       await sendEstimacionLead({
         nombre,
-        email: email ?? "—",
+        email,
         telefono: tel.valor,
         barrio: input.barrio,
         input,
@@ -108,6 +114,16 @@ export async function POST(req: Request) {
       });
     } catch (e) {
       console.error("Error enviando aviso de estimación:", e);
+    }
+
+    // Al usuario: el email lo tipea cualquiera, así que el envío a una misma
+    // dirección tiene tope propio (si no, el endpoint sirve para spamear a un tercero)
+    try {
+      if (await checkRateLimitClave(`estimador-mail:${email}`, 3, 86400)) {
+        await sendEstimacionAlUsuario({ para: email, nombre, barrio: input.barrio, resultado });
+      }
+    } catch (e) {
+      console.error("Error enviando la estimación al usuario:", e);
     }
   });
 

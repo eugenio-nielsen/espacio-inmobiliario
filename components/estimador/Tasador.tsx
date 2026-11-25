@@ -170,6 +170,9 @@ export default function Tasador({
     if (!contacto.nombre.trim()) return setError("Ingresá tu nombre.");
     const tel = normalizarTelefono(contacto.telefono);
     if (!tel.ok) return setError(tel.error);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contacto.email.trim())) {
+      return setError("Ingresá un email válido: ahí te enviamos la estimación.");
+    }
 
     setError(null);
     setEmitiendo(true);
@@ -182,7 +185,7 @@ export default function Tasador({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...input,
-            contacto: { nombre: contacto.nombre.trim(), telefono: tel.valor, email: contacto.email.trim() || undefined },
+            contacto: { nombre: contacto.nombre.trim(), telefono: tel.valor, email: contacto.email.trim() },
           }),
         }),
         esperar(2300),
@@ -409,9 +412,10 @@ export default function Tasador({
                 />
               </label>
               <label className="ts-texto">
-                <span className="ts-rotulo">Email <em>(opcional)</em></span>
+                <span className="ts-rotulo">Email</span>
                 <input
                   type="email"
+                  required
                   value={contacto.email}
                   onChange={e => setContacto(c => ({ ...c, email: e.target.value }))}
                   placeholder="tu@email.com"
@@ -419,7 +423,7 @@ export default function Tasador({
                 />
               </label>
               <p className="ts-privado">
-                Usamos tus datos solo para enviarte la estimación y, si querés, revisarla
+                Te enviamos la estimación por email. Usamos tus datos solo para eso y, si querés, revisarla
                 con vos sin cargo. No compartimos tu información con terceros.
               </p>
             </div>

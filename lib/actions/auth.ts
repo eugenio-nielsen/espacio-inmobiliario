@@ -1,6 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { after } from "next/server";
+import { enviarBienvenidaUnaVez } from "@/lib/bienvenida";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
@@ -56,10 +58,22 @@ export async function signUp(formData: FormData) {
     password,
     // El trigger handle_new_user copia nombre y teléfono al perfil;
     // el origen queda solo en los metadatos del usuario
-    options: { data: { nombre, telefono: tel.valor, ...(origen ? { origen } : {}) } },
+    options: {
+      data: { nombre, telefono: tel.valor, ...(origen ? { origen } : {}) },
+      // El enlace de confirmación pasa por el callback: ahí se confirma la
+      // cuenta y sale la bienvenida. Si la URL no está permitida en Supabase,
+      // cae en la Site URL como hasta ahora.
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback?next=${encodeURIComponent(destinoTrasRegistro(formData))}`,
+    },
   });
 
   if (error) return { error: error.message };
+
+  // Sin confirmación de email la sesión ya existe: se da la bienvenida acá.
+  // Con confirmación, sale cuando la persona confirma (auth/callback).
+  if (data.user && data.session) {
+    after(() => enviarBienvenidaUnaVez(data.user!));
+  }
 
   // Defensivo: si el trigger todavía no fue migrado, dejamos el perfil completo igual.
   if (data.user) {

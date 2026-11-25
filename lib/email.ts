@@ -728,3 +728,120 @@ export async function sendForoAdmin(data: { asunto: string; titulo: string; line
     <a href="${data.url}" style="${styles.btn}">${escHtml(data.cta)} &rarr;</a>
   `);
 }
+
+// ── Mails a la persona: tasación y bienvenida ──────────────────
+// Lo que escribe la gente va siempre escapado con escHtml.
+
+const fmtUsd = (n: number) => `US$ ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n))}`;
+
+/** Resultado del tasador → a quien lo usó. */
+export async function sendEstimacionAlUsuario(data: {
+  para: string;
+  nombre: string;
+  barrio: string;
+  resultado: Pick<EstimadorResultado, "estimado" | "rangoMin" | "rangoMax"> &
+    Partial<Pick<EstimadorResultado, "precioM2Resultante" | "confianza" | "factoresPositivos" | "factoresNegativos">>;
+}) {
+  const resend = getResend(); if (!resend) return;
+
+  const pct = (c: number) => `${c > 1 ? "+" : "−"}${Math.abs((c - 1) * 100).toLocaleString("es-AR", { maximumFractionDigits: 1 })}%`;
+  const celda = "padding:3px 0;font-size:13px;color:#475569;";
+  const factores = (titulo: string, lista: FactorAplicado[] = []) => lista.length ? `
+    <p style="${styles.label}">${titulo}</p>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:10px;">
+      ${lista.slice(0, 5).map((f) => `<tr><td style="${celda}">${escHtml(f.label)} · ${escHtml(f.detalle)}</td><td align="right" style="${celda}font-weight:600;color:${f.positivo ? "#15803D" : "#B91C1C"};">${pct(f.coef)}</td></tr>`).join("")}
+    </table>` : "";
+  const primerNombre = escHtml(data.nombre.trim().split(" ")[0] || "");
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Tu estimación de precio</h1>
+      <p style="${styles.lead}">
+        Hola${primerNombre ? ` ${primerNombre}` : ""}, esta es la estimación que calculamos para tu propiedad en
+        <strong style="color:#0E2C50;">${escHtml(data.barrio)}</strong>.
+      </p>
+
+      <div style="${styles.card}">
+        <p style="${styles.label}">Valor estimado</p>
+        <p style="${styles.value};font-size:24px;">${fmtUsd(data.resultado.estimado)}</p>
+
+        <p style="${styles.label}">Rango</p>
+        <p style="${styles.value}">${fmtUsd(data.resultado.rangoMin)} – ${fmtUsd(data.resultado.rangoMax)}</p>
+
+        ${data.resultado.precioM2Resultante ? `
+        <p style="${styles.label}">Valor por m²</p>
+        <p style="${styles.value}">${fmtUsd(data.resultado.precioM2Resultante)}/m²${data.resultado.confianza ? ` · precisión ${escHtml(data.resultado.confianza)}` : ""}</p>` : ""}
+      </div>
+
+      ${factores("Lo que sumó", data.resultado.factoresPositivos)}
+      ${factores("Lo que restó", data.resultado.factoresNegativos)}
+
+      <p style="${styles.lead}">
+        Es una estimación orientativa, calculada con los datos que cargaste y los valores
+        del barrio. Para afinarla, lo mejor es revisarla con vos.
+      </p>
+
+      <a href="${SITE}/contacto?motivo=vender" style="${styles.btn}">Revisarla con Eugenio &rarr;</a>
+      <p style="margin:18px 0 0;font-size:14px;color:#595349;">
+        ¿Ya sabés que querés vender? <a href="${SITE}/propietarios/publicar" style="color:#8C7641;">Publicá tu propiedad gratis</a>.
+      </p>
+
+      <p style="color:#A39C8F;font-size:12px;margin-top:22px;line-height:1.6;">
+        Te escribimos porque pediste esta estimación en ${SITE.replace("https://", "")}. Si no fuiste vos, podés ignorar este email.
+      </p>
+    </div>
+  `);
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.para,
+    replyTo: ADMIN,
+    subject: `Tu estimación: ${data.barrio} — ${fmtUsd(data.resultado.estimado)}`,
+    html,
+  });
+}
+
+/** Cuenta nueva (ya con el email confirmado) → bienvenida con los primeros pasos. */
+export async function sendBienvenida(data: { para: string; nombre: string }) {
+  const resend = getResend(); if (!resend) return;
+
+  const primerNombre = escHtml(data.nombre.trim().split(" ")[0] || "");
+  const paso = (n: string, titulo: string, texto: string, href: string) => `
+    <tr>
+      <td valign="top" style="padding:0 14px 16px 0;color:#B99F66;font-size:22px;font-weight:700;width:28px;">${n}</td>
+      <td style="padding:0 0 16px;">
+        <a href="${href}" style="color:#0E2C50;font-size:15px;font-weight:700;text-decoration:none;">${titulo}</a>
+        <p style="margin:2px 0 0;color:#595349;font-size:14px;line-height:1.6;">${texto}</p>
+      </td>
+    </tr>`;
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1}">Te damos la bienvenida${primerNombre ? `, ${primerNombre}` : ""}</h1>
+      <p style="${styles.lead}">
+        Tu cuenta en Espacio Inmobiliario ya está lista. Publicar es gratis y el contacto
+        con los interesados es directo, sin intermediarios. Para arrancar:
+      </p>
+
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 8px;">
+        ${paso("1", "Cargá tu propiedad", "Con buenas fotos y una descripción clara, las consultas llegan más rápido.", `${SITE}/panel/propiedades/nueva`)}
+        ${paso("2", "Validá tu identidad", "Las publicaciones de propietarios verificados generan más confianza.", `${SITE}/panel/perfil`)}
+        ${paso("3", "Calculá cuánto vale", "Usá el estimador para fijar un precio con criterio antes de publicar.", `${SITE}/estimador`)}
+      </table>
+
+      <a href="${SITE}/panel" style="${styles.btn}">Ir a mi panel &rarr;</a>
+
+      <p style="color:#A39C8F;font-size:13px;margin-top:22px;line-height:1.6;">
+        ¿Dudas? Respondé este email y te ayudamos.
+      </p>
+    </div>
+  `);
+
+  await resend.emails.send({
+    from: FROM,
+    to: data.para,
+    replyTo: ADMIN,
+    subject: "Bienvenido/a a Espacio Inmobiliario",
+    html,
+  });
+}

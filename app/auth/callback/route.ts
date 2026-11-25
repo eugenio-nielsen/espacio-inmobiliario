@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { enviarBienvenidaUnaVez } from "@/lib/bienvenida";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -15,6 +16,11 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Cuenta recién confirmada → bienvenida (no en la recuperación de clave)
+      if (!next.startsWith("/panel/clave")) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) after(() => enviarBienvenidaUnaVez(user));
+      }
       // Solo permitimos redirecciones internas
       const safeNext = next.startsWith("/") ? next : "/panel";
       return NextResponse.redirect(`${origin}${safeNext}`);
