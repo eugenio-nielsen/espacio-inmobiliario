@@ -12,7 +12,7 @@ import "./explainer.css";
  */
 export default function Explainer() {
   return (
-    <section className="ex" aria-labelledby="ex-titulo">
+    <section className="ex" id="recorrido" aria-labelledby="ex-titulo">
       <div className="ex-in">
         <FadeIn direction="up">
           <div className="ex-cab">

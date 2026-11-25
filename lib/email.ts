@@ -924,6 +924,19 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
       <a href="${SITE}/panel" style="${styles.btn}">Ir a mi panel &rarr;</a>
     </div>
 
+    <div style="padding:20px 32px 8px;">
+      <p style="${styles.label}">Cómo empezar, en video</p>
+      <p style="margin:0 0 14px;color:#595349;font-size:14px;line-height:1.7;">
+        En poco más de un minuto: crear la cuenta, publicar, buscar, tasar y llevar tus operaciones desde un solo lugar.
+      </p>
+      <a href="${SITE}/#recorrido" style="display:block;text-decoration:none;">
+        <img src="${SITE}/video/explainer-poster.jpg" alt="Ver el recorrido: de la cuenta a la escritura" width="536" style="display:block;width:100%;max-width:536px;height:auto;border:0;border-radius:10px;" />
+      </a>
+      <p style="margin:12px 0 0;font-size:14px;">
+        <a href="${SITE}/#recorrido" style="color:#8C7641;font-weight:600;">Ver el recorrido &rarr;</a>
+      </p>
+    </div>
+
     <div style="padding:26px 32px 24px;">
       <p style="${styles.label}">Y si querés conversar</p>
       <p style="margin:0;color:#595349;font-size:14px;line-height:1.7;">
