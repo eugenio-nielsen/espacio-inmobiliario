@@ -1,0 +1,71 @@
+/* Estilos de la portada y del bloque de contacto de app/como-funciona.
+   Viven fuera de globals.css por la misma razón que explainer.css: el
+   cache de PostCSS de Tailwind no ve los cambios en Windows. */
+
+/* ── Portada: titular a la izquierda, el recorrido en video a la derecha ── */
+.cf-apertura {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(36px, 5vw, 64px);
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .cf-apertura { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  /* En media columna el titular necesita menos cuerpo */
+  .cf-apertura .cf-h1 { font-size: clamp(42px, 4.5vw, 62px); }
+}
+/* La palabra que rota va en su propio renglón y más chica: la más larga
+   ("con acompañamiento") tiene que entrar en media columna */
+.cf-apertura .cf-rotor { display: grid; font-size: .76em; line-height: 1.2; white-space: nowrap; }
+.cf-apertura .ex-wrap { width: 100%; max-width: none; }
+.cf-apertura .ex-marco {
+  box-shadow: 0 50px 90px -40px rgba(0,0,0,.8), 0 0 0 1px rgba(185,159,102,.35);
+}
+/* Los capítulos del video, sobre fondo oscuro */
+.cf-apertura .ex-caps { margin-top: 18px; }
+.cf-apertura .ex-cap { color: rgba(255,255,255,.84); border-color: rgba(185,159,102,.34); }
+.cf-apertura .ex-cap-n { color: var(--gold-300); }
+.cf-apertura .ex-cap:hover { background: rgba(255,255,255,.06); border-color: var(--gold-500); }
+.cf-apertura .ex-cap-on,
+.cf-apertura .ex-cap-on:hover { color: var(--navy-950); background: var(--gold-500); border-color: var(--gold-500); }
+.cf-apertura .ex-cap-on .ex-cap-n { color: var(--navy-900); }
+
+/* ── Quién está detrás y el contacto, en un solo bloque ── */
+.cf-persona {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(48px, 6vw, 80px);
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .cf-persona { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+.cf-persona-cita { margin: clamp(28px, 3.4vw, 36px) 0 0; text-align: center; }
+.cf-persona-cita p {
+  max-width: 42ch;
+  margin: 0 auto;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(18px, 1.8vw, 22px);
+  line-height: 1.55;
+  letter-spacing: -.01em;
+  color: var(--navy-800);
+}
+.cf-persona-enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(24px, 3vw, 32px);
+}
+.cf-persona-form {
+  padding: clamp(24px, 3.2vw, 40px);
+  background: #fff;
+  border: 1px solid var(--gold-200);
+  border-radius: 3px;
+  box-shadow: 0 40px 70px -48px rgba(14,44,80,.35);
+}
+.cf-persona-form header { margin-bottom: 24px; }
+.cf-persona-form .cf-h2 { margin: 18px 0 12px; font-size: clamp(24px, 2.6vw, 32px); color: var(--navy-800); }
+.cf-persona-form .cf-lead { margin: 0; color: var(--ink-600); }

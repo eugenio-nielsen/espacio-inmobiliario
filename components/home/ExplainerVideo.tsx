@@ -2,10 +2,12 @@
 
 import { useRef, useState } from "react";
 import { Play } from "lucide-react";
+import "./explainer.css";
 
 /**
- * El explainer de la home. Pesa ~15 MB: no se descarga hasta que alguien
- * le da play (preload="none"); mientras tanto se ve el póster.
+ * El explainer de la home y de la portada de /como-funciona. Pesa ~15 MB: no
+ * se descarga hasta que alguien le da play (preload="none"); mientras tanto
+ * se ve el póster.
  *
  * CAPITULOS: segundos en que empieza cada parte. Salen del render
  * (promo/explainer/render.mjs imprime los tiempos de cada escena): si se
