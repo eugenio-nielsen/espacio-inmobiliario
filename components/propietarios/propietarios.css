@@ -261,6 +261,45 @@
 .pr-ya a { font-weight: 600; }
 .pr-alta-lista .pr-boton { margin-top: 26px; }
 
+/* El aviso "Revisá tu mail": reemplaza al formulario cuando la cuenta quedó por confirmar */
+.pr-aviso { display: flex; gap: 12px; margin-top: 16px; font-family: var(--font-sans); font-size: 14px; line-height: 1.6; color: var(--ink-700); }
+.pr-aviso > svg { flex-shrink: 0; margin-top: 3px; color: var(--gold-600); }
+.pr-aviso p { margin: 0; }
+.pr-aviso p + p { margin-top: 8px; font-size: 12.5px; color: var(--ink-500); }
+.pr-aviso strong { font-weight: 600; color: var(--navy-800); overflow-wrap: anywhere; }
+.pr-reenvio { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 20px; }
+.pr-reenvio button {
+  padding: 11px 18px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--navy-800);
+  background: transparent;
+  border: 1px solid var(--navy-800);
+  border-radius: 2px;
+  transition: background .3s var(--ease-out), color .3s var(--ease-out);
+}
+.pr-reenvio button:hover:not(:disabled) { color: #fff; background: var(--navy-800); }
+.pr-reenvio button:disabled { opacity: .5; cursor: default; }
+.pr-reenvio-estado { font-family: var(--font-sans); font-size: 12.5px; line-height: 1.4; color: var(--ink-500); }
+.pr-reenvio-estado[data-tipo="ok"] { color: var(--success); }
+.pr-reenvio-estado[data-tipo="error"] { color: var(--danger); }
+.pr-ya button {
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--navy-800);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--gold-500);
+  text-underline-offset: 3px;
+}
+
 /* ── Secciones ────────────────────────────────────────────────── */
 .pr-seccion { padding: clamp(64px, 8vw, 104px) 0; border-top: 1px solid var(--gold-200); }
 .pr-seccion-papel { background: #FFFDF9; }

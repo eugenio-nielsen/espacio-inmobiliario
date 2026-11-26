@@ -4,9 +4,14 @@
  * Inventario de lo que se mide. Los nombres van en español y snake_case, y
  * ningún evento lleva datos personales (nombre, mail, teléfono):
  *
- *   Altas y publicación (los manda <EventoGA> en la página a la que se llega)
- *     sign_up                  cuenta creada
- *     publicar_propiedad       propiedad publicada
+ *   Altas y publicación
+ *     sign_up                  cuenta creada. Un dueño la manda al ver el aviso "revisá tu
+ *                              mail" (confirmacion = pendiente: todavía no confirmó); la
+ *                              Tertulia, en su página de bienvenida
+ *     cuenta_confirmada        el dueño confirmó su email y entró por el enlace del mail
+ *     reenvio_confirmacion     pidió que le reenviemos el mail de confirmación (origen: alta
+ *                              o login). Si crece, los mails no están llegando
+ *     publicar_propiedad       propiedad publicada (la manda <EventoGA> en la página a la que se llega)
  *
  *   Demanda (compradores e inquilinos)
  *     consulta_propiedad       consulta enviada desde una ficha

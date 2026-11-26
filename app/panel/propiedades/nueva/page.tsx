@@ -18,21 +18,23 @@ function paginaOrigen(meta: Record<string, unknown> | undefined, porDefecto: str
 export default async function NuevaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ bienvenida?: string }>;
+  searchParams: Promise<{ bienvenida?: string; confirmada?: string }>;
 }) {
   // Llega con ?bienvenida=1 desde el alta en /propietarios: la cuenta
   // se acaba de crear y el paso siguiente es este
-  const { bienvenida } = await searchParams;
+  const { bienvenida, confirmada } = await searchParams;
   const user = bienvenida ? await getCurrentUser() : null;
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Conversión: la cuenta se acaba de crear */}
+      {/* Conversión: la cuenta se acaba de crear. Si llegó por el enlace del mail de
+          confirmación (confirmada=1), el alta ya se contó al crear la cuenta: acá se
+          cuenta la confirmación. */}
       {bienvenida && user && (
         <EventoGA
-          nombre="sign_up"
+          nombre={confirmada ? "cuenta_confirmada" : "sign_up"}
           params={{ method: "email", pagina_origen: paginaOrigen(user.user_metadata, "/propietarios/publicar") }}
-          limpiar={["bienvenida"]}
+          limpiar={["bienvenida", "confirmada"]}
         />
       )}
       {bienvenida && (

@@ -1,13 +1,20 @@
 "use server";
 
+import { createHash } from "node:crypto";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { enviarBienvenidaUnaVez } from "@/lib/bienvenida";
 import { createClient } from "@/lib/supabase/server";
-import { checkRateLimit, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
+import { errorDeAuth, YA_EXISTE } from "@/lib/auth/errores";
+import { checkRateLimit, checkRateLimitClave, RATE_LIMIT_MSG } from "@/lib/utils/rateLimit";
 import { normalizarTelefono } from "@/lib/utils/telefono";
 import { normalizarNombre } from "@/lib/utils/nombre";
 import { volverSeguro } from "@/lib/foro/texto";
+
+/** Lo que devuelven signUp y signIn cuando no redirigen. */
+type Fallo = { error: string; sinConfirmar?: boolean };
+/** La cuenta se creó pero falta confirmar el email: no hay sesión todavía. */
+type AltaPendiente = { pendiente: true; email: string };
 
 /** Parámetros de campaña que se guardan con la cuenta, si llegaron. */
 const CAMPOS_ORIGEN = ["pagina", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
@@ -32,13 +39,27 @@ function leerOrigen(formData: FormData): Record<string, string> | null {
  * Es una lista cerrada a propósito: nada que llegue del formulario se
  * usa como URL.
  */
-function destinoTrasRegistro(formData: FormData): string {
-  return formData.get("destino") === "publicar"
+function destinoTrasRegistro(formData: FormData, porEnlace = false): string {
+  const destino = formData.get("destino") === "publicar"
     ? "/panel/propiedades/nueva?bienvenida=1"
     : "/panel?nuevo=1";
+  // El enlace del mail de confirmación lleva confirmada=1: la página de
+  // llegada mide la confirmación (cuenta_confirmada) y no cuenta de nuevo
+  // el alta, que ya se midió al crear la cuenta
+  return porEnlace ? `${destino}&confirmada=1` : destino;
 }
 
-export async function signUp(formData: FormData) {
+/**
+ * El enlace del mail de confirmación pasa por el callback: ahí se confirma
+ * la cuenta y sale la bienvenida. Si la URL no está permitida en Supabase,
+ * cae en la Site URL como hasta ahora.
+ */
+function enlaceDeConfirmacion(formData: FormData): string {
+  const sitio = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  return `${sitio}/auth/callback?next=${encodeURIComponent(destinoTrasRegistro(formData, true))}`;
+}
+
+export async function signUp(formData: FormData): Promise<Fallo | AltaPendiente> {
   const supabase = await createClient();
   const nombre = normalizarNombre(formData.get("nombre") as string);
   const email = ((formData.get("email") as string) || "").trim();
@@ -60,40 +81,80 @@ export async function signUp(formData: FormData) {
     // el origen queda solo en los metadatos del usuario
     options: {
       data: { nombre, telefono: tel.valor, ...(origen ? { origen } : {}) },
-      // El enlace de confirmación pasa por el callback: ahí se confirma la
-      // cuenta y sale la bienvenida. Si la URL no está permitida en Supabase,
-      // cae en la Site URL como hasta ahora.
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback?next=${encodeURIComponent(destinoTrasRegistro(formData))}`,
+      emailRedirectTo: enlaceDeConfirmacion(formData),
     },
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: errorDeAuth(error) };
+  if (!data.user) return { error: "No pudimos crear tu cuenta. Probá de nuevo en un momento." };
+
+  // Con la confirmación de email activada, si ese email ya tiene una cuenta
+  // Supabase no da error: devuelve un usuario sin identidades, no crea nada y
+  // no manda ningún mail. Sin este aviso la persona esperaría uno que no llega.
+  if (!data.user.identities?.length) return { error: YA_EXISTE };
 
   // Sin confirmación de email la sesión ya existe: se da la bienvenida acá.
   // Con confirmación, sale cuando la persona confirma (auth/callback).
-  if (data.user && data.session) {
+  if (data.session) {
     after(() => enviarBienvenidaUnaVez(data.user!));
   }
 
   // Defensivo: si el trigger todavía no fue migrado, dejamos el perfil completo igual.
-  if (data.user) {
-    await supabase
-      .from("profiles")
-      .update({ telefono: tel.valor, nombre })
-      .eq("id", data.user.id);
-  }
+  await supabase
+    .from("profiles")
+    .update({ telefono: tel.valor, nombre })
+    .eq("id", data.user.id);
+
+  // Con confirmación de email todavía no hay sesión: ir al panel rebotaría al
+  // ingreso sin explicar nada. Se le avisa a la persona que revise su mail.
+  if (!data.session) return { pendiente: true, email };
 
   redirect(destinoTrasRegistro(formData));
 }
 
-export async function signIn(formData: FormData) {
+/**
+ * Vuelve a mandar el mail de confirmación de una cuenta que todavía no lo
+ * confirmó (desde el aviso de "revisá tu mail" o desde el ingreso).
+ *
+ * Responde igual exista o no la cuenta: no revela qué emails están
+ * registrados. Está limitada por conexión y por email, para que el botón no
+ * sirva para llenar de mails una casilla ajena.
+ */
+export async function reenviarConfirmacion(formData: FormData): Promise<{ ok: true } | { error: string }> {
+  const email = ((formData.get("email") as string) || "").trim().toLowerCase();
+  if (!email) return { error: "Falta el email al que mandar el enlace." };
+
+  if (!(await checkRateLimit("alta-reenvio", 5, 3600))) return { error: RATE_LIMIT_MSG };
+  // El email no se guarda tal cual en la tabla de límites: va como huella
+  const huella = createHash("sha256").update(email).digest("hex").slice(0, 32);
+  if (!(await checkRateLimitClave(`alta-reenvio-email:${huella}`, 3, 3600))) {
+    return { error: "Ya te mandamos varios mails. Esperá un rato antes de pedir otro y revisá la carpeta de spam." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: enlaceDeConfirmacion(formData) },
+  });
+  if (error) return { error: errorDeAuth(error) };
+  return { ok: true };
+}
+
+export async function signIn(formData: FormData): Promise<Fallo> {
   const supabase = await createClient();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) return { error: error.message };
+  if (error) {
+    // Cuenta creada pero sin confirmar: la pantalla ofrece pedir el mail de nuevo
+    return {
+      error: errorDeAuth(error),
+      ...(error.code === "email_not_confirmed" ? { sinConfirmar: true } : {}),
+    };
+  }
 
   // Si llegó desde una página que pidió ingresar (p. ej. responder en la
   // Tertulia), vuelve ahí. Solo rutas internas.

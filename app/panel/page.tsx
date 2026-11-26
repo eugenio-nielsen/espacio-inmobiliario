@@ -18,9 +18,9 @@ function paginaOrigen(meta: Record<string, unknown> | undefined, porDefecto: str
 export default async function PanelPage({
   searchParams,
 }: {
-  searchParams: Promise<{ nuevo?: string; clave?: string }>;
+  searchParams: Promise<{ nuevo?: string; confirmada?: string; clave?: string }>;
 }) {
-  const { nuevo, clave } = await searchParams;
+  const { nuevo, confirmada, clave } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -71,12 +71,14 @@ export default async function PanelPage({
 
   return (
     <>
-      {/* Conversión: la cuenta se acaba de crear desde /auth/registro */}
+      {/* Conversión: la cuenta se acaba de crear desde /auth/registro. Si llegó por el
+          enlace del mail de confirmación (confirmada=1), el alta ya se contó al crear
+          la cuenta: acá se cuenta la confirmación. */}
       {nuevo && (
         <EventoGA
-          nombre="sign_up"
+          nombre={confirmada ? "cuenta_confirmada" : "sign_up"}
           params={{ method: "email", pagina_origen: paginaOrigen(user!.user_metadata, "/auth/registro") }}
-          limpiar={["nuevo"]}
+          limpiar={["nuevo", "confirmada"]}
         />
       )}
       {clave && (
