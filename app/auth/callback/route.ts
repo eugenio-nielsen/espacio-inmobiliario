@@ -1,5 +1,6 @@
 import { NextResponse, after } from "next/server";
 import { enviarBienvenidaUnaVez } from "@/lib/bienvenida";
+import { volverSeguro } from "@/lib/foro/texto";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -27,11 +28,21 @@ export async function GET(request: Request) {
     }
   }
 
-  // El alta de la Tertulia y de la Cátedra vuelve por acá. Si el enlace se abrió en otro
-  // dispositivo no hay sesión que intercambiar, pero Supabase ya confirmó
-  // el email: se lo manda a ingresar y volver al tema.
-  if (next.startsWith("/foro") || next.startsWith("/catedra")) {
-    return NextResponse.redirect(`${origin}/auth/login?volver=${encodeURIComponent(next)}`);
+  // No se pudo abrir la sesión. La recuperación de clave sí necesita el
+  // enlace: se pide uno nuevo.
+  if (next.startsWith("/panel/clave")) {
+    return NextResponse.redirect(`${origin}/auth/recuperar?error=enlace`);
   }
-  return NextResponse.redirect(`${origin}/auth/recuperar?error=enlace`);
+
+  // Cualquier otro destino es el enlace de confirmación de una cuenta (el alta
+  // de un dueño, de la Tertulia o de la Cátedra). Con `code`, Supabase ya
+  // confirmó el email y lo que falló fue abrir la sesión acá: pasa cuando el
+  // mail se abre en otro navegador o dispositivo que el del alta, que es donde
+  // quedó guardada la verificación. Sin `code`, el enlace ya se usó o venció.
+  // En los dos casos ingresar con la contraseña lo resuelve (y si faltaba
+  // confirmar, el ingreso ofrece mandar un mail nuevo), y se vuelve a donde iba.
+  const login = new URL("/auth/login", origin);
+  login.searchParams.set(code ? "confirmada" : "enlace", code ? "1" : "vencido");
+  login.searchParams.set("volver", volverSeguro(next, "/panel"));
+  return NextResponse.redirect(login);
 }

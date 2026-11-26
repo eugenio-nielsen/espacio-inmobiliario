@@ -5,6 +5,7 @@ import Script from "next/script";
 import "./globals.css";
 import AsesoriaFlotante from "@/components/AsesoriaFlotante";
 import ClicksGA from "@/components/analytics/ClicksGA";
+import OrigenVisita from "@/components/analytics/OrigenVisita";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <AsesoriaFlotante />
         <ClicksGA />
+        <OrigenVisita />
 
         {/* Google Analytics — carga después de que la página es interactiva */}
         {GA_ACTIVO && (

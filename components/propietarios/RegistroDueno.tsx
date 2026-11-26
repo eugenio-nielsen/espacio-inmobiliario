@@ -1,13 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { flushSync } from "react-dom";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import RevisaTuMail from "@/components/auth/RevisaTuMail";
 import { signUp } from "@/lib/actions/auth";
-
-const UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
+import { completarOrigen } from "@/lib/origen";
 
 /**
  * El alta de propietario, en la misma página donde se lo invita: una
@@ -16,8 +15,10 @@ const UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_ter
  *
  *   · destino="publicar": al crear la cuenta va directo a cargar la
  *     propiedad, que es el objetivo de estas páginas.
- *   · pagina y utm_*: de dónde vino, para medir qué página o anuncio
- *     trae dueños (queda en los metadatos del usuario).
+ *   · pagina, utm_* y referrer: de dónde vino, para medir qué página o
+ *     anuncio trae dueños (queda en los metadatos del usuario). Los utm y
+ *     el referrer se leen al enviar (lib/origen.ts): ya no están en la URL
+ *     si la persona navegó antes de registrarse.
  *
  * Como el sitio pide confirmar el email, al crear la cuenta todavía no hay
  * sesión: la ficha pasa a explicar que hay que revisar el mail (el
@@ -26,26 +27,15 @@ const UTM = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_ter
 export default function RegistroDueno({ pagina }: { pagina: string }) {
   const [error, setError] = useState<string | null>(null);
   const [verClave, setVerClave] = useState(false);
-  const [utm, setUtm] = useState<Record<string, string>>({});
   const [pendiente, setPendiente] = useState<string | null>(null);
   const [enviando, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
-
-  // Los utm llegan en la URL del anuncio; se leen una vez al cargar
-  useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    const leidos: Record<string, string> = {};
-    for (const k of UTM) {
-      const v = q.get(k);
-      if (v) leidos[k] = v;
-    }
-    setUtm(leidos);
-  }, []);
 
   function enviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     const datos = new FormData(e.currentTarget);
+    completarOrigen(datos);
     startTransition(async () => {
       const r = await signUp(datos);
       if (r && "error" in r) setError(r.error);
@@ -74,7 +64,6 @@ export default function RegistroDueno({ pagina }: { pagina: string }) {
       >
         <input type="hidden" name="destino" value="publicar" />
         <input type="hidden" name="pagina" value={pagina} />
-        {Object.entries(utm).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}
 
         <header className="pr-alta-cab">
           <span className="pr-alta-k">Alta de propietario</span>

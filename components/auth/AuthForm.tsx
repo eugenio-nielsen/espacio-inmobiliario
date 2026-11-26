@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { flushSync } from "react-dom";
 import { signIn, signUp } from "@/lib/actions/auth";
+import { completarOrigen } from "@/lib/origen";
 import ReenviarMail from "./ReenviarMail";
 import RevisaTuMail from "./RevisaTuMail";
 
@@ -23,12 +24,20 @@ export default function AuthForm({ mode, volver, encabezado }: Props) {
   const [pendiente, setPendiente] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+  // Cada etiqueta apunta a su campo: tocarla lo enfoca y el lector de pantalla lo nombra
+  const uid = useId();
+  const campo = (nombre: string) => `${uid}-${nombre}`;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setSinConfirmar(null);
     const formData = new FormData(e.currentTarget);
+    if (mode === "registro") {
+      // De dónde vino la cuenta: sirve para medir qué canal trae altas
+      formData.set("pagina", "/auth/registro");
+      completarOrigen(formData);
+    }
 
     startTransition(async () => {
       if (mode === "login") {
@@ -62,10 +71,11 @@ export default function AuthForm({ mode, volver, encabezado }: Props) {
         {mode === "registro" && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor={campo("nombre")} className="block text-sm font-medium text-gray-700 mb-1">
                 Nombre completo *
               </label>
               <input
+                id={campo("nombre")}
                 name="nombre"
                 type="text"
                 required
@@ -75,10 +85,11 @@ export default function AuthForm({ mode, volver, encabezado }: Props) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor={campo("telefono")} className="block text-sm font-medium text-gray-700 mb-1">
                 Teléfono / WhatsApp *
               </label>
               <input
+                id={campo("telefono")}
                 name="telefono"
                 type="tel"
                 required
@@ -95,10 +106,11 @@ export default function AuthForm({ mode, volver, encabezado }: Props) {
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor={campo("email")} className="block text-sm font-medium text-gray-700 mb-1">
             Email *
           </label>
           <input
+            id={campo("email")}
             name="email"
             type="email"
             required
@@ -110,7 +122,7 @@ export default function AuthForm({ mode, volver, encabezado }: Props) {
 
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-gray-700">
+            <label htmlFor={campo("password")} className="block text-sm font-medium text-gray-700">
               Contraseña *
             </label>
             {mode === "login" && (
@@ -120,6 +132,7 @@ export default function AuthForm({ mode, volver, encabezado }: Props) {
             )}
           </div>
           <input
+            id={campo("password")}
             name="password"
             type="password"
             required

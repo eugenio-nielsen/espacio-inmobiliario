@@ -20,9 +20,18 @@ import { Resend } from "resend";
  */
 export type OrigenContacto = "registro" | "tasador";
 
+let faltaClaveAvisada = false;
+
 export async function agregarContacto(data: { email: string; nombre?: string; origen: OrigenContacto }) {
   const key = process.env.RESEND_CONTACTS_API_KEY;
-  if (!key) return;
+  if (!key) {
+    // Que la audiencia no se esté cargando tiene que verse en los logs (una vez por instancia)
+    if (!faltaClaveAvisada) {
+      faltaClaveAvisada = true;
+      console.warn("Resend: falta RESEND_CONTACTS_API_KEY; los contactos no se están cargando en la audiencia.");
+    }
+    return;
+  }
 
   try {
     const resend = new Resend(key);

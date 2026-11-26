@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { requestPasswordReset } from "@/lib/actions/auth";
 
 export default function RecuperarForm() {
+  const idEmail = useId();
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -24,7 +25,8 @@ export default function RecuperarForm() {
     return (
       <div className="bg-green-50 border border-green-200 text-green-800 text-sm rounded-lg px-4 py-4">
         Si el email está registrado, te enviamos un enlace para crear una contraseña
-        nueva. Revisá tu bandeja de entrada (y el spam).
+        nueva. Revisá tu bandeja de entrada (y el spam) y abrí el enlace en este mismo
+        navegador.
       </div>
     );
   }
@@ -32,10 +34,11 @@ export default function RecuperarForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor={idEmail} className="block text-sm font-medium text-gray-700 mb-1">
           Email *
         </label>
         <input
+          id={idEmail}
           name="email"
           type="email"
           required

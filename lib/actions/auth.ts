@@ -16,8 +16,11 @@ type Fallo = { error: string; sinConfirmar?: boolean };
 /** La cuenta se creó pero falta confirmar el email: no hay sesión todavía. */
 type AltaPendiente = { pendiente: true; email: string };
 
-/** Parámetros de campaña que se guardan con la cuenta, si llegaron. */
-const CAMPOS_ORIGEN = ["pagina", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
+/**
+ * Parámetros de campaña que se guardan con la cuenta, si llegaron. `referrer`
+ * es el dominio desde el que llegó (sin ruta): sirve cuando no había utm.
+ */
+const CAMPOS_ORIGEN = ["pagina", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "referrer"] as const;
 
 /**
  * De dónde vino la cuenta: la página de alta y los utm de la campaña.
@@ -72,6 +75,10 @@ export async function signUp(formData: FormData): Promise<Fallo | AltaPendiente>
   // para que no se pueda saltear.
   const tel = normalizarTelefono(formData.get("telefono") as string);
   if (!tel.ok) return { error: tel.error };
+
+  // Sin tope, el formulario serviría para llenar casillas ajenas con mails de
+  // confirmación. Va después de validar: un formulario mal cargado no cuenta.
+  if (!(await checkRateLimit("alta-dueno", 10, 3600))) return { error: RATE_LIMIT_MSG };
 
   const origen = leerOrigen(formData);
   const { data, error } = await supabase.auth.signUp({
@@ -143,10 +150,11 @@ export async function reenviarConfirmacion(formData: FormData): Promise<{ ok: tr
 
 export async function signIn(formData: FormData): Promise<Fallo> {
   const supabase = await createClient();
-  const email = formData.get("email") as string;
+  // Los teclados del celular suelen dejar un espacio al final del email
+  const email = ((formData.get("email") as string) || "").trim();
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     // Cuenta creada pero sin confirmar: la pantalla ofrece pedir el mail de nuevo
@@ -155,6 +163,11 @@ export async function signIn(formData: FormData): Promise<Fallo> {
       ...(error.code === "email_not_confirmed" ? { sinConfirmar: true } : {}),
     };
   }
+
+  // Si confirmó el email en otro navegador, el callback no pudo darle la
+  // bienvenida: sale en su primer ingreso. La marca de "ya enviada" y el tope
+  // de antigüedad evitan repetirla o mandársela a una cuenta vieja.
+  after(() => enviarBienvenidaUnaVez(data.user));
 
   // Si llegó desde una página que pidió ingresar (p. ej. responder en la
   // Tertulia), vuelve ahí. Solo rutas internas.

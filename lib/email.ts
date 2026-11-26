@@ -14,6 +14,28 @@ const FROM    = process.env.FROM_EMAIL    || "onboarding@resend.dev";
 const ADMIN   = process.env.ADMIN_EMAIL   || "eugenio@espacioinmobiliario.com.ar";
 const SITE    = process.env.NEXT_PUBLIC_SITE_URL || "https://espacio-inmobiliario-one.vercel.app";
 
+/**
+ * Todo lo que escribe la gente (nombres, mensajes, títulos, direcciones) se
+ * escapa antes de entrar a un mail: un texto con HTML no puede alterar el
+ * email ni meter enlaces con nuestro remitente.
+ */
+const escHtml = (t: string) =>
+  t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/**
+ * Marca (utm) los enlaces al sitio de un mail a la persona, para que Analytics
+ * sepa de qué correo vino la visita. Los avisos al admin no se marcan: sus
+ * clics no son de usuarios.
+ */
+function conUtm(html: string, campana: string): string {
+  const base = SITE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const enlaceAlSitio = new RegExp(`href="(${base}(?:/[^"#?]*)?(?:\\?[^"#]*)?)(#[^"]*)?"`, "g");
+  return html.replace(enlaceAlSitio, (_todo, url: string, ancla: string = "") => {
+    const union = url.includes("?") ? "&amp;" : "?";
+    return `href="${url}${union}utm_source=correo&amp;utm_medium=email&amp;utm_campaign=${campana}${ancla}"`;
+  });
+}
+
 // ── Shared styles ──────────────────────────────────────────────
 const styles = {
   body:    "margin:0;padding:0;background:#F7F4EE;font-family:'Outfit',system-ui,sans-serif;",
@@ -144,27 +166,27 @@ export async function sendInquiryToOwner(data: {
     <div style="${styles.body_p}">
       <h1 style="${styles.h1}">¡Tenés una nueva consulta!</h1>
       <p style="${styles.lead}">
-        Hola ${data.ownerNombre}, alguien está interesado en tu propiedad
-        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+        Hola ${escHtml(data.ownerNombre)}, alguien está interesado en tu propiedad
+        <strong style="color:#0E2C50;">"${escHtml(data.propertyTitulo)}"</strong>.
       </p>
 
       <div style="${styles.card}">
         <p style="${styles.label}">Nombre</p>
-        <p style="${styles.value}">${data.interesadoNombre}</p>
+        <p style="${styles.value}">${escHtml(data.interesadoNombre)}</p>
 
         <p style="${styles.label}">Email</p>
-        <p style="${styles.value}"><a href="mailto:${data.interesadoEmail}" style="color:#0E2C50;">${data.interesadoEmail}</a></p>
+        <p style="${styles.value}"><a href="mailto:${escHtml(data.interesadoEmail)}" style="color:#0E2C50;">${escHtml(data.interesadoEmail)}</a></p>
 
         ${data.interesadoTelefono ? `
         <p style="${styles.label}">Teléfono / WhatsApp</p>
-        <p style="${styles.value}"><a href="https://wa.me/${data.interesadoTelefono.replace(/\D/g,"")}" style="color:#15803D;">${data.interesadoTelefono}</a></p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.interesadoTelefono.replace(/\D/g,"")}" style="color:#15803D;">${escHtml(data.interesadoTelefono)}</a></p>
         ` : ""}
       </div>
 
       <p style="${styles.label}">Mensaje</p>
-      <p style="${styles.message}">"${data.mensaje}"</p>
+      <p style="${styles.message}">"${escHtml(data.mensaje)}"</p>
 
-      <a href="${data.propertyUrl}" style="${styles.btn}">Ver propiedad →</a>
+      <a href="${escHtml(data.propertyUrl)}" style="${styles.btn}">Ver propiedad →</a>
     </div>
   `);
 
@@ -174,7 +196,7 @@ export async function sendInquiryToOwner(data: {
     to: data.ownerEmail,
     bcc: ADMIN,           // vos siempre recibís una copia
     subject: `Nueva consulta: "${data.propertyTitulo}"`,
-    html,
+    html: conUtm(html, "consulta-recibida"),
   });
 }
 
@@ -191,11 +213,11 @@ export async function sendInquiryConfirmation(data: {
     <div style="${styles.body_p}">
       <h1 style="${styles.h1}">Tu consulta fue enviada</h1>
       <p style="${styles.lead}">
-        Hola ${data.interesadoNombre}, recibimos tu consulta sobre
-        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+        Hola ${escHtml(data.interesadoNombre)}, recibimos tu consulta sobre
+        <strong style="color:#0E2C50;">"${escHtml(data.propertyTitulo)}"</strong>.
         El dueño se comunicará con vos a la brevedad.
       </p>
-      <a href="${data.propertyUrl}" style="${styles.btn}">Ver la propiedad →</a>
+      <a href="${escHtml(data.propertyUrl)}" style="${styles.btn}">Ver la propiedad →</a>
       <p style="color:#A39C8F;font-size:13px;margin-top:20px;">
         Si no enviaste esta consulta, podés ignorar este email.
       </p>
@@ -207,7 +229,7 @@ export async function sendInquiryConfirmation(data: {
     from: FROM,
     to: data.interesadoEmail,
     subject: `Tu consulta fue enviada — ${data.propertyTitulo}`,
-    html,
+    html: conUtm(html, "consulta-enviada"),
   });
 }
 
@@ -234,23 +256,23 @@ export async function sendEstimacionLead(data: {
 
       <div style="${styles.card}">
         <p style="${styles.label}">Nombre</p>
-        <p style="${styles.value}">${data.nombre}</p>
+        <p style="${styles.value}">${escHtml(data.nombre)}</p>
 
         <p style="${styles.label}">Email</p>
-        <p style="${styles.value}"><a href="mailto:${data.email}" style="color:#0E2C50;">${data.email}</a></p>
+        <p style="${styles.value}"><a href="mailto:${escHtml(data.email)}" style="color:#0E2C50;">${escHtml(data.email)}</a></p>
 
         ${data.telefono ? `
         <p style="${styles.label}">Teléfono / WhatsApp</p>
-        <p style="${styles.value}"><a href="https://wa.me/${data.telefono.replace(/\D/g,"")}" style="color:#15803D;">${data.telefono}</a></p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.telefono.replace(/\D/g,"")}" style="color:#15803D;">${escHtml(data.telefono)}</a></p>
         ` : ""}
 
         <p style="${styles.label}">Barrio</p>
-        <p style="${styles.value}">${data.barrio}</p>
+        <p style="${styles.value}">${escHtml(data.barrio)}</p>
 
         <p style="${styles.label}">Estimación generada</p>
         <p style="${styles.value}">${fmt(data.resultado.estimado)} <span style="color:#8C7641;font-weight:400;">(rango ${fmt(data.resultado.rangoMin)} – ${fmt(data.resultado.rangoMax)})</span></p>
         ${data.resultado.precioM2Resultante ? `<p style="${styles.label}">Valor por m² · referencia del barrio · precisión</p>
-        <p style="${styles.value}">${fmt(data.resultado.precioM2Resultante)}/m² · ${fmt(data.resultado.precioM2Referencia ?? 0)}/m² · ${data.resultado.confianza ?? "—"}</p>` : ""}
+        <p style="${styles.value}">${fmt(data.resultado.precioM2Resultante)}/m² · ${fmt(data.resultado.precioM2Referencia ?? 0)}/m² · ${escHtml(data.resultado.confianza ?? "—")}</p>` : ""}
       </div>
       ${detalleEstimacion(data.input, data.resultado)}
     </div>
@@ -311,29 +333,29 @@ export async function sendAsesoriaLead(data: {
 
   const html = baseLayout(`
     <div style="${styles.body_p}">
-      <h1 style="${styles.h1}">Nueva consulta${data.motivo ? `: ${data.motivo}` : " de asesoría"}</h1>
+      <h1 style="${styles.h1}">Nueva consulta${data.motivo ? `: ${escHtml(data.motivo)}` : " de asesoría"}</h1>
       <p style="${styles.lead}">Alguien quiere conversar desde el sitio.</p>
 
       <div style="${styles.card}">
         ${data.motivo ? `
         <p style="${styles.label}">Motivo</p>
-        <p style="${styles.value}">${data.motivo}</p>
+        <p style="${styles.value}">${escHtml(data.motivo)}</p>
         ` : ""}
 
         <p style="${styles.label}">Nombre</p>
-        <p style="${styles.value}">${data.nombre}</p>
+        <p style="${styles.value}">${escHtml(data.nombre)}</p>
 
         <p style="${styles.label}">Email</p>
-        <p style="${styles.value}"><a href="mailto:${data.email}" style="color:#0E2C50;">${data.email}</a></p>
+        <p style="${styles.value}"><a href="mailto:${escHtml(data.email)}" style="color:#0E2C50;">${escHtml(data.email)}</a></p>
 
         ${data.telefono ? `
         <p style="${styles.label}">Teléfono / WhatsApp</p>
-        <p style="${styles.value}"><a href="https://wa.me/${data.telefono.replace(/\D/g,"")}" style="color:#15803D;">${data.telefono}</a></p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.telefono.replace(/\D/g,"")}" style="color:#15803D;">${escHtml(data.telefono)}</a></p>
         ` : ""}
       </div>
 
       <p style="${styles.label}">Mensaje</p>
-      <p style="${styles.message}">"${data.mensaje}"</p>
+      <p style="${styles.message}">"${escHtml(data.mensaje)}"</p>
     </div>
   `);
 
@@ -360,18 +382,18 @@ export async function sendServiceInterest(data: {
       <h1 style="${styles.h1}">Nuevo interés en servicio del ecosistema</h1>
       <p style="${styles.lead}">
         Un dueño solicitó ser conectado con un profesional de
-        <strong style="color:#0E2C50;">${data.servicio}</strong>.
+        <strong style="color:#0E2C50;">${escHtml(data.servicio)}</strong>.
       </p>
 
       <div style="${styles.card}">
         <p style="${styles.label}">Nombre</p>
-        <p style="${styles.value}">${data.nombre}</p>
+        <p style="${styles.value}">${escHtml(data.nombre)}</p>
 
         <p style="${styles.label}">Email</p>
-        <p style="${styles.value}"><a href="mailto:${data.email}" style="color:#0E2C50;">${data.email}</a></p>
+        <p style="${styles.value}"><a href="mailto:${escHtml(data.email)}" style="color:#0E2C50;">${escHtml(data.email)}</a></p>
 
         <p style="${styles.label}">Servicio solicitado</p>
-        <p style="${styles.value}">${data.servicio}</p>
+        <p style="${styles.value}">${escHtml(data.servicio)}</p>
       </div>
     </div>
   `);
@@ -415,21 +437,21 @@ export async function sendNewPropertyToAdmin(data: {
 
       <div style="${styles.card}">
         <p style="${styles.label}">Propiedad</p>
-        <p style="${styles.value}">${data.titulo}</p>
+        <p style="${styles.value}">${escHtml(data.titulo)}</p>
 
         <p style="${styles.label}">Tipo · Ubicación</p>
-        <p style="${styles.value}">${TIPO_LABEL[data.tipo] || data.tipo} · ${ubicacion}</p>
+        <p style="${styles.value}">${escHtml(TIPO_LABEL[data.tipo] || data.tipo)} · ${escHtml(ubicacion)}</p>
 
         <p style="${styles.label}">Precio</p>
         <p style="${styles.value}">${precio}</p>
 
         <p style="${styles.label}">Publicada por</p>
-        <p style="${styles.value}">${data.ownerNombre} · <a href="mailto:${data.ownerEmail}" style="color:#0E2C50;">${data.ownerEmail}</a></p>
+        <p style="${styles.value}">${escHtml(data.ownerNombre)} · <a href="mailto:${escHtml(data.ownerEmail)}" style="color:#0E2C50;">${escHtml(data.ownerEmail)}</a></p>
       </div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <a href="${data.publicUrl}" style="${styles.btn}">Ver publicación →</a>
-        <a href="${data.panelUrl}" style="display:inline-block;background:#F7F4EE;color:#0E2C50;font-size:14px;font-weight:700;padding:13px 24px;border-radius:10px;text-decoration:none;border:1px solid #E8DFC8;">
+        <a href="${escHtml(data.publicUrl)}" style="${styles.btn}">Ver publicación →</a>
+        <a href="${escHtml(data.panelUrl)}" style="display:inline-block;background:#F7F4EE;color:#0E2C50;font-size:14px;font-weight:700;padding:13px 24px;border-radius:10px;text-decoration:none;border:1px solid #E8DFC8;">
           Ver en el panel
         </a>
       </div>
@@ -462,17 +484,17 @@ export async function sendAyudaVenta(data: {
 
   const html = baseLayout(`
     <div style="${styles.body_p}">
-      <strong>${data.ownerNombre}</strong> pidió ayuda para vender una propiedad.
+      <strong>${escHtml(data.ownerNombre)}</strong> pidió ayuda para vender una propiedad.
     </div>
     <div style="${styles.body_p}">
-      <strong>Propiedad:</strong> ${data.propiedadTitulo}<br>
-      <strong>Zona:</strong> ${data.propiedadZona || "—"}<br>
+      <strong>Propiedad:</strong> ${escHtml(data.propiedadTitulo)}<br>
+      <strong>Zona:</strong> ${escHtml(data.propiedadZona || "—")}<br>
       <strong>Precio publicado:</strong> ${precio}
     </div>
     <div style="${styles.body_p}">
       <strong>Contacto:</strong><br>
-      Email: <a href="mailto:${data.ownerEmail}">${data.ownerEmail}</a><br>
-      Teléfono: ${data.ownerTelefono ?? "no informado"}
+      Email: <a href="mailto:${escHtml(data.ownerEmail)}">${escHtml(data.ownerEmail)}</a><br>
+      Teléfono: ${escHtml(data.ownerTelefono ?? "no informado")}
       ${wa ? `<br><a href="https://wa.me/${wa}">Escribirle por WhatsApp</a>` : ""}
     </div>
     <div style="${styles.body_p}">
@@ -508,28 +530,28 @@ export async function sendVisitaToOwner(data: {
     <div style="${styles.body_p}">
       <h1 style="${styles.h1}">Te pidieron una visita</h1>
       <p style="${styles.lead}">
-        Hola ${data.ownerNombre}, quieren conocer
-        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+        Hola ${escHtml(data.ownerNombre)}, quieren conocer
+        <strong style="color:#0E2C50;">"${escHtml(data.propertyTitulo)}"</strong>.
         Confirmá o proponé otro horario desde tu panel.
       </p>
 
       <div style="${styles.card}">
         <p style="${styles.label}">Horario pedido</p>
-        <p style="${styles.value}">${data.cuando}</p>
+        <p style="${styles.value}">${escHtml(data.cuando)}</p>
 
         <p style="${styles.label}">Nombre</p>
-        <p style="${styles.value}">${data.interesadoNombre}</p>
+        <p style="${styles.value}">${escHtml(data.interesadoNombre)}</p>
 
         <p style="${styles.label}">Teléfono / WhatsApp</p>
-        <p style="${styles.value}"><a href="https://wa.me/${data.interesadoTelefono.replace(/\D/g,"")}" style="color:#15803D;">${data.interesadoTelefono}</a></p>
+        <p style="${styles.value}"><a href="https://wa.me/${data.interesadoTelefono.replace(/\D/g,"")}" style="color:#15803D;">${escHtml(data.interesadoTelefono)}</a></p>
 
         <p style="${styles.label}">Email</p>
-        <p style="${styles.value}"><a href="mailto:${data.interesadoEmail}" style="color:#0E2C50;">${data.interesadoEmail}</a></p>
+        <p style="${styles.value}"><a href="mailto:${escHtml(data.interesadoEmail)}" style="color:#0E2C50;">${escHtml(data.interesadoEmail)}</a></p>
       </div>
 
       ${data.mensaje ? `
       <p style="${styles.label}">Mensaje</p>
-      <p style="${styles.message}">"${data.mensaje}"</p>
+      <p style="${styles.message}">"${escHtml(data.mensaje)}"</p>
       ` : ""}
 
       <a href="${SITE}/panel" style="${styles.btn}">Confirmar la visita &rarr;</a>
@@ -546,7 +568,7 @@ export async function sendVisitaToOwner(data: {
     to: data.ownerEmail,
     bcc: ADMIN,
     subject: `Pedido de visita: "${data.propertyTitulo}" — ${data.cuando}`,
-    html,
+    html: conUtm(html, "visita-recibida"),
   });
 }
 
@@ -564,17 +586,17 @@ export async function sendVisitaPendiente(data: {
     <div style="${styles.body_p}">
       <h1 style="${styles.h1}">Pedimos tu visita</h1>
       <p style="${styles.lead}">
-        Hola ${data.interesadoNombre}, le avisamos al dueño de
-        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>
+        Hola ${escHtml(data.interesadoNombre)}, le avisamos al dueño de
+        <strong style="color:#0E2C50;">"${escHtml(data.propertyTitulo)}"</strong>
         que querés visitarla. Te escribimos apenas confirme.
       </p>
 
       <div style="${styles.card}">
         <p style="${styles.label}">Horario pedido</p>
-        <p style="${styles.value}">${data.cuando}</p>
+        <p style="${styles.value}">${escHtml(data.cuando)}</p>
       </div>
 
-      <a href="${data.propertyUrl}" style="${styles.btn}">Ver la propiedad &rarr;</a>
+      <a href="${escHtml(data.propertyUrl)}" style="${styles.btn}">Ver la propiedad &rarr;</a>
 
       <p style="color:#A39C8F;font-size:13px;margin-top:20px;">
         Todavía no está confirmada: esperá nuestro aviso antes de viajar.
@@ -587,7 +609,7 @@ export async function sendVisitaPendiente(data: {
     from: FROM,
     to: data.interesadoEmail,
     subject: `Pedido de visita enviado — ${data.propertyTitulo}`,
-    html,
+    html: conUtm(html, "visita-enviada"),
   });
 }
 
@@ -609,27 +631,27 @@ export async function sendVisitaRespuesta(data: {
     ? `
       <h1 style="${styles.h1}">¡Visita confirmada!</h1>
       <p style="${styles.lead}">
-        Hola ${data.interesadoNombre}, ${data.ownerNombre} confirmó tu visita a
-        <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+        Hola ${escHtml(data.interesadoNombre)}, ${escHtml(data.ownerNombre)} confirmó tu visita a
+        <strong style="color:#0E2C50;">"${escHtml(data.propertyTitulo)}"</strong>.
       </p>
 
       <div style="${styles.card}">
         <p style="${styles.label}">Cuándo</p>
-        <p style="${styles.value}">${data.cuando}</p>
+        <p style="${styles.value}">${escHtml(data.cuando)}</p>
 
         ${data.direccion ? `
         <p style="${styles.label}">Dónde</p>
-        <p style="${styles.value}">${data.direccion}</p>
+        <p style="${styles.value}">${escHtml(data.direccion)}</p>
         ` : ""}
 
       </div>
 
       ${data.nota ? `
       <p style="${styles.label}">Mensaje del dueño</p>
-      <p style="${styles.message}">"${data.nota}"</p>
+      <p style="${styles.message}">"${escHtml(data.nota)}"</p>
       ` : ""}
 
-      <a href="${data.propertyUrl}" style="${styles.btn}">Ver la propiedad &rarr;</a>
+      <a href="${escHtml(data.propertyUrl)}" style="${styles.btn}">Ver la propiedad &rarr;</a>
 
       <p style="color:#A39C8F;font-size:13px;margin-top:20px;">
         Si no vas a poder ir, avisale al dueño con tiempo.
@@ -638,18 +660,18 @@ export async function sendVisitaRespuesta(data: {
     : `
       <h1 style="${styles.h1}">Ese horario no le sirve al dueño</h1>
       <p style="${styles.lead}">
-        Hola ${data.interesadoNombre}, ${data.ownerNombre} no puede recibirte
-        el ${data.cuando} en <strong style="color:#0E2C50;">"${data.propertyTitulo}"</strong>.
+        Hola ${escHtml(data.interesadoNombre)}, ${escHtml(data.ownerNombre)} no puede recibirte
+        el ${escHtml(data.cuando)} en <strong style="color:#0E2C50;">"${escHtml(data.propertyTitulo)}"</strong>.
       </p>
 
       ${data.nota ? `
       <p style="${styles.label}">Mensaje del dueño</p>
-      <p style="${styles.message}">"${data.nota}"</p>
+      <p style="${styles.message}">"${escHtml(data.nota)}"</p>
       ` : ""}
 
       <p style="${styles.lead}">Podés elegir otro horario disponible desde la publicación.</p>
 
-      <a href="${data.propertyUrl}#visitas" style="${styles.btn}">Elegir otro horario &rarr;</a>
+      <a href="${escHtml(data.propertyUrl)}#visitas" style="${styles.btn}">Elegir otro horario &rarr;</a>
     `;
 
   const resend = getResend(); if (!resend) return;
@@ -659,7 +681,7 @@ export async function sendVisitaRespuesta(data: {
     subject: data.confirmada
       ? `Visita confirmada: ${data.propertyTitulo} — ${data.cuando}`
       : `Sobre tu visita a ${data.propertyTitulo}`,
-    html: baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`),
+    html: conUtm(baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`), "visita-respuesta"),
   });
 }
 
@@ -685,9 +707,9 @@ export async function sendValidacionPendiente(data: {
 
       <div style="${styles.card}">
         <p style="${styles.label}">Usuario</p>
-        <p style="${styles.value}">${data.quien}</p>
+        <p style="${styles.value}">${escHtml(data.quien)}</p>
         <p style="${styles.label}">Detalle</p>
-        <p style="${styles.value}">${data.detalle}</p>
+        <p style="${styles.value}">${escHtml(data.detalle)}</p>
       </div>
 
       <a href="${SITE}/panel/admin" style="${styles.btn}">Revisar en el panel &rarr;</a>
@@ -715,14 +737,14 @@ export async function sendValidacionResuelta(data: {
   if (!process.env.RESEND_API_KEY) return;
 
   const queEs = data.tipo === "identidad" ? "identidad" : "dominio";
-  const saludo = data.nombre ? `Hola ${data.nombre.split(" ")[0]}, ` : "Hola, ";
+  const saludo = data.nombre ? `Hola ${escHtml(data.nombre.split(" ")[0])}, ` : "Hola, ";
 
   const cuerpo = data.aprobada
     ? `
       <h1 style="${styles.h1}">Validación aprobada</h1>
       <p style="${styles.lead}">
         ${saludo}revisamos tu documentación y tu <strong style="color:#0E2C50;">validación de ${queEs}</strong>
-        quedó aprobada${data.propiedad ? ` para <strong style="color:#0E2C50;">"${data.propiedad}"</strong>` : ""}.
+        quedó aprobada${data.propiedad ? ` para <strong style="color:#0E2C50;">"${escHtml(data.propiedad)}"</strong>` : ""}.
       </p>
       <p style="${styles.lead}">
         ${data.tipo === "identidad"
@@ -735,11 +757,11 @@ export async function sendValidacionResuelta(data: {
       <h1 style="${styles.h1}">Necesitamos que reenvíes la documentación</h1>
       <p style="${styles.lead}">
         ${saludo}revisamos tu <strong style="color:#0E2C50;">validación de ${queEs}</strong>
-        ${data.propiedad ? `para <strong style="color:#0E2C50;">"${data.propiedad}"</strong> ` : ""}y no pudimos aprobarla.
+        ${data.propiedad ? `para <strong style="color:#0E2C50;">"${escHtml(data.propiedad)}"</strong> ` : ""}y no pudimos aprobarla.
       </p>
       ${data.motivo ? `
       <p style="${styles.label}">Motivo</p>
-      <p style="${styles.message}">"${data.motivo}"</p>
+      <p style="${styles.message}">"${escHtml(data.motivo)}"</p>
       ` : ""}
       <p style="${styles.lead}">Podés volver a subirla desde tu perfil.</p>
       <a href="${SITE}/panel/perfil" style="${styles.btn}">Reenviar documentación &rarr;</a>
@@ -753,16 +775,11 @@ export async function sendValidacionResuelta(data: {
     subject: data.aprobada
       ? `Tu validación de ${queEs} fue aprobada`
       : `Sobre tu validación de ${queEs}`,
-    html: baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`),
+    html: conUtm(baseLayout(`<div style="${styles.body_p}">${cuerpo}</div>`), "validacion"),
   });
 }
 
 // ── Tertulia Inmobiliaria (foro) ──────────────────────────────
-// Todo lo que escribe la gente se escapa: un alias o una respuesta con
-// HTML no puede alterar el email.
-
-const escHtml = (t: string) =>
-  t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 /** Pie de los avisos del foro: por qué te llega y cómo dejar de recibirlo. */
 function pieAvisos(bajaUrl: string) {
@@ -772,13 +789,14 @@ function pieAvisos(bajaUrl: string) {
   </p>`;
 }
 
-async function enviarForo(para: string, asunto: string, contenido: string) {
+async function enviarForo(para: string, asunto: string, contenido: string, campana?: string) {
   const resend = getResend(); if (!resend) return;
+  const html = baseLayout(`<div style="${styles.body_p}">${contenido}</div>`);
   await resend.emails.send({
     from: FROM,
     to: para,
     subject: asunto,
-    html: baseLayout(`<div style="${styles.body_p}">${contenido}</div>`),
+    html: campana ? conUtm(html, campana) : html,
   });
 }
 
@@ -801,7 +819,7 @@ export async function sendForoAviso(data: {
     ${data.cita ? `<p style="${styles.message}">"${escHtml(data.cita)}"</p>` : ""}
     <a href="${data.url}" style="${styles.btn}">${escHtml(data.cta)} &rarr;</a>
     ${pieAvisos(data.bajaUrl)}
-  `);
+  `, "aviso-tertulia");
 }
 
 /** Aviso al admin: tema nuevo, reporte o pedido de verificación */
@@ -880,7 +898,7 @@ export async function sendEstimacionAlUsuario(data: {
     to: data.para,
     replyTo: ADMIN,
     subject: `Tu estimación: ${data.barrio} — ${fmtUsd(data.resultado.estimado)}`,
-    html,
+    html: conUtm(html, "tasacion"),
   });
 }
 
@@ -950,7 +968,7 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
     to: data.para,
     replyTo: ADMIN,
     subject: "Bienvenido/a a Espacio Inmobiliario",
-    html,
+    html: conUtm(html, "bienvenida"),
   });
 }
 
@@ -1037,7 +1055,7 @@ export async function sendPropiedadPublicada(data: {
     to: data.para,
     replyTo: ADMIN,
     subject: `Tu propiedad ya está publicada — ${data.titulo}`,
-    html,
+    html: conUtm(html, "propiedad-publicada"),
   });
 }
 
@@ -1068,7 +1086,7 @@ export async function sendAyudaVentaAcuse(data: { para: string; nombre: string; 
     to: data.para,
     replyTo: ADMIN,
     subject: "Recibimos tu pedido de ayuda para vender",
-    html,
+    html: conUtm(html, "ayuda-vender"),
   });
 }
 
@@ -1099,7 +1117,7 @@ export async function sendAsesoriaAcuse(data: { para: string; nombre: string; me
     to: data.para,
     replyTo: ADMIN,
     subject: "Recibimos tu consulta — Espacio Inmobiliario",
-    html,
+    html: conUtm(html, "asesoria"),
   });
 }
 
@@ -1144,7 +1162,7 @@ export function plantillaSeguimiento(origen: "tasador" | "registro"): string {
       <td style="padding:2px 0 12px;color:#0E2C50;font-size:15px;line-height:1.5;font-weight:600;">${p}</td>
     </tr>`).join("");
 
-  return baseLayout(`
+  const html = baseLayout(`
     <div style="background:#0E2C50;padding:36px 32px 32px;">
       <p style="margin:0 0 10px;color:#CBB585;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;">${t.eyebrow}</p>
       <h1 style="margin:0 0 12px;color:#fff;font-family:${SERIF};font-size:28px;line-height:1.25;font-weight:700;">${t.titulo}</h1>
@@ -1168,4 +1186,5 @@ export function plantillaSeguimiento(origen: "tasador" | "registro"): string {
     ${bloqueHerramientas()}
     <div style="background:#fff;padding-top:26px;border-top:1px solid #E8DFC8;">${bloqueFirma()}</div>
   `, { completo: true, bajaUrl: "{{{RESEND_UNSUBSCRIBE_URL}}}" });
+  return conUtm(html, `seguimiento-${origen}`);
 }

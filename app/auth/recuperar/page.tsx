@@ -24,7 +24,8 @@ export default async function RecuperarPage({
 
       {sp.error === "enlace" && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg px-4 py-3 mb-4">
-          El enlace expiró o ya fue usado. Pedí uno nuevo.
+          Ese enlace no funcionó: venció, ya se usó o se abrió en otro navegador. Pedí uno
+          nuevo y abrilo en este mismo navegador.
         </div>
       )}
 
