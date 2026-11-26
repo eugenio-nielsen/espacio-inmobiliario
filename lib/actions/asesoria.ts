@@ -38,7 +38,7 @@ export async function enviarConsultaAsesoria(data: {
     // Acuse a quien escribió. El email lo tipea cualquiera: tope por dirección
     // para que el formulario no sirva para mandarle mails a un tercero.
     const email = data.email.trim().toLowerCase();
-    if (/^[^s@<>]+@[^s@<>]+.[^s@<>]{2,}$/.test(email) && (await checkRateLimitClave(`asesoria-mail:${email}`, 2, 86400))) {
+    if (/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]{2,}$/.test(email) && (await checkRateLimitClave(`asesoria-mail:${email}`, 2, 86400))) {
       try {
         await sendAsesoriaAcuse({
           para: email,
