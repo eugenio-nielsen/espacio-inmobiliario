@@ -6,6 +6,7 @@ import "./globals.css";
 import AsesoriaFlotante from "@/components/AsesoriaFlotante";
 import ClicksGA from "@/components/analytics/ClicksGA";
 import OrigenVisita from "@/components/analytics/OrigenVisita";
+import { CLAVE_TRAFICO_INTERNO } from "@/lib/trafico-interno";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -64,7 +65,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${GA_ID}');
+                var interno = false;
+                try { interno = localStorage.getItem('${CLAVE_TRAFICO_INTERNO}') === '1'; } catch (e) {}
+                gtag('config', '${GA_ID}', interno ? { traffic_type: 'internal' } : {});
               `}
             </Script>
           </>

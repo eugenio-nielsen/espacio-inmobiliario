@@ -13,6 +13,7 @@ import { getPreciosBarrios, getEstimadorConfig } from "@/lib/estimador/data";
 import type { Post } from "@/lib/blog/types";
 import { datosAdminForo } from "@/lib/foro/data";
 import { getCostosConfig, profesionalesAdmin } from "@/lib/catedra/data";
+import MarcarTraficoInterno from "@/components/analytics/MarcarTraficoInterno";
 
 export const metadata: Metadata = {
   title: "Superadmin",
@@ -147,6 +148,8 @@ export default async function SuperadminPage({ searchParams }: Props) {
 
   return (
     <div>
+      {/* Las visitas de este navegador no se cuentan como de usuarios en Analytics */}
+      <MarcarTraficoInterno />
       <div style={{ marginBottom: 24 }}>
         <Link href="/panel" style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", textDecoration: "none" }}>← Volver al panel</Link>
         <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 26, color: "var(--navy-800)", margin: "8px 0 2px" }}>

@@ -51,6 +51,10 @@ type PageProps = { params: Promise<{ operacion: string; barrio: string; tipo: st
 /**
  * Consulta cacheada por request: generateMetadata y el componente de página
  * la comparten, así la propiedad se pide una sola vez en lugar de dos.
+ *
+ * El público solo ve las activas. Una pausada o vendida la pueden abrir su
+ * dueño y el administrador (el botón "Ver" de sus paneles), como vista
+ * privada; para el resto no existe.
  */
 const getPropiedad = cache(async (shortId: string) => {
   const supabase = await createClient();
@@ -59,8 +63,22 @@ const getPropiedad = cache(async (shortId: string) => {
     .select("*, profiles(nombre, email)")
     .eq("short_id", shortId).eq("status", "activa").maybeSingle();
   if (error) console.error("Property fetch error:", error);
-  return data as (Property & { profiles: Profile }) | null;
+  const publica = data as (Property & { profiles: Profile }) | null;
+  return publica ?? getPropiedadNoPublicada(shortId);
 });
+
+/** Una propiedad que no está activa, solo si quien mira es su dueño o el administrador. */
+async function getPropiedadNoPublicada(shortId: string) {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const { data, error } = await createAdminClient()
+    .from("properties")
+    .select("*, profiles(nombre, email)")
+    .eq("short_id", shortId).neq("status", "activa").maybeSingle();
+  if (error) console.error("Property fetch error (no publicada):", error);
+  const p = data as (Property & { profiles: Profile }) | null;
+  return p && (p.owner_id === user.id || esAdminEmail(user.email)) ? p : null;
+}
 
 /** Corta en el último espacio antes del límite, sin dejar palabras a medias. */
 function recortar(texto: string, max: number): string {
@@ -106,6 +124,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: canonicalUrl },
+    // La vista privada de una pausada o vendida no se indexa
+    ...(data.status !== "activa" && { robots: { index: false, follow: false } }),
     openGraph: {
       title, description, url: canonicalUrl, type: "website",
       ...(imagen && { images: [{ url: imagen, width: 1200, height: 630, alt: data.titulo }] }),
@@ -135,6 +155,8 @@ export default async function PropiedadPage({ params }: PageProps) {
   // cochera": esos datos no se muestran aunque hayan quedado cargados.
   const esCochera = p.tipo === "cochera";
   const esAlquiler = p.operacion === "alquiler";
+  // false: vista privada de una pausada o vendida (dueño o administrador)
+  const publicada = p.status === "activa";
   // Los parámetros de costos son los mismos de la calculadora de la Cátedra
   const costosConfig = await getCostosConfig();
 
@@ -284,13 +306,27 @@ export default async function PropiedadPage({ params }: PageProps) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      {publicada && (
+        <>
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+        </>
+      )}
       {sumaVista && <RegistrarVista propertyId={p.id} />}
       <div className="property-page-pad" style={{ minHeight: "100vh", background: "var(--cream)" }}>
         <Navbar />
 
         <main style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "clamp(16px,4vw,28px) 20px clamp(40px,6vw,64px)" }}>
+          {!publicada && (
+            <div role="status" style={{ marginBottom: 18, padding: "12px 16px", borderRadius: "var(--radius-sm)", background: "#FFFBEB", border: "1px solid #FDE68A", fontFamily: "var(--font-sans)", fontSize: 13.5, lineHeight: 1.6, color: "#92400E" }}>
+              <strong>Vista privada.</strong> Esta publicación está {p.status === "vendida" ? "marcada como vendida" : "pausada"}: solo
+              la ven su dueño y el administrador. Para el público no existe.{" "}
+              <Link href={`/panel/propiedades/${p.slug}/editar`} style={{ color: "#92400E", fontWeight: 700 }}>
+                Editarla
+              </Link>
+            </div>
+          )}
+
           {/* Breadcrumb */}
           <div style={{ fontFamily: "var(--font-sans)", fontSize: 12, color: "var(--ink-500)", marginBottom: 18, display: "flex", alignItems: "center", flexWrap: "wrap", gap: "2px 0", overflow: "hidden" }}>
             <Link href="/" style={{ color: "var(--ink-500)", textDecoration: "none" }}>Inicio</Link>
@@ -438,7 +474,7 @@ export default async function PropiedadPage({ params }: PageProps) {
                   Publicado por el propietario
                 </span>
               </div>
-              <ShareButtons url={urlFicha} title={`${p.titulo} · Espacio Inmobiliario`} />
+              {publicada && <ShareButtons url={urlFicha} title={`${p.titulo} · Espacio Inmobiliario`} />}
             </div>
 
             {/* Right — sticky sidebar */}
@@ -505,7 +541,13 @@ export default async function PropiedadPage({ params }: PageProps) {
                 </div>
 
                 {/* Inquiry form */}
-                <ContactoPropiedad propertyId={p.id} dias={diasAgenda} ga={{ operacion: p.operacion, tipo: p.tipo }} />
+                {publicada ? (
+                  <ContactoPropiedad propertyId={p.id} dias={diasAgenda} ga={{ operacion: p.operacion, tipo: p.tipo }} />
+                ) : (
+                  <p style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: "var(--ink-500)", margin: 0 }}>
+                    El formulario de contacto y la agenda de visitas se muestran cuando la publicación está activa.
+                  </p>
+                )}
               </div>
 
               {/* Reference */}
@@ -538,18 +580,20 @@ export default async function PropiedadPage({ params }: PageProps) {
       </div>
 
       {/* Barra fija mobile con precio + contacto */}
-      <StickyPropertyBar
-        precio={precio}
-        datos={{
-          precioPorM2: precioPorM2
-            ? `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(precioPorM2)}`
-            : null,
-          ambientes: esCochera ? null : p.ambientes,
-          dormitorios: esCochera ? null : p.dormitorios,
-          banos: esCochera ? null : p.banos,
-          superficieTotal: p.superficie_total,
-        }}
-      />
+      {publicada && (
+        <StickyPropertyBar
+          precio={precio}
+          datos={{
+            precioPorM2: precioPorM2
+              ? `${p.moneda === "USD" ? "US$" : "$"} ${fmtNum(precioPorM2)}`
+              : null,
+            ambientes: esCochera ? null : p.ambientes,
+            dormitorios: esCochera ? null : p.dormitorios,
+            banos: esCochera ? null : p.banos,
+            superficieTotal: p.superficie_total,
+          }}
+        />
+      )}
     </>
   );
 }

@@ -47,7 +47,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const esCaba = data.provincia === "Ciudad Autónoma de Buenos Aires";
   const zona = esCaba ? "CABA" : "Provincia de Buenos Aires";
   const precio = esCaba ? resumenBarrio(data.nombre, await getPreciosBarrios())?.precio : undefined;
-  const title = `Propiedades en venta en ${data.nombre} · Dueño directo`;
+  // Con las palabras con las que se busca: "casas / departamentos en venta en <barrio> dueño directo"
+  const title = `Casas y departamentos en venta en ${data.nombre} · Dueño directo`;
   const description = `Casas, terrenos y departamentos en venta en ${data.nombre}, ${zona}, publicados directamente por sus dueños. Sin comisión inmobiliaria.${precio ? ` Precio de referencia del m²: US$ ${fmtUsd(precio)}. Tasá tu propiedad gratis.` : esCaba ? " Tasá tu propiedad gratis." : ""}`;
   const url = `${SITE}/propiedades/venta/${data.slug}`;
   return {

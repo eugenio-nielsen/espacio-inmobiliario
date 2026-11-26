@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/precios", destination: "/vender", permanent: true },
+      // Direcciones de una versión anterior que Google todavía conoce. Las
+      // fichas viejas (/propiedad/<id>) las resuelve app/propiedad/[id].
+      { source: "/herramientas", destination: "/estimador", permanent: true },
+      { source: "/guias", destination: "/blog", permanent: true },
     ];
   },
   // Versión en markdown de las notas y de las guías de costos, para

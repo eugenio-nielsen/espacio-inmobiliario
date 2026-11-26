@@ -38,6 +38,9 @@
  *
  * Para que un evento cuente como conversión hay que marcarlo como "evento
  * clave" en Administrar → Eventos.
+ *
+ * El tráfico del equipo se marca con traffic_type = internal (ver
+ * lib/trafico-interno.ts) para el filtro "Internal Traffic" de la propiedad.
  */
 
 declare global {
