@@ -182,10 +182,14 @@ export function BuscadorBarrio({
   barrios,
   valor,
   onCambio,
+  placeholder = "Buscá tu barrio",
+  vacio = "No tenemos valores de referencia para ese barrio todavía.",
 }: {
   barrios: string[];
   valor: string;
   onCambio: (v: string) => void;
+  placeholder?: string;
+  vacio?: string;
 }) {
   const id = useId();
   const [q, setQ] = useState("");
@@ -203,7 +207,7 @@ export function BuscadorBarrio({
           type="search"
           value={q}
           onChange={e => setQ(e.target.value)}
-          placeholder="Buscá tu barrio"
+          placeholder={placeholder}
           aria-label="Buscar barrio"
           onKeyDown={e => {
             // Enter con un solo resultado lo elige, en vez de avanzar sin barrio
@@ -227,7 +231,7 @@ export function BuscadorBarrio({
             <span className="ts-op-t">{b}</span>
           </label>
         ))}
-        {!visibles.length && <p className="ts-vacio">No tenemos valores de referencia para ese barrio todavía.</p>}
+        {!visibles.length && <p className="ts-vacio">{vacio}</p>}
       </div>
     </div>
   );

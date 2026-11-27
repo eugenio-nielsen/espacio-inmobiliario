@@ -25,6 +25,17 @@ function Enfocar({ enfoque }: { enfoque: Enfoque }) {
   return null;
 }
 
+/** Si el mapa estaba oculto o cambia de tamaño, Leaflet tiene que volver a medirlo. */
+function Medir() {
+  const map = useMap();
+  useEffect(() => {
+    const observador = new ResizeObserver(() => map.invalidateSize());
+    observador.observe(map.getContainer());
+    return () => observador.disconnect();
+  }, [map]);
+  return null;
+}
+
 function AlTocar({ onElegir }: { onElegir: (lat: number, lng: number) => void }) {
   useMapEvents({ click: e => onElegir(e.latlng.lat, e.latlng.lng) });
   return null;
@@ -56,6 +67,7 @@ export default function MapaSelector({
         attributionControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Medir />
         <Enfocar enfoque={enfoque} />
         <AlTocar onElegir={onElegir} />
         {pos && (aproximada || radio) && (

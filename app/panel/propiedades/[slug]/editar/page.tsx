@@ -51,8 +51,10 @@ export default async function EditarPage({
     cantidad = count ?? 0;
   }
 
+  const ajena = esAdmin && property.owner_id !== user.id;
+
   return (
-    <div className="max-w-3xl mx-auto">
+    <>
       {/* Conversión: la propiedad se acaba de publicar */}
       {creada && (
         <EventoGA
@@ -65,27 +67,24 @@ export default async function EditarPage({
           limpiar={["creada"]}
         />
       )}
-      <div className="mb-6">
-        <Link href={esAdmin && property.owner_id !== user.id ? "/panel/admin" : "/panel"} className="text-sm text-gray-500 hover:text-blue-700">
-          ← Volver al panel
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-800 mt-2">Editar propiedad</h1>
-        {esAdmin && property.owner_id !== user.id && (
-          <div className="mt-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-lg px-4 py-3 text-sm">
-            Estás editando como superadmin una publicación de otro usuario.
-          </div>
-        )}
-        {creada && (
-          <div className="mt-3 bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">
-            ✅ Propiedad publicada exitosamente. Podés seguir editando los datos o{" "}
-            <Link href={buildPropertyUrl(property as Property)} className="font-semibold underline">
-              ver la publicación
-            </Link>
-            .
-          </div>
-        )}
-      </div>
-      <PropertyForm mode="editar" property={property as Property} />
-    </div>
+      <PropertyForm
+        mode="editar"
+        property={property as Property}
+        volverA={ajena ? "/panel/admin" : "/panel"}
+        avisos={(ajena || creada) ? (
+          <>
+            {ajena && (
+              <p className="pf-aviso">Estás editando como superadmin una publicación de otro usuario.</p>
+            )}
+            {creada && (
+              <p className="pf-aviso" role="status">
+                <strong>Propiedad publicada.</strong> Podés seguir editando los datos o{" "}
+                <Link href={buildPropertyUrl(property as Property)}>ver la publicación</Link>.
+              </p>
+            )}
+          </>
+        ) : null}
+      />
+    </>
   );
 }
