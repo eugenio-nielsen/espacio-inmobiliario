@@ -23,7 +23,7 @@ if (!KEY) { console.error("Falta ELEVEN_LABS_API_KEY en .env.local."); process.e
 const guion = JSON.parse(readFileSync(path.join(AQUI, "guiones", `${reel}.json`), "utf8"));
 const OUT = path.join(AQUI, "vo", reel); mkdirSync(OUT, { recursive: true });
 const prev = existsSync(path.join(OUT, "vo.json")) ? JSON.parse(readFileSync(path.join(OUT, "vo.json"), "utf8")) : { escenas: {} };
-const ajustes = { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true, speed: 1.0 };
+const ajustes = { stability: 0.5, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true, speed: guion.velocidad ?? 1.0 };
 const habladas = guion.escenas.filter(e => e.texto);
 
 for (let i = 0; i < habladas.length; i++) {

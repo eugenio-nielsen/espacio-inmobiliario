@@ -136,5 +136,10 @@ Escenas de un guion (`visual.tipo`):
 | `movil` | El sitio dentro de un celular | `imagenes` (nombres de `capturas/`, se cruzan en orden), `etiqueta` |
 | `punto` | Un punto numerado ("1 de 3") | `n`, `de`, `titulo` (`\|` separa las líneas) |
 | `cierre` | Logo, frase final y dirección | `frase`, `url`, `aviso` |
+| `contador` | Un número que sube desde cero | `hasta`, `prefijo`, `rotulo`, `letra` |
+| `foto` | Foto de una ficha a pantalla completa | `imagen` (`foto-N`, según la lista `fotos` del guion), `titulo`, `dato` |
+| `opciones` | Opciones A, B y C sobre una foto | `imagen`, `titulo`, `opciones` |
+
+Los teasers para pauta (`teaser-*`, textos en [`reels/TEASERS.md`](reels/TEASERS.md)) usan `"zonaAnuncio": true`, que deja el texto fuera de la interfaz de los anuncios. El guion admite además `velocidad` (de la voz) y `cola` (segundos tras la última frase), y cada escena `min` (duración mínima).
 
 Una escena sin `texto` no lleva voz y dura `dur` segundos. La música es la misma sintética del video de la familia, sin licencias. Las capturas usan la cuenta de prueba de `explainer/.demo.json` y no envían ningún formulario.

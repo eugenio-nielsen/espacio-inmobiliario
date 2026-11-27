@@ -1,0 +1,21 @@
+{
+  "id": "teaser-comision",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "zonaAnuncio": true,
+  "velocidad": 1.1,
+  "cola": 1.2,
+  "escenas": [
+    { "id": "gancho", "texto": "Vendés tu casa en cien mil dólares.", "min": 3,
+      "visual": { "tipo": "gancho", "kicker": "Hacé la cuenta", "titulo": ["Vendés a", "*USD 100.000*"] } },
+    { "id": "comision", "texto": "Con una comisión del tres por ciento…", "min": 3,
+      "visual": { "tipo": "gancho", "kicker": "", "titulo": ["Con una comisión", "*del 3 %…*"], "letra": "Ejemplo de cálculo.|No incluye gastos de escritura ni impuestos." } },
+    { "id": "cuenta", "texto": "son tres mil dólares.", "min": 3.6,
+      "visual": { "tipo": "contador", "prefijo": "USD", "hasta": 3000, "rotulo": "de *comisión*", "letra": "Ejemplo de cálculo.|No incluye gastos de escritura ni impuestos." } },
+    { "id": "sitio", "texto": "En Espacio Inmobiliario publicás gratis y tratás directo con quien compra.", "min": 5,
+      "visual": { "tipo": "movil", "titulo": ["Publicá gratis.", "*Tratá directo.*"], "imagenes": ["publicar-1"] } },
+    { "id": "asesoria", "texto": "Sin comisión, y con asesoramiento cuando lo necesites.", "min": 4,
+      "visual": { "tipo": "gancho", "kicker": "", "titulo": ["Sin comisión.", "*Con asesoramiento.*"] } },
+    { "id": "cierre", "texto": "¿Querés vender? Escribinos por WhatsApp.", "min": 4.5,
+      "visual": { "tipo": "cierre", "frase": ["Escribinos", "*por WhatsApp.*"], "url": "espacioinmobiliario.com.ar" } }
+  ]
+}

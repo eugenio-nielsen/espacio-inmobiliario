@@ -40,6 +40,12 @@ const servidor = http.createServer(async (req, res) => {
     if (ruta === "/guion.json") return enviar(JSON.stringify(guion), "application/json; charset=utf-8");
     if (ARCHIVOS[ruta]) return enviar(await readFile(ARCHIVOS[ruta][0]), ARCHIVOS[ruta][1]);
     let m;
+    // "foto-N": la foto N de la ficha (lista `fotos` del guion)
+    if ((m = ruta.match(/^\/cap\/foto-(\d+)\.png$/)) && guion.fotos?.[m[1]]) {
+      const r = await fetch(guion.fotos[m[1]]);
+      if (!r.ok) throw new Error(`No pude bajar la foto ${m[1]}: ${r.status}`);
+      return enviar(Buffer.from(await r.arrayBuffer()), r.headers.get("content-type") || "image/jpeg");
+    }
     if ((m = ruta.match(/^\/vo\/([a-z0-9-]+)\.mp3$/))) return enviar(await readFile(path.join(AQUI, "vo", reel, `${m[1]}.mp3`)), "audio/mpeg");
     if ((m = ruta.match(/^\/cap\/([a-z0-9-]+)\.png$/)) && existsSync(path.join(AQUI, "capturas", `${m[1]}.png`))) return enviar(await readFile(path.join(AQUI, "capturas", `${m[1]}.png`)), "image/png");
     res.writeHead(404).end();

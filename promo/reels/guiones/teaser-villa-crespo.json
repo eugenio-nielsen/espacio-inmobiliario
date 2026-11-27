@@ -1,0 +1,101 @@
+{
+  "id": "teaser-villa-crespo",
+  "voz": "bN1bDXgDIGX5lw0rtY2B",
+  "zonaAnuncio": true,
+  "velocidad": 1.1,
+  "cola": 1.2,
+  "ficha": "https://www.espacioinmobiliario.com.ar/propiedades/venta/villa-crespo/departamento/27b2ceb9",
+  "fotos": [
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/9a2e1c6c-2849-4018-9a6a-1f20a7194fd4.webp",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/37e01d47-c3e0-45f6-bcf0-4c6930c79685.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/328c274f-c6ee-4cee-aa5e-a993844104d8.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/756b2e8e-d917-4553-afb3-fbe8f8b94102.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/cf6531a5-a4d9-4d5d-8044-76801c554b0d.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/b63efbf8-6ddf-4717-8cf3-887421e0fc08.jpg",
+    "https://ffaeymvuesbqvddnybje.supabase.co/storage/v1/object/public/property-photos/f943a570-f44d-4be2-a5f9-00c7f525abfa/4d69d397-191f-47ff-83df-532441017501.jpeg"
+  ],
+  "escenas": [
+    {
+      "id": "gancho",
+      "texto": "¿Cuánto pedirías por este departamento?",
+      "min": 3,
+      "visual": {
+        "tipo": "foto",
+        "imagen": "foto-0",
+        "titulo": [
+          "¿Cuánto pedirías",
+          "*por esto?*"
+        ]
+      }
+    },
+    {
+      "id": "zona",
+      "texto": "Está en Villa Crespo, a dos cuadras del subte B.",
+      "min": 4,
+      "visual": {
+        "tipo": "foto",
+        "imagen": "foto-4",
+        "titulo": [
+          "*Villa Crespo*"
+        ],
+        "dato": "A 2 cuadras del subte B"
+      }
+    },
+    {
+      "id": "datos",
+      "texto": "Ochenta y dos metros, cuatro ambientes, tres dormitorios.",
+      "min": 4.5,
+      "visual": {
+        "tipo": "foto",
+        "imagen": "foto-3",
+        "titulo": [
+          "82 m² totales",
+          "*4 ambientes*"
+        ],
+        "dato": "3 dormitorios"
+      }
+    },
+    {
+      "id": "balcon",
+      "texto": "Y un balcón corrido de nueve metros, con orientación norte.",
+      "min": 4,
+      "visual": {
+        "tipo": "foto",
+        "imagen": "foto-6",
+        "titulo": [
+          "Balcón corrido",
+          "*de 9 metros*"
+        ],
+        "dato": "Orientación norte"
+      }
+    },
+    {
+      "id": "opciones",
+      "texto": "¿A, B o C?",
+      "min": 3.2,
+      "visual": {
+        "tipo": "opciones",
+        "imagen": "foto-0",
+        "titulo": "¿A, B o *C?*",
+        "opciones": [
+          "USD 135.000",
+          "USD 190.000",
+          "USD 160.000"
+        ]
+      }
+    },
+    {
+      "id": "cierre",
+      "texto": "Comentá tu letra y seguinos.",
+      "min": 4.5,
+      "visual": {
+        "tipo": "cierre",
+        "frase": [
+          "Comentá tu letra",
+          "*y seguinos.*"
+        ],
+        "url": "Mañana, la respuesta en historias"
+      }
+    }
+  ]
+}

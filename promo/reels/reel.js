@@ -6,6 +6,11 @@
  *   · "movil":  el sitio real dentro de un celular (capturas/<nombre>.png, se cruzan en orden)
  *   · "punto":  un punto numerado de una lista ("1 de 3") con su título
  *   · "cierre": logo, frase final y dirección del sitio
+ *   · "contador": un número que sube desde cero (`hasta`, `prefijo`, `rotulo`)
+ *   · "foto": foto a pantalla completa con título y dato
+ *   · "opciones": foto oscurecida con las opciones A, B y C
+ * Con "zonaAnuncio": true en el guion, el texto queda en la franja que no tapa
+ * la interfaz de un anuncio en Reels (entre el 14 % y el 65 % del alto).
  * La duración de cada escena sale de la voz medida; una escena sin "texto" dura `dur` segundos.
  * La música es sintética (piano y cuerdas suaves, sin licencia de terceros).
  *
@@ -61,7 +66,7 @@ async function preparar() {
       const buf = await ac.decodeAudioData(await (await fetch(`/vo/${e.id}.mp3`)).arrayBuffer());
       buffers[e.id] = buf;
       const voz = medirVoz(buf), lead = i === 0 ? 0.8 : 0.35, hablaDur = voz.fin - voz.ini;
-      const dur = lead + hablaDur + (ultima ? 2.2 : 0.45);
+      const dur = Math.max(e.min ?? 0, lead + hablaDur + (ultima ? guion.cola ?? 2.2 : 0.45));
       const p0 = e.palabras[0].ini, pN = e.palabras.at(-1).fin, k = hablaDur / Math.max(0.1, pN - p0);
       const palabras = e.palabras.map(w => ({ p: w.p, ini: t + lead + (w.ini - p0) * k, fin: t + lead + (w.fin - p0) * k }));
       esc = { ...e, voz, ini: t, lead, hablaDur, dur, palabras, tramos: armarTramos(palabras) };
@@ -71,7 +76,7 @@ async function preparar() {
     escenas.push(esc); t += esc.dur;
   }
   total = t;
-  for (const e of escenas) if (e.visual.tipo === "movil") for (const n of e.visual.imagenes) if (!(n in imagenes)) imagenes[n] = await cargarImagen(`/cap/${n}.png`);
+  for (const e of escenas) for (const n of e.visual.imagenes ?? (e.visual.imagen ? [e.visual.imagen] : [])) if (!(n in imagenes)) imagenes[n] = await cargarImagen(`/cap/${n}.png`);
   logo = await cargarImagen("/logo.png");
   await cuadro(0);
   return {
@@ -97,8 +102,9 @@ function fondo(alfa = 1) {
 function marca(alfa) {
   ctx.save(); ctx.globalAlpha = alfa * 0.8; ctx.textAlign = "center";
   ctx.fillStyle = GOLD_L; ctx.font = '500 25px "Outfit"'; ctx.letterSpacing = "7px";
-  ctx.fillText("ESPACIO INMOBILIARIO", W / 2, 170);
-  ctx.letterSpacing = "0px"; ctx.fillStyle = GOLD; ctx.fillRect(W / 2 - 40, 196, 80, 2);
+  const y = guion.zonaAnuncio ? 315 : 170;
+  ctx.fillText("ESPACIO INMOBILIARIO", W / 2, y);
+  ctx.letterSpacing = "0px"; ctx.fillStyle = GOLD; ctx.fillRect(W / 2 - 40, y + 26, 80, 2);
   ctx.restore();
 }
 
@@ -128,8 +134,79 @@ function dibujarGancho(e, t, alfa) {
     ctx.save(); lineaMixta(ln, W / 2, 790 + i * 130 + (1 - a) * 36, 112, "#fff", alfa * a); ctx.restore();
   });
   const a = suave(clamp((u - 1.0) / 0.8, 0, 1));
-  ctx.globalAlpha = alfa * a; ctx.fillStyle = GOLD; ctx.fillRect(W / 2 - 60, 790 + v.titulo.length * 130 + 20, 120 * a, 3);
+  ctx.globalAlpha = alfa * a; ctx.fillStyle = GOLD; ctx.fillRect(W / 2 - 60, 790 + v.titulo.length * 130 - 50, 120 * a, 3);
   ctx.restore();
+  letraChica(v.letra, alfa);
+}
+
+/** Aclaración en letra chica, arriba de los subtítulos ("|" separa líneas). */
+function letraChica(texto, alfa) {
+  if (!texto) return;
+  ctx.save(); ctx.textAlign = "center"; ctx.globalAlpha = alfa;
+  ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.font = '400 28px "Outfit"';
+  texto.split("|").forEach((ln, i) => ctx.fillText(ln, W / 2, 445 + i * 38));
+  ctx.restore();
+}
+
+function dibujarContador(e, t, alfa) {
+  const v = e.visual, u = t - e.ini;
+  fondo(alfa); marca(alfa);
+  const p = clamp((u - 0.2) / 1.5, 0, 1), n = Math.round(v.hasta * (1 - Math.pow(1 - p, 2)) / 10) * 10;
+  const golpe = p >= 1 ? Math.max(0, 1 - (u - 1.7) / 0.35) : 0;
+  ctx.save(); ctx.textAlign = "center"; ctx.globalAlpha = alfa;
+  ctx.translate(W / 2, 700); ctx.scale(1 + golpe * 0.12, 1 + golpe * 0.12);
+  ctx.fillStyle = GOLD_L; ctx.font = '700 180px "Playfair Display"';
+  ctx.fillText(`${v.prefijo} ${n.toLocaleString("es-AR", { useGrouping: "always" })}`, 0, 60, 900);
+  ctx.restore();
+  ctx.save(); lineaMixta(v.rotulo, W / 2, 890, 70, "#fff", alfa * suave(clamp((u - 1.5) / 0.5, 0, 1))); ctx.restore();
+  letraChica(v.letra, alfa);
+}
+
+/** Foto que cubre toda la pantalla, con un acercamiento lento y velo para leer encima. */
+function fotoCompleta(nombre, u, alfa, velo = 0) {
+  fondo(alfa);
+  const img = imagenes[nombre]; if (!img) return;
+  const k = Math.max(W / img.width, H / img.height) * (1 + 0.09 * u), w = img.width * k, h = img.height * k;
+  ctx.save(); ctx.globalAlpha = alfa; ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  [[0, 0.7], [0.28, 0.5], [0.4, 0], [0.46, 0], [0.56, 0.5], [0.7, 0.65], [1, 0.8]].forEach(([p, a]) => g.addColorStop(p, `rgba(6,21,42,${a})`));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  if (velo) { ctx.fillStyle = `rgba(6,21,42,${velo})`; ctx.fillRect(0, 0, W, H); }
+  ctx.restore();
+}
+
+function dibujarFoto(e, t, alfa) {
+  const v = e.visual, u = t - e.ini;
+  fotoCompleta(v.imagen, clamp(u / e.dur, 0, 1), alfa); marca(alfa);
+  ctx.save(); ctx.shadowColor = "rgba(0,0,0,.85)"; ctx.shadowBlur = 24;
+  (v.titulo ?? []).forEach((ln, i) => {
+    const a = suave(clamp((u - 0.15 - i * 0.22) / 0.55, 0, 1));
+    lineaMixta(ln, W / 2, 460 + i * 100 + (1 - a) * 28, 84, "#fff", alfa * a);
+  });
+  if (v.dato) {
+    const a = suave(clamp((u - 0.7) / 0.6, 0, 1));
+    ctx.textAlign = "center"; ctx.font = '600 44px "Outfit"';
+    const w = ctx.measureText(v.dato).width + 70;
+    ctx.globalAlpha = alfa * a; ctx.fillStyle = "rgba(6,21,42,.85)"; rr(W / 2 - w / 2, 975, w, 84, 42); ctx.fill();
+    ctx.shadowBlur = 0; ctx.fillStyle = GOLD_L; ctx.fillText(v.dato, W / 2, 1032);
+  }
+  ctx.restore();
+}
+
+function dibujarOpciones(e, t, alfa) {
+  const v = e.visual, u = t - e.ini;
+  fotoCompleta(v.imagen, 0.5, alfa, 0.55); marca(alfa);
+  ctx.save(); lineaMixta(v.titulo, W / 2, 470, 96, "#fff", alfa * suave(clamp(u / 0.4, 0, 1))); ctx.restore();
+  v.opciones.forEach((op, i) => {
+    const a = suave(clamp((u - 0.15 - i * 0.22) / 0.45, 0, 1)), y = 540 + i * 170, x = 190 + (1 - a) * 60;
+    ctx.save(); ctx.globalAlpha = alfa * a;
+    ctx.fillStyle = "rgba(6,21,42,.88)"; rr(x, y, 700, 136, 24); ctx.fill();
+    ctx.strokeStyle = "rgba(185,159,102,.7)"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = GOLD; ctx.beginPath(); ctx.arc(x + 80, y + 68, 44, 0, Math.PI * 2); ctx.fill();
+    ctx.textAlign = "center"; ctx.fillStyle = NAVY_D; ctx.font = '600 50px "Outfit"'; ctx.fillText("ABC"[i], x + 80, y + 86);
+    ctx.fillStyle = "#fff"; ctx.font = '700 62px "Playfair Display"'; ctx.fillText(op, x + 405, y + 90);
+    ctx.restore();
+  });
 }
 
 function dibujarPunto(e, t, alfa) {
@@ -153,13 +230,15 @@ function dibujarPunto(e, t, alfa) {
 function dibujarMovil(e, t, alfa) {
   const v = e.visual, u = clamp((t - e.ini) / e.dur, 0, 1);
   fondo(alfa); marca(alfa);
+  (v.titulo ?? []).forEach((ln, i) => { ctx.save(); lineaMixta(ln, W / 2, 440 + i * 84, 70, "#fff", alfa * suave(clamp((t - e.ini - i * 0.25) / 0.5, 0, 1))); ctx.restore(); });
   if (v.etiqueta) {
     ctx.save(); ctx.globalAlpha = alfa * suave(clamp((t - e.ini) / 0.5, 0, 1)); ctx.textAlign = "center";
     ctx.fillStyle = GOLD; ctx.font = '600 30px "Outfit"'; ctx.letterSpacing = "8px";
     ctx.fillText(v.etiqueta.toUpperCase(), W / 2, 275); ctx.restore();
   }
   const subida = suave(clamp(u * 4, 0, 1));
-  const pw = 520, ph = 1090, px = (W - pw) / 2, py = 330 + (1 - subida) * 70;
+  const chico = guion.zonaAnuncio;
+  const pw = chico ? 340 : 520, ph = chico ? 470 : 1090, px = (W - pw) / 2, py = (chico ? 575 : 330) + (1 - subida) * 70;
   ctx.save(); ctx.globalAlpha = alfa * (0.4 + 0.6 * subida);
   ctx.shadowColor = "rgba(0,0,0,.6)"; ctx.shadowBlur = 70; ctx.shadowOffsetY = 40;
   ctx.fillStyle = "#14110e"; rr(px, py, pw, ph, 66); ctx.fill(); ctx.restore();
@@ -184,6 +263,7 @@ function dibujarCierre(e, t, alfa) {
   const v = e.visual, u = t - e.ini;
   fondo(alfa);
   ctx.save(); ctx.textAlign = "center";
+  if (guion.zonaAnuncio) ctx.translate(0, -230);
   if (logo) {
     const lw = 260, lh = lw * logo.height / logo.width, a = suave(clamp(u / 0.8, 0, 1));
     ctx.globalAlpha = alfa * a; ctx.fillStyle = CREMA; rr(W / 2 - lw / 2 - 20, 520 - 20, lw + 40, lh + 40, 22); ctx.fill();
@@ -203,7 +283,7 @@ function dibujarCierre(e, t, alfa) {
 }
 
 function plano(e, t, alfa) {
-  const f = { gancho: dibujarGancho, punto: dibujarPunto, movil: dibujarMovil, cierre: dibujarCierre }[e.visual.tipo];
+  const f = { gancho: dibujarGancho, punto: dibujarPunto, movil: dibujarMovil, cierre: dibujarCierre, contador: dibujarContador, foto: dibujarFoto, opciones: dibujarOpciones }[e.visual.tipo];
   f(e, t, alfa);
 }
 
@@ -223,7 +303,7 @@ function subtitulo(t) {
     lineas.at(-1).push({ w, aw }); ancho += aw + esp;
   }
   ctx.globalAlpha = clamp((t - (tr[0].ini - 0.12)) / 0.18, 0, 1) * clamp((tr.at(-1).fin + 0.35 - t) / 0.2, 0, 1);
-  const alto = 82, y0 = 1560 - (lineas.length - 1) * alto / 2;
+  const alto = 82, y0 = (guion.zonaAnuncio ? 1175 : 1560) - (lineas.length - 1) * alto / 2;
   ctx.shadowColor = "rgba(0,0,0,.8)"; ctx.shadowBlur = 16; ctx.shadowOffsetY = 3;
   lineas.forEach((ln, li) => {
     const largo = ln.reduce((s, x) => s + x.aw, 0) + esp * (ln.length - 1);
