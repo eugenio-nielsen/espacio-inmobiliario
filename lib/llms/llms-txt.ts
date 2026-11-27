@@ -6,6 +6,7 @@ import { SITE, SITE_NOMBRE } from "@/lib/site";
 import { createPublicClient } from "@/lib/supabase/publico";
 import { buildPropertyUrl } from "@/lib/utils/urls";
 import { htmlEnLineaAMarkdown, textoEnlace, unaLinea } from "./markdown";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 /**
  * Contenido de /llms.txt: el índice del sitio para asistentes y agentes de IA
@@ -113,7 +114,7 @@ export async function generarLlmsTxt(): Promise<string> {
 
   const cabecera = [
     `# ${SITE_NOMBRE}`,
-    `> Portal de propiedades publicadas directamente por sus dueños en la Ciudad y la Provincia de Buenos Aires (Argentina), sin comisión inmobiliaria. Tiene un tasador online de departamentos en CABA, guías y calculadoras con los costos de comprar y vender, y acompañamiento profesional opcional. Sitio en español (es-AR), fundado por Eugenio Nielsen.`,
+    `> Portal de propiedades publicadas directamente por sus dueños en la Ciudad y la Provincia de Buenos Aires (Argentina), sin comisión inmobiliaria. Tiene un estimador online de departamentos en CABA, guías y calculadoras con los costos de comprar y vender, y acompañamiento profesional opcional. Sitio en español (es-AR), fundado por Eugenio Nielsen.`,
     [
       "Qué conviene saber:",
       "",
@@ -138,7 +139,7 @@ export async function generarLlmsTxt(): Promise<string> {
   const propietarios = seccion("Para quienes quieren vender", [
     item("Publicá tu propiedad gratis", `${SITE}/propietarios/publicar`, "Cómo se publica, qué incluye y preguntas frecuentes sobre comisión, contacto y verificación."),
     item("Vender tu propiedad", `${SITE}/vender`, "Dos formas de vender, por tu cuenta o con acompañamiento profesional; en ninguna hay comisión."),
-    item("Tasador online de departamentos en CABA", `${SITE}/estimador`, "Estima gratis el valor de un departamento a partir del barrio, la superficie y las características."),
+    item("Estimador online de departamentos en CABA", `${SITE}/estimador`, `Estima gratis el valor de un departamento a partir del barrio, la superficie y las características. ${ACLARATORIO}`),
     item("Precio del metro cuadrado por barrio", `${SITE}/precios-m2`, "Valores de referencia por barrio de la Ciudad de Buenos Aires."),
   ]);
 

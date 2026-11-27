@@ -22,7 +22,7 @@ export default function Explainer() {
             </h2>
             <p className="ex-lead">
               En poco más de un minuto: cómo crear tu cuenta, publicar tu propiedad,
-              buscar, tasar y llevar tus operaciones desde un solo lugar.
+              buscar, estimar valores y llevar tus operaciones desde un solo lugar.
             </p>
           </div>
         </FadeIn>

@@ -19,7 +19,7 @@ import { Calculator, LineChart } from "lucide-react";
 export const HERRAMIENTAS = [
   {
     href: "/estimador",
-    label: "Tasar departamentos",
+    label: "Estimar departamentos",
     detalle: "Estimá cuánto vale tu departamento",
     icon: LineChart,
   },

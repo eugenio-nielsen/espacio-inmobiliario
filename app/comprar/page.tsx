@@ -14,6 +14,7 @@ import { PROPERTY_CARD_COLS, type PropertyCardData } from "@/lib/types";
 import { Scale, BadgeCheck, FileText, Wallet, ArrowRight, Send } from "lucide-react";
 
 import { SITE } from "@/lib/site";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const metadata: Metadata = {
   title: "Comprar una propiedad · Con quién consultarlo antes de decidir",
@@ -34,8 +35,8 @@ const DUDAS: ItemIndice[] = [
   {
     icon: Scale,
     t: "¿El precio es razonable?",
-    d: "Estimá el valor de mercado de un departamento en CABA con el mismo modelo que usamos para tasar, y compará contra lo que te están pidiendo.",
-    cta: "Usar el tasador",
+    d: `Estimá el valor de mercado de un departamento en CABA y compará contra lo que te están pidiendo. ${ACLARATORIO}`,
+    cta: "Usar el estimador",
     href: "/estimador",
   },
   {

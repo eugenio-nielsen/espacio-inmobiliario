@@ -10,6 +10,7 @@ import type { EstimadorInput, EstimadorResultado, FactorAplicado, NivelConfianza
 import { datosDeclarados } from "@/lib/estimador/declarado";
 
 import { WHATSAPP } from "@/lib/contacto";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 const PRECISION: Record<NivelConfianza, string> = { baja: "Baja", media: "Media", alta: "Alta" };
 
 const usd = (n: number) => `US$ ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(n)}`;
@@ -51,7 +52,7 @@ function useContador(final: number, dur = 1800, retardo = 700) {
  * llegó al valor en cuatro cláusulas, lo que suma y lo que resta, y la
  * firma de Eugenio, que revisa cada estimación.
  *
- * Es orientativa y lo dice: no se presenta como una tasación profesional.
+ * Es orientativa y lo dice: lleva el aclaratorio al pie.
  */
 export default function Informe({
   input,
@@ -241,7 +242,7 @@ export default function Informe({
                 Publicar gratis
               </Link>
               <a
-                href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola Eugenio, hice una estimación en el tasador.")}`}
+                href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent("Hola Eugenio, hice una estimación en el estimador.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ts-cta-texto"
@@ -262,7 +263,7 @@ export default function Informe({
       </section>
 
       <p className="ts-aviso">
-        <strong>Fuente:</strong> valor de referencia por barrio de Espacio Inmobiliario{actualizado ? `, actualizado en ${actualizado}` : ""}. <strong>Importante:</strong> esta estimación es orientativa y no constituye una tasación profesional.
+        <strong>Fuente:</strong> valor de referencia por barrio de Espacio Inmobiliario{actualizado ? `, actualizado en ${actualizado}` : ""}. <strong>Importante:</strong> {ACLARATORIO}
         Los valores pueden variar según condiciones particulares del inmueble, la demanda del mercado y el
         momento de comercialización.
       </p>

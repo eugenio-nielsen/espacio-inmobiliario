@@ -50,7 +50,7 @@ export default function PrivacidadPage() {
             <li>Operar la Plataforma: publicar propiedades, gestionar tu cuenta y tu panel.</li>
             <li>Conectar interesados con propietarios: tu consulta se envía al dueño de la propiedad.</li>
             <li>Enviarte notificaciones del servicio por email (consultas recibidas, confirmaciones).</li>
-            <li>Responder pedidos de tasación o asesoría que inicies vos.</li>
+            <li>Responder pedidos de estimación o asesoría que inicies vos.</li>
             <li>Prevenir abuso, spam y uso fraudulento del sitio.</li>
             <li>Entender el uso del sitio para mejorarlo (estadísticas agregadas).</li>
           </ul>

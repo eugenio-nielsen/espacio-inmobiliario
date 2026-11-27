@@ -3,6 +3,7 @@ import { datosDeclarados } from "@/lib/estimador/declarado";
 import type { EstimadorResultado, FactorAplicado } from "@/lib/estimador/types";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { WHATSAPP, TELEFONO_TEXTO } from "@/lib/contacto";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 // Inicialización lazy — evita crash si la key no está configurada en el entorno
 function getResend() {
@@ -240,7 +241,7 @@ export async function sendEstimacionLead(data: {
   telefono?: string;
   barrio: string;
   resultado: { estimado: number; rangoMin: number; rangoMax: number } & Partial<Pick<EstimadorResultado, "precioM2Resultante" | "precioM2Referencia" | "ajustePct" | "confianza" | "factoresPositivos" | "factoresNegativos">>;
-  /** Lo que completó la persona en el tasador: va completo en el mail. */
+  /** Lo que completó la persona en el estimador: va completo en el mail. */
   input?: unknown;
 }) {
   if (!process.env.RESEND_API_KEY) return;
@@ -836,17 +837,17 @@ export async function sendForoAdmin(data: { asunto: string; titulo: string; line
   `);
 }
 
-// ── Mails a la persona: tasación y bienvenida ──────────────────
+// ── Mails a la persona: estimación y bienvenida ──────────────────
 // Lo que escribe la gente va siempre escapado con escHtml.
 
 const fmtUsd = (n: number) => `US$ ${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n))}`;
 
-/** Resultado del tasador → a quien lo usó. */
+/** Resultado del estimador → a quien lo usó. */
 export async function sendEstimacionAlUsuario(data: {
   para: string;
   nombre: string;
   barrio: string;
-  /** Lo que completó la persona en el tasador: va completo, de la ubicación a la situación. */
+  /** Lo que completó la persona en el estimador: va completo, de la ubicación a la situación. */
   input?: unknown;
   resultado: Pick<EstimadorResultado, "estimado" | "rangoMin" | "rangoMax"> &
     Partial<Pick<EstimadorResultado, "precioM2Resultante" | "confianza" | "factoresPositivos" | "factoresNegativos">>;
@@ -876,7 +877,7 @@ export async function sendEstimacionAlUsuario(data: {
       ${detalleEstimacion(data.input, data.resultado, true)}
 
       <p style="${styles.lead}">
-        Es una estimación orientativa, calculada con los datos que cargaste y los valores
+        ${ACLARATORIO} La calculamos con los datos que cargaste y los valores
         del barrio. Para afinarla, lo mejor es revisarla con vos.
       </p>
 
@@ -932,7 +933,7 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 8px;">
         ${paso("I", "Cargá tu propiedad", "Con buenas fotos y una descripción clara, las consultas llegan más rápido.", `${SITE}/panel/propiedades/nueva`)}
         ${paso("II", "Validá tu identidad", "Las publicaciones de propietarios verificados generan más confianza.", `${SITE}/panel/perfil`)}
-        ${paso("III", "Calculá cuánto vale", "Usá el estimador para fijar un precio con criterio antes de publicar.", `${SITE}/estimador`)}
+        ${paso("III", "Calculá cuánto vale", "Usá el estimador para fijar un precio con criterio antes de publicar. " + ACLARATORIO, `${SITE}/estimador`)}
       </table>
       <a href="${SITE}/panel" style="${styles.btn}">Ir a mi panel &rarr;</a>
     </div>
@@ -940,7 +941,7 @@ export async function sendBienvenida(data: { para: string; nombre: string }) {
     <div style="padding:20px 32px 8px;">
       <p style="${styles.label}">Cómo empezar, en video</p>
       <p style="margin:0 0 14px;color:#595349;font-size:14px;line-height:1.7;">
-        En poco más de un minuto: crear la cuenta, publicar, buscar, tasar y llevar tus operaciones desde un solo lugar.
+        En poco más de un minuto: crear la cuenta, publicar, buscar, estimar valores y llevar tus operaciones desde un solo lugar.
       </p>
       <a href="${SITE}/#recorrido" style="display:block;text-decoration:none;">
         <img src="${SITE}/video/explainer-poster.jpg" alt="Ver el recorrido: de la cuenta a la escritura" width="536" style="display:block;width:100%;max-width:536px;height:auto;border:0;border-radius:10px;" />
@@ -1126,20 +1127,20 @@ export async function sendAsesoriaAcuse(data: { para: string; nombre: string; me
 // escribe en emails/resend/ para pegarlas en Resend. Usan las variables de
 // Resend ({{{FIRST_NAME}}}, {{{RESEND_UNSUBSCRIBE_URL}}}), no datos nuestros.
 
-/** Seguimiento a los 7 días: cómo le fue con la tasación o con el portal. */
+/** Seguimiento a los 7 días: cómo le fue con la estimación o con el portal. */
 export function plantillaSeguimiento(origen: "tasador" | "registro"): string {
   const t = origen === "tasador"
     ? {
         eyebrow: "Una semana después",
-        titulo: "¿Qué te pareció tu tasación?",
-        lead: "hace unos días te enviamos la estimación de tu propiedad. Nos gustaría saber cómo te fue.",
+        titulo: "¿Qué te pareció tu estimación?",
+        lead: `hace unos días te enviamos la estimación de tu propiedad. ${ACLARATORIO} Nos gustaría saber cómo te fue.`,
         preguntas: [
           "¿El valor se acercó a lo que esperabas?",
           "¿Qué dato te faltó o te pareció que no reflejaba tu propiedad?",
           "¿Ya decidiste qué hacer: vender, esperar, alquilar?",
         ],
-        asunto: "Mi tasación",
-        secundario: { href: "/contacto?motivo=vender", texto: "Revisar mi tasación con Eugenio" },
+        asunto: "Mi estimación",
+        secundario: { href: "/contacto?motivo=vender", texto: "Revisar mi estimación con Eugenio" },
         terciario: { href: "/propietarios/publicar", texto: "Publicar mi propiedad gratis" },
       }
     : {

@@ -23,7 +23,7 @@ export type Desplegable = { titulo: string; grupos: GrupoMenu[] };
  *
  *   · "Sobre nosotros": qué hacemos (los servicios para comprar y para
  *     vender) y cómo trabajamos. "Quiénes somos" vive en el footer.
- *   · "Herramientas": lo que se usa y se consulta: el tasador, la
+ *   · "Herramientas": lo que se usa y se consulta: el estimador, la
  *     calculadora del Registro, el blog, el foro y la Cátedra.
  *
  * "Propiedades" es el destino principal del sitio y el Navbar lo destaca
@@ -33,7 +33,7 @@ export type Desplegable = { titulo: string; grupos: GrupoMenu[] };
  * separado por una línea. Los consumen el menú de escritorio
  * (NavDesplegables) y el móvil (MobileMenu).
  *
- * El tasador y la calculadora siguen en lib/herramientas.ts, porque el
+ * El estimador y la calculadora siguen en lib/herramientas.ts, porque el
  * footer los lista solos.
  */
 export const DESPLEGABLES: Desplegable[] = [

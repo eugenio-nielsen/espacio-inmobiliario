@@ -39,7 +39,7 @@ const HERRAMIENTAS_EN_NOTAS: Record<string, { nombre: string; ruta: string }> = 
     nombre: "Calculadora de aranceles del Registro de la Propiedad Inmueble",
     ruta: "/blog/calculadora-aranceles-rpi-registro-de-la-propiedad-inmueble",
   },
-  TASADOR: { nombre: "Tasador online de departamentos", ruta: "/estimador" },
+  TASADOR: { nombre: "Estimador online de departamentos", ruta: "/estimador" },
 };
 
 /**

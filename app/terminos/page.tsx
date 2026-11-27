@@ -2,6 +2,7 @@ import { SITE } from "@/lib/site";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const metadata: Metadata = {
   title: "Términos y condiciones",
@@ -76,10 +77,10 @@ export default function TerminosPage() {
 
           <h2>6. Estimador de precios</h2>
           <p>
-            El estimador de valores de la Plataforma entrega un resultado <strong>orientativo</strong>,
-            calculado a partir de valores de referencia del mercado y de los datos que ingresás.
-            <strong> No constituye una tasación oficial</strong> ni asesoramiento profesional, y no
-            debe usarse como única base para decidir una operación.
+            El estimador de valores de la Plataforma entrega un resultado calculado a partir de
+            valores de referencia del mercado y de los datos que ingresás.{" "}
+            <strong>{ACLARATORIO}</strong> Tampoco es asesoramiento profesional, y no debe usarse
+            como única base para decidir una operación.
           </p>
 
           <h2>7. Propiedad intelectual</h2>

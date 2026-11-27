@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search, Plus, ArrowRight } from "lucide-react";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 type Modo = "comprar" | "vender";
 
@@ -27,7 +28,7 @@ const TIPOS = [
  * nombres que el menú "Servicios".
  *
  *   · Quiero comprar: el buscador (tipo y zona; la operación es venta).
- *   · Quiero vender: publicar, tasar, o sumar acompañamiento.
+ *   · Quiero vender: publicar, estimar el valor, o sumar acompañamiento.
  *
  * Los dos paneles ocupan la misma celda de la grilla, así la ficha
  * tiene siempre la altura del más alto y cambiar de pestaña no hace
@@ -128,10 +129,11 @@ export default function FichaHome({ logueado }: { logueado: boolean }) {
               Publicar mi propiedad
             </Link>
             <Link href="/estimador" className="ap-enlace">
-              Tasar mi propiedad
+              Estimar mi propiedad
               <ArrowRight size={15} strokeWidth={1.8} />
             </Link>
           </div>
+          <p className="ap-aclaratorio">{ACLARATORIO}</p>
         </div>
       </div>
     </div>

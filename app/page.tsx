@@ -42,7 +42,7 @@ const datosEstructurados = [
     url: SITE,
     logo: `${SITE}/icon.png`,
     image: `${SITE}/opengraph-image`,
-    description: "Portal de propiedades de dueños directos y tasador online de departamentos en la Ciudad de Buenos Aires.",
+    description: "Portal de propiedades de dueños directos y estimador online de departamentos en la Ciudad de Buenos Aires.",
     email: "eugenio@espacioinmobiliario.com.ar",
     telephone: TELEFONO_E164,
     areaServed: ["Ciudad Autónoma de Buenos Aires", "Provincia de Buenos Aires"],
@@ -67,7 +67,7 @@ const datosEstructurados = [
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name: "Cómo funciona Espacio Inmobiliario: de la cuenta a la escritura",
-    description: "Recorrido por el sitio: crear la cuenta, publicar una propiedad, buscar, usar el tasador, el panel y las herramientas.",
+    description: "Recorrido por el sitio: crear la cuenta, publicar una propiedad, buscar, usar el estimador, el panel y las herramientas.",
     thumbnailUrl: `${SITE}/video/explainer-poster.jpg`,
     contentUrl: `${SITE}/video/explainer.mp4`,
     uploadDate: "2026-10-30",
@@ -151,7 +151,7 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* ── Herramientas: tasador y aranceles del Registro ───── */}
+      {/* ── Compraventa: estimador y guías de costos ────────── */}
       <HerramientasHome />
 
       {/* ── Últimas notas del blog ────────────────────────────── */}

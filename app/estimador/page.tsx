@@ -7,22 +7,23 @@ import Tasador from "@/components/estimador/Tasador";
 import InfoTasador, { PREGUNTAS_TASADOR } from "@/components/estimador/InfoTasador";
 import { getContextoTasador } from "@/lib/estimador/data";
 import "@/components/estimador/tasador.css";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Tasador de departamentos en CABA · Estimá su valor gratis",
-  description: "Estimá gratis el valor de venta de un departamento en Capital Federal en cinco pasos, con valores de referencia por barrio. Orientativo, y con revisión sin cargo.",
+  title: "Estimá cuánto vale tu departamento en CABA, gratis",
+  description: `Valor de venta de un departamento en CABA en cinco pasos, con referencias por barrio. ${ACLARATORIO}`,
   alternates: { canonical: `${SITE}/estimador` },
   openGraph: {
-    title: "Tasador de departamentos en CABA · Espacio Inmobiliario",
-    description: "¿Cuánto vale tu departamento? Estimalo gratis en cinco pasos, con valores de referencia por barrio.",
+    title: "Estimá cuánto vale tu departamento en CABA · Espacio Inmobiliario",
+    description: `¿Cuánto vale tu departamento? Estimalo gratis en cinco pasos. ${ACLARATORIO}`,
     type: "website",
   },
 };
 
 /**
- * El tasador. La página es un escenario nocturno donde los papeles
+ * El estimador. La página es un escenario nocturno donde los papeles
  * quedan iluminados: arriba la pregunta, y la mesa de trabajo (la
  * escena del formulario y la ficha que se va escribiendo) cruza el
  * límite entre el navy y el crema. Todo lo interactivo vive en
@@ -34,12 +35,12 @@ export default async function EstimadorPage() {
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      name: "Tasador online de departamentos en CABA",
+      name: "Estimador online de departamentos en CABA",
       url: `${SITE}/estimador`,
       applicationCategory: "FinanceApplication",
       operatingSystem: "Web",
       inLanguage: "es-AR",
-      description: "Estimá gratis el valor de venta de un departamento en la Ciudad de Buenos Aires, con valores de referencia por barrio.",
+      description: `Estimá gratis el valor de venta de un departamento en la Ciudad de Buenos Aires, con valores de referencia por barrio. ${ACLARATORIO}`,
       offers: { "@type": "Offer", price: "0", priceCurrency: "ARS" },
       provider: { "@type": "Organization", name: "Espacio Inmobiliario", url: SITE },
       ...(actualizado && { dateModified: actualizado }),
@@ -62,15 +63,16 @@ export default async function EstimadorPage() {
         <Guilloche id="ts-gq-escenario" className="ts-escenario-gq" />
 
         <div className="ts-apertura">
-          <p className="ts-eyebrow">Tasador · Departamentos en CABA</p>
+          <p className="ts-eyebrow">Estimador · Departamentos en CABA</p>
           <h1 id="ts-titulo" className="ts-titulo">
             <span className="ts-corte"><span>¿Cuánto vale</span></span>{" "}
             <span className="ts-corte"><em>tu departamento?</em></span>
           </h1>
           <p className="ts-lead">
-            Una estimación orientativa en cinco pasos, con el valor de referencia de
+            Cinco pasos, con el valor de referencia de
             {" "}{barrios.length} barrios porteños. Y si querés, Eugenio la revisa con vos sin cargo.
           </p>
+          <p className="ts-aclaratorio">{ACLARATORIO}</p>
         </div>
       </section>
 

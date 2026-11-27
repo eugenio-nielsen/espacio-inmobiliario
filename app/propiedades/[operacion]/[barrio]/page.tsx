@@ -16,6 +16,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TipoLanding, { metadataTipo } from "./TipoLanding";
 import { MapPin, TrendingUp, Building2, Calculator, Plus, ArrowRight } from "lucide-react";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const revalidate = 300;
 
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const precio = esCaba ? resumenBarrio(data.nombre, await getPreciosBarrios())?.precio : undefined;
   // Con las palabras con las que se busca: "casas / departamentos en venta en <barrio> dueño directo"
   const title = `Casas y departamentos en venta en ${data.nombre} · Dueño directo`;
-  const description = `Casas, terrenos y departamentos en venta en ${data.nombre}, ${zona}, publicados directamente por sus dueños. Sin comisión inmobiliaria.${precio ? ` Precio de referencia del m²: US$ ${fmtUsd(precio)}. Tasá tu propiedad gratis.` : esCaba ? " Tasá tu propiedad gratis." : ""}`;
+  const description = `Casas, terrenos y departamentos en venta en ${data.nombre}, ${zona}, publicados directamente por sus dueños. Sin comisión inmobiliaria.${precio ? ` Precio de referencia del m²: US$ ${fmtUsd(precio)}. Estimá gratis el valor de tu propiedad.` : esCaba ? " Estimá gratis el valor de tu propiedad." : ""}`;
   const url = `${SITE}/propiedades/venta/${data.slug}`;
   return {
     title,
@@ -82,7 +83,7 @@ export default async function BarrioPage({ params }: PageProps) {
   const lista = await conPropietarioVerificado(supabase, (properties ?? []) as PropertyCardData[]);
   const precioM2 = precios[data.nombre];
   const count = properties?.length || 0;
-  // El tasador solo cubre CABA: no lo ofrecemos en partidos de provincia
+  // El estimador solo cubre CABA: no lo ofrecemos en partidos de provincia
   const esCaba = data.provincia === "Ciudad Autónoma de Buenos Aires";
   const siteUrl = SITE;
   const fmt = fmtUsd;
@@ -91,7 +92,7 @@ export default async function BarrioPage({ params }: PageProps) {
   const comuna = COMUNA_DE_BARRIO[data.nombre];
   const vecinos = barriosVecinos(data.nombre);
   const fechaPrecio = actualizado ? new Date(actualizado).toLocaleDateString("es-AR", { month: "long", year: "numeric", timeZone: "America/Argentina/Buenos_Aires" }) : null;
-  const nota = `Son valores de referencia de Espacio Inmobiliario${fechaPrecio ? `, actualizados en ${fechaPrecio}` : ""}, no una tasación: el precio real depende del estado, el piso, la luz y la orientación.`;
+  const nota = `Son valores de referencia de Espacio Inmobiliario${fechaPrecio ? `, actualizados en ${fechaPrecio}` : ""}: el precio real depende del estado, el piso, la luz y la orientación. ${ACLARATORIO}`;
   const posicion = !resumen ? "" : resumen.difPct === 0
     ? "en línea con el promedio porteño"
     : `un ${Math.abs(resumen.difPct)}% ${resumen.difPct > 0 ? "por encima" : "por debajo"} del promedio porteño`;
@@ -109,7 +110,7 @@ export default async function BarrioPage({ params }: PageProps) {
       },
       {
         q: `¿Cómo sé cuánto vale mi departamento en ${data.nombre}?`,
-        a: "Podés estimarlo gratis con el tasador online: elegís el barrio, cargás superficie, piso, antigüedad y estado, y te devuelve un rango de valor al instante. Si querés, Eugenio Nielsen lo revisa con vos sin cargo.",
+        a: `Podés estimarlo gratis con el estimador online: elegís el barrio, cargás superficie, piso, antigüedad y estado, y te devuelve un rango de valor al instante. Si querés, Eugenio Nielsen lo revisa con vos sin cargo. ${ACLARATORIO}`,
       },
     );
   }
@@ -191,7 +192,7 @@ export default async function BarrioPage({ params }: PageProps) {
           {esCaba && (
             <Link href="/estimador" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--gold-700)", textDecoration: "underline", textUnderlineOffset: 2 }}>
               <Calculator size={16} strokeWidth={1.75} />
-              Tasá tu propiedad en {data.nombre} gratis
+              Estimá el valor de tu propiedad en {data.nombre} gratis
             </Link>
           )}
         </div>
@@ -234,7 +235,7 @@ export default async function BarrioPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Cuánto cuesta (datos del tasador) */}
+        {/* Cuánto cuesta (datos del estimador) */}
         {resumen && (
           <section style={{ maxWidth: 760, marginBottom: 36 }}>
             <h2 style={h2Estilo}>Cuánto cuesta un departamento en {data.nombre}</h2>
@@ -294,7 +295,7 @@ export default async function BarrioPage({ params }: PageProps) {
           </h2>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: 15, color: "rgba(255,255,255,.78)", maxWidth: 480, margin: "0 auto 22px", lineHeight: 1.6 }}>
             {esCaba
-              ? "Averiguá cuánto vale con nuestro tasador online y publicala gratis. Recibís las consultas directo, sin pagar comisión."
+              ? `Averiguá cuánto vale con nuestro estimador online y publicala gratis. Recibís las consultas directo, sin pagar comisión. ${ACLARATORIO}`
               : "Publicala gratis y recibí las consultas directo, sin comisión inmobiliaria."}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
@@ -305,7 +306,7 @@ export default async function BarrioPage({ params }: PageProps) {
                 fontSize: 14.5, padding: "13px 24px", background: "var(--gold-500)", color: "#26200f",
                 textDecoration: "none",
               }}>
-                <Calculator size={16} strokeWidth={2} /> Tasar mi propiedad
+                <Calculator size={16} strokeWidth={2} /> Estimar mi propiedad
               </Link>
             )}
             <Link href="/auth/registro" className={esCaba ? undefined : "esbtn esbtn-gold"} style={{

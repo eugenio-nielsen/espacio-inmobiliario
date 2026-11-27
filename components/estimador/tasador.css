@@ -106,6 +106,14 @@
 .ts-corte { display: block; overflow: hidden; padding: 0 .12em .16em; margin-bottom: -.16em; }
 .ts-corte > * { display: block; animation: ts-sube 1.25s cubic-bezier(.19, 1, .22, 1) .45s both; }
 .ts-corte + .ts-corte > * { animation-delay: .62s; }
+.ts-aclaratorio {
+  margin: 14px auto 0;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(255,255,255,.6);
+  animation: ts-entra 1s var(--ease-out) 1.05s both;
+}
 .ts-lead {
   max-width: 56ch;
   margin: 0 auto;
@@ -992,6 +1000,7 @@
   color: #fff;
 }
 .ts-nota-t em { font-style: italic; font-weight: 500; color: var(--gold-300); }
+.ts-nota-acl { margin: 10px 0 0; font-family: var(--font-sans); font-size: 12.5px; line-height: 1.6; color: rgba(255,255,255,.64); }
 /* En la nota no hay entrada de página: la mesa ya está quieta */
 .ts-mesa-nota { display: block; animation: none; }
 .ts-mesa-nota .ts-hoja { padding: clamp(22px, 3vw, 32px); }
@@ -1048,7 +1057,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ts-escenario-gq, .ts-eyebrow, .ts-corte > *, .ts-lead, .ts-mesa, .ts-escena,
+  .ts-escenario-gq, .ts-eyebrow, .ts-corte > *, .ts-lead, .ts-aclaratorio, .ts-mesa, .ts-escena,
   .ts-linea-v, .ts-linea dd small, .ts-emision, .ts-emision-t, .ts-ficha-sello.is-sellando > *,
   .ts-caratula-sello, .ts-regla-linea, .ts-regla-rombo, .ts-clausulas li { animation: none; }
   .ts-riel::after, .ts-rosa-aguja { transition: none; }

@@ -7,6 +7,7 @@ import { SITE } from "@/lib/site";
 import { MessageCircle, ArrowRight } from "lucide-react";
 
 import { WHATSAPP } from "@/lib/contacto";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const metadata: Metadata = {
   title: "Sobre nosotros · Quién está detrás del portal",
@@ -65,7 +66,7 @@ export default function SobreNosotrosPage() {
           Si querés <Link href="/vender" style={{ color: "var(--gold-700)" }}>vender</Link>, publicar es gratis y los interesados te escriben directo.
           Si querés <Link href="/comprar" style={{ color: "var(--gold-700)" }}>comprar</Link>, hablás con quien vende y podés pedir
           acompañamiento para revisar la documentación antes de firmar. Y si todavía no sabés cuánto vale tu propiedad, el{" "}
-          <Link href="/estimador" style={{ color: "var(--gold-700)" }}>tasador online</Link> te da un rango de valor gratis.
+          <Link href="/estimador" style={{ color: "var(--gold-700)" }}>estimador online</Link> te da un rango de valor gratis. {ACLARATORIO}
         </p>
 
         <h2 style={h2}>Información en la que podés apoyarte</h2>

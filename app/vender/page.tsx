@@ -13,16 +13,15 @@ import {
 } from "lucide-react";
 
 import { SITE } from "@/lib/site";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const metadata: Metadata = {
-  title: "Vender tu propiedad · Tasación gratis y sin comisión",
-  description:
-    "Conocé cuánto vale tu propiedad y elegí cómo venderla: publicá y gestionala vos, o sumá nuestro acompañamiento. Sin comisión: no somos intermediarios.",
+  title: "Vender tu propiedad · Estimación gratis y sin comisión",
+  description: `Estimá cuánto vale tu propiedad y vendela sin comisión, por tu cuenta o con acompañamiento. ${ACLARATORIO}`,
   alternates: { canonical: `${SITE}/vender` },
   openGraph: {
     title: "Vender tu propiedad · Espacio Inmobiliario",
-    description:
-      "Tasá tu propiedad gratis y elegí cómo vender: por tu cuenta, o con nuestro acompañamiento. Sin comisión.",
+    description: `Estimá gratis el valor de tu propiedad y elegí cómo vender. ${ACLARATORIO}`,
     type: "website",
   },
 };
@@ -78,13 +77,15 @@ export default function VenderPage() {
             <div className="vd-hero-ctas">
               <Link href="/estimador" className="vd-btn vd-btn-oro">
                 <LineChart size={15} strokeWidth={2} />
-                Tasar mi propiedad gratis
+                Estimar mi propiedad gratis
               </Link>
               <Link href="#contacto" className="vd-btn vd-btn-linea">
                 Hablar con Eugenio
                 <ArrowRight size={14} strokeWidth={1.9} />
               </Link>
             </div>
+            {/* En línea: globals.css se cachea en desarrollo (ver bloques.css) */}
+            <p style={{ margin: "16px 0 0", fontSize: 12.5, lineHeight: 1.6, color: "rgba(255,255,255,.6)" }}>{ACLARATORIO}</p>
           </FadeIn>
         </div>
       </section>

@@ -1,20 +1,21 @@
 import Link from "next/link";
 import { slugifyUbicacion } from "@/lib/ubicaciones";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 /**
- * Texto de apoyo del tasador: cómo funciona, qué se tiene en cuenta y las
+ * Texto de apoyo del estimador: cómo funciona, qué se tiene en cuenta y las
  * preguntas frecuentes. Es contenido de servidor (rastreable por los
  * buscadores) y responde lo que la gente pregunta antes de usar la
  * herramienta. Las preguntas se exportan para armar el FAQPage del schema.
  */
 export const PREGUNTAS_TASADOR: { q: string; a: string }[] = [
   {
-    q: "¿Tengo que registrarme para tasar mi departamento?",
+    q: "¿Tengo que registrarme para estimar el valor de mi departamento?",
     a: "No. La estimación online no te pide registrarte para ver el rango de valor. Si querés una revisión con una persona, Eugenio Nielsen te acompaña sin cargo.",
   },
   {
     q: "¿Qué tan precisa es la estimación?",
-    a: "Es orientativa. Parte del valor de referencia del m² de tu barrio y lo ajusta con las características de tu departamento (superficie, piso, estado, antigüedad, orientación y más), y te devuelve un rango en vez de un número único. No reemplaza una tasación profesional ni una tasación para un trámite bancario o judicial.",
+    a: `Parte del valor de referencia del m² de tu barrio y lo ajusta con las características de tu departamento (superficie, piso, estado, antigüedad, orientación y más), y te devuelve un rango en vez de un número único. ${ACLARATORIO}`,
   },
   {
     q: "¿Qué datos del departamento tengo que cargar?",
@@ -43,11 +44,11 @@ export default function InfoTasador({ actualizado }: { actualizado?: string | nu
   return (
     <div className="ts-info">
       <section>
-        <h2>Cómo funciona el tasador de departamentos</h2>
+        <h2>Cómo funciona el estimador de departamentos</h2>
         <p>
           Elegís el barrio, cargás las características del departamento en cinco pasos y obtenés un rango de valor de venta en dólares.
           El cálculo parte del <Link href="/precios-m2">valor de referencia del metro cuadrado de cada barrio</Link> y
-          lo ajusta con las características propias de tu propiedad, en lugar de aplicar un promedio general.
+          lo ajusta con las características propias de tu propiedad, en lugar de aplicar un promedio general. {ACLARATORIO}
         </p>
       </section>
 

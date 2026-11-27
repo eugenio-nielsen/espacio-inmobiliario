@@ -7,6 +7,7 @@ import { BARRIOS_CABA, slugifyUbicacion } from "@/lib/ubicaciones";
 import { COMUNA_DE_BARRIO } from "@/lib/barrios";
 import { getPreciosConFecha, fmtUsd } from "@/lib/mercado";
 import { ArrowRight, Calculator } from "lucide-react";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 export const revalidate = 3600;
 
@@ -39,7 +40,7 @@ export default async function PreciosM2Page() {
     "@context": "https://schema.org",
     "@type": "Dataset",
     name: "Precio de referencia del metro cuadrado de departamentos en CABA, por barrio",
-    description: "Valor de referencia en dólares del m² de departamentos en cada barrio de la Ciudad de Buenos Aires, usado por el tasador online de Espacio Inmobiliario.",
+    description: "Valor de referencia en dólares del m² de departamentos en cada barrio de la Ciudad de Buenos Aires, usado por el estimador online de Espacio Inmobiliario.",
     url: `${SITE}/precios-m2`,
     inLanguage: "es-AR",
     spatialCoverage: "Ciudad Autónoma de Buenos Aires, Argentina",
@@ -76,7 +77,7 @@ export default async function PreciosM2Page() {
         </h1>
         <p style={{ fontSize: 16, lineHeight: 1.75, color: "var(--ink-600)", maxWidth: 760, margin: "0 0 10px" }}>
           Cuánto vale el m² de un departamento en cada uno de los {ranking.length} barrios porteños, ordenados de más caro a más barato.
-          Son los valores de referencia que usa nuestro tasador online
+          Son los valores de referencia que usa nuestro estimador online
           {ultima ? <>, actualizados el {fmtFecha(ultima)}</> : null}.
         </p>
         {ranking.length > 0 && (
@@ -119,9 +120,9 @@ export default async function PreciosM2Page() {
           </table>
         </div>
         <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "var(--ink-500)", maxWidth: 760, margin: "0 0 36px" }}>
-          Los valores son una referencia por metro cuadrado cubierto de un departamento usado promedio, no una tasación:
+          Los valores son una referencia por metro cuadrado cubierto de un departamento usado promedio:
           el precio de una propiedad concreta depende del piso, el estado, la luz, la orientación, las amenities y la antigüedad.
-          Para una estimación con esos factores, usá el tasador.
+          Para una estimación con esos factores, usá el estimador. {ACLARATORIO}
         </p>
 
         <div style={{ background: "var(--navy-800)", borderRadius: "var(--radius-lg)", padding: "clamp(28px,4vw,40px)", textAlign: "center" }}>
@@ -129,10 +130,10 @@ export default async function PreciosM2Page() {
             ¿Cuánto vale tu departamento?
           </h2>
           <p style={{ fontSize: 15, color: "rgba(255,255,255,.78)", maxWidth: 480, margin: "0 auto 22px", lineHeight: 1.6 }}>
-            Estimalo gratis en cinco pasos: elegís el barrio y cargás los datos, y el tasador te devuelve un rango de valor.
+            Estimalo gratis en cinco pasos: elegís el barrio y cargás los datos, y el estimador te devuelve un rango de valor.
           </p>
           <Link href="/estimador" className="esbtn esbtn-gold" style={{ fontWeight: 600, borderRadius: "var(--radius-sm)", border: "1.5px solid transparent", display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14.5, padding: "13px 24px", background: "var(--gold-500)", color: "#26200f", textDecoration: "none" }}>
-            <Calculator size={16} strokeWidth={2} /> Tasar mi departamento <ArrowRight size={15} />
+            <Calculator size={16} strokeWidth={2} /> Estimar mi departamento <ArrowRight size={15} />
           </Link>
         </div>
       </main>

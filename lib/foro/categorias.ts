@@ -1,4 +1,5 @@
 import { Search, Tag, Landmark, FilePen, Scale, Building, Receipt, Hammer, type LucideIcon } from "lucide-react";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 /**
  * Categorías de la Tertulia. Fuente única: la portada, los filtros, el
@@ -8,7 +9,7 @@ import { Search, Tag, Landmark, FilePen, Scale, Building, Receipt, Hammer, type 
  * los dos lugares.
  *
  * `herramienta` es la sugerencia en contexto: quien pregunta por el
- * precio de su casa ve el Tasador al lado del tema.
+ * precio de su casa ve el Estimador al lado del tema.
  */
 export type Herramienta = { href: string; label: string; detalle: string };
 
@@ -20,10 +21,10 @@ export type Categoria = {
   herramienta?: Herramienta;
 };
 
-const TASADOR: Herramienta = {
+const ESTIMADOR: Herramienta = {
   href: "/estimador",
-  label: "Tasador",
-  detalle: "Estimá en dos minutos cuánto vale una propiedad en CABA.",
+  label: "Estimador",
+  detalle: `Estimá en dos minutos cuánto vale una propiedad en CABA. ${ACLARATORIO}`,
 };
 
 export const CATEGORIAS = [
@@ -43,7 +44,7 @@ export const CATEGORIAS = [
     nombre: "Vender",
     descripcion: "Precio, publicación, visitas y negociación, del lado de quien vende.",
     icon: Tag,
-    herramienta: TASADOR,
+    herramienta: ESTIMADOR,
   },
   {
     slug: "creditos-hipotecarios",
@@ -64,10 +65,10 @@ export const CATEGORIAS = [
   },
   {
     slug: "tasaciones",
-    nombre: "Tasaciones",
+    nombre: "Estimaciones y precios",
     descripcion: "Cuánto vale una propiedad y cómo se llega a ese número.",
     icon: Scale,
-    herramienta: TASADOR,
+    herramienta: ESTIMADOR,
   },
   {
     slug: "propiedad-horizontal",

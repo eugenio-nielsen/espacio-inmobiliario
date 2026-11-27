@@ -1,4 +1,5 @@
 import { calcularCostos, type CostosConfig, type EntradaCostos } from "@/lib/catedra/costos";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 
 /**
  * Contenido editorial de las dos páginas de costos con foco
@@ -55,6 +56,25 @@ export function entradaEjemplo(precio: number, c: CostosConfig, over: Partial<En
 export const PRECIO_EJ = 120_000;
 export const PRECIOS_EJEMPLO = [80_000, 120_000, 200_000, 400_000];
 
+/**
+ * Los porcentajes que resumen cada guía, sobre el ejemplo de referencia.
+ * Los usan las guías y el bloque de la home, para que digan lo mismo.
+ */
+export function rangosCostos(c: CostosConfig) {
+  const ej = calcularCostos(entradaEjemplo(PRECIO_EJ, c), c);
+  const sinInmo = calcularCostos(entradaEjemplo(PRECIO_EJ, c, { conInmobiliaria: false }), c);
+  const noUnica = calcularCostos(entradaEjemplo(PRECIO_EJ, c, { viviendaUnica: false }), c);
+  const pct = (monto: number) => (monto / PRECIO_EJ) * 100;
+  return {
+    venderCon: pct(ej.vendedor.costos),
+    venderSin: pct(sinInmo.vendedor.costos),
+    comprarMin: pct(sinInmo.comprador.costos),
+    comprarMax: pct(noUnica.comprador.costos),
+  };
+}
+
+export const porcentaje = (x: number) => n(x);
+
 export function guia(foco: Foco, c: CostosConfig): Guia {
   const ej = calcularCostos(entradaEjemplo(PRECIO_EJ, c), c);
   const sinInmo = calcularCostos(entradaEjemplo(PRECIO_EJ, c, { conInmobiliaria: false }), c);
@@ -64,8 +84,7 @@ export function guia(foco: Foco, c: CostosConfig): Guia {
   const honC = c.inmobiliaria.comprador;
 
   if (foco === "vender") {
-    const pctV = (ej.vendedor.costos / PRECIO_EJ) * 100;
-    const pctVsin = (sinInmo.vendedor.costos / PRECIO_EJ) * 100;
+    const { venderCon: pctV, venderSin: pctVsin } = rangosCostos(c);
     const sellosNoExento = calcularCostos(entradaEjemplo(PRECIO_EJ, c, { viviendaUnica: false }), c);
     return {
       foco,
@@ -103,7 +122,7 @@ export function guia(foco: Foco, c: CostosConfig): Guia {
           t: "Cómo bajar el costo de vender",
           p: [
             "Los honorarios son libres: se negocian antes de firmar la autorización de venta, no después. Pedir el pacto por escrito y con el IVA discriminado evita sorpresas. También conviene empezar temprano con los certificados, que tienen vencimiento: pedirlos cuando ya hay oferta acelera la escritura.",
-            "Y fijar bien el precio de salida pesa más que cualquier otro gasto: una propiedad mal publicada pierde meses y termina bajando el precio. Podés orientarte con el <a href=\"/estimador\">tasador online de Espacio Inmobiliario</a>.",
+            "Y fijar bien el precio de salida pesa más que cualquier otro gasto: una propiedad mal publicada pierde meses y termina bajando el precio. Podés orientarte con el <a href=\"/estimador\">estimador online de Espacio Inmobiliario</a>. " + ACLARATORIO,
           ],
         },
       ],
@@ -140,8 +159,7 @@ export function guia(foco: Foco, c: CostosConfig): Guia {
   const conCred = calcularCostos(entradaEjemplo(PRECIO_EJ, c, { credito: 75_000 }), c);
   const noUnica = calcularCostos(entradaEjemplo(PRECIO_EJ, c, { viviendaUnica: false }), c);
   const pctC = (ej.comprador.costos / PRECIO_EJ) * 100;
-  const pctCsin = (sinInmo.comprador.costos / PRECIO_EJ) * 100;
-  const pctCnoUnica = (noUnica.comprador.costos / PRECIO_EJ) * 100;
+  const { comprarMin: pctCsin, comprarMax: pctCnoUnica } = rangosCostos(c);
   return {
     foco,
     slug: SLUGS.comprar,

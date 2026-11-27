@@ -12,6 +12,7 @@ import Indice, { type ItemIndice } from "@/components/ui/Indice";
 import RegistroDueno from "@/components/propietarios/RegistroDueno";
 
 import { SITE } from "@/lib/site";
+import { ACLARATORIO } from "@/lib/estimador/aclaratorio";
 const PAGINA = "/propietarios/publicar";
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ const INCLUYE: ItemIndice[] = [
   { icon: Sparkles, t: "Descripción asistida", d: "Te ayudamos a escribir la descripción a partir de los datos que cargás." },
   { icon: ShieldCheck, t: "Sellos de verificación", d: "Validá tu identidad y tu escritura: la ficha lo muestra y el comprador llega con más confianza." },
   { icon: FileCheck, t: "Revisión previa", d: "Ninguna publicación sale al portal sin haber sido revisada, una por una." },
-  { icon: LineChart, t: "Tasador gratis", d: "Estimá el valor de tu departamento antes de ponerle precio.", cta: "Usar el tasador", href: "/estimador" },
+  { icon: LineChart, t: "Estimador gratis", d: `Estimá el valor de tu departamento antes de ponerle precio. ${ACLARATORIO}`, cta: "Usar el estimador", href: "/estimador" },
   { icon: LayoutDashboard, t: "Tu panel", d: "Consultas, visitas y publicaciones en un solo lugar. Pausás o editás cuando quieras." },
 ];
 
@@ -67,7 +68,7 @@ const PREGUNTAS = [
   },
   {
     q: "¿Y si prefiero no ocuparme de la venta?",
-    a: "Te acompañamos en toda la operación, de la tasación a la escritura. Sin comisión: no somos intermediarios.",
+    a: "Te acompañamos en toda la operación, de la definición del precio a la escritura. Sin comisión: no somos intermediarios.",
   },
 ] as const;
 

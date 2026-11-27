@@ -301,6 +301,7 @@
 }
 .ap-vender-t a:hover { color: var(--gold-700); }
 .ap-vender-acciones { display: flex; align-items: center; gap: 24px; }
+.ap-aclaratorio { margin: 0; font-family: var(--font-sans); font-size: 11.5px; line-height: 1.5; color: var(--ink-500); }
 /* El segundo llamado es un enlace, no otra caja (como en Respaldo) */
 .ap-enlace {
   position: relative;
@@ -497,7 +498,8 @@
   .ap-campo select, .ap-campo input { font-size: 16px; }
   .ap-buscar .ap-boton { margin-top: 6px; min-height: 52px; }
   .ap-vender { padding: 18px 16px 16px; }
-  .ap-vender-acciones { width: 100%; justify-content: space-between; }
+  .ap-vender-acciones { width: 100%; flex-direction: column; gap: 12px; }
+  .ap-vender-acciones .ap-boton { width: 100%; justify-content: center; min-height: 50px; }
   /* En una línea, el lugar partía el rótulo en dos renglones */
   .ap-eyebrow-lugar { display: none; }
   .ap-cinta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; padding: 20px 20px 26px; }
