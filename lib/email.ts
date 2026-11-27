@@ -1122,6 +1122,44 @@ export async function sendAsesoriaAcuse(data: { para: string; nombre: string; me
   });
 }
 
+// ── Plantillas para Supabase (mails de la cuenta) ──────────────
+// No se envían desde el código: los manda Supabase Auth.
+// scripts/generar-plantillas-supabase.mts las escribe en emails/supabase/ para
+// pegarlas en Supabase → Authentication → Emails. {{ .ConfirmationURL }} lo
+// completa Supabase. No llevan el nombre de la persona a propósito: salen a
+// direcciones sin confirmar y el nombre lo escribe quien hace el pedido.
+
+export function plantillaCuenta(tipo: "confirmar" | "clave"): string {
+  const t = tipo === "confirmar"
+    ? {
+        titulo: "Confirmá tu cuenta",
+        lead: "Gracias por registrarte en Espacio Inmobiliario. Para terminar, confirmá que este email es tuyo.",
+        boton: "Confirmar mi cuenta",
+        nota: "Si no creaste una cuenta, ignorá este mensaje.",
+        campana: "confirmar-cuenta",
+      }
+    : {
+        titulo: "Elegí una contraseña nueva",
+        lead: "Pediste recuperar el acceso a tu cuenta de Espacio Inmobiliario. Abrí el enlace en el mismo navegador donde hiciste el pedido.",
+        boton: "Cambiar mi contraseña",
+        nota: "Si no lo pediste, ignorá este mensaje: tu contraseña sigue siendo la misma.",
+        campana: "recuperar-clave",
+      };
+  const enlace = "{{ .ConfirmationURL }}";
+
+  const html = baseLayout(`
+    <div style="${styles.body_p}">
+      <h1 style="${styles.h1};font-family:${SERIF};font-size:26px;">${t.titulo}</h1>
+      <p style="${styles.lead}">${t.lead}</p>
+      <p style="margin:0 0 24px;"><a href="${enlace}" style="${styles.btn}">${t.boton} &rarr;</a></p>
+      <p style="margin:0 0 6px;color:#595349;font-size:13px;line-height:1.6;">Si el botón no funciona, copiá y pegá esta dirección en tu navegador:</p>
+      <p style="margin:0 0 20px;font-size:12px;line-height:1.6;word-break:break-all;"><a href="${enlace}" style="color:#8C7641;">${enlace}</a></p>
+      <p style="margin:0;color:#595349;font-size:13px;line-height:1.6;">El enlace sirve una sola vez y vence. ${t.nota}</p>
+    </div>
+  `);
+  return conUtm(html, t.campana);
+}
+
 // ── Plantillas para Resend (Broadcasts) ────────────────────────
 // No se envían desde el código: scripts/generar-plantillas-resend.mts las
 // escribe en emails/resend/ para pegarlas en Resend. Usan las variables de
